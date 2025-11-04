@@ -105,9 +105,9 @@ class StructureController extends Controller
         $user = Auth::user();
 
         // Fetch all sectors created by the user's kebele
-        $sectors = KebeleSectors::where('kebele_id', $user->kebele_id)
-            ->orderBy('id', 'desc')
-            ->get();
+        $sectors = KebeleSectors::all();
+           
+           
 
         return view('setting.sector.index', compact('sectors'));
     }
@@ -141,14 +141,46 @@ class StructureController extends Controller
         // Create sector record with IDs from logged-in user
         KebeleSectors::create([
             'name' => $request->name,
-            'kebele_id' => $user->kebele_id,
-            'woreda_id' => $user->woreda_id,
-            'zone_id' => $user->zone_id,
-            'region_id' => $user->region_id,
+            'level'=> $request->level,
+             
             'created_by' => $user->id, // optional (for auditing)
         ]);
 
-        return back()->with('success', 'Sector added successfully!');
+        return redirect()->route('sectors.index')->with('success', 'Sector added successfully!');
+    }
+
+
+
+     
+
+    public function editSector($id)
+    {
+        $sector = KebeleSectors::findOrFail($id);
+
+        // Optional: Authorization check
+        // $this->authorize('update', $sector);
+
+        return view('setting.sector.edit', compact('sector'));
+    }
+
+    public function updateSector(Request $request, $id)
+    {
+        $user = Auth::user();
+        $sector = KebeleSectors::findOrFail($id);
+
+        // Optional: Authorization check
+        // $this->authorize('update', $sector);
+
+        $request->validate([
+            'name' => 'required|string|max:255',
+        ]);
+
+        $sector->update([
+            'name' => $request->name,
+            'updated_by' => $user->id, // optional (for auditing)
+        ]);
+
+        return redirect()->route('sectors.index')->with('success', 'Sector updated successfully!');
     }
 
 
@@ -354,7 +386,7 @@ class StructureController extends Controller
         }
 
         // Fetch only sectors under this kebele
-        $sectors = KebeleSectors::where('kebele_id', $user->kebele_id)->get();
+        $sectors = KebeleSectors::all();
 
         return view('setting.sector.create_admin', compact('sectors'));
     }
@@ -408,11 +440,11 @@ class StructureController extends Controller
         }
 
         $sectorAdmin = User::where('id', $id)
-            ->where('kebele_id', $user->kebele_id)
+            
             ->where('role_id', 5)
             ->firstOrFail();
 
-        $sectors = \App\Models\KebeleSectors::where('kebele_id', $user->kebele_id)->get();
+        $sectors = \App\Models\KebeleSectors::all();
 
         return view('setting.sector.edit_admin', compact('sectorAdmin', 'sectors'));
     }
@@ -452,6 +484,182 @@ class StructureController extends Controller
 
         return redirect()->route('sectoradmin.index')->with('success', 'Sector Admin updated successfully!');
     }
+
+
+
+
+
+
+
+
+
+    public function indexdausers()
+    {
+        $user = Auth::user();
+
+        if ($user->role_id != 4) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        // Fetch only DA users under Agricultural Development Sector in this kebele
+        $dausers = User::with('sector')
+            ->where('kebele_id', $user->kebele_id)
+            ->where('role_id', 6) // DA users
+            ->whereHas('sector', function ($query) {
+                $query->where('id', 2); // Assuming ID 2 is Agricultural Development Sector
+            })
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return view('setting.da.index_admin', compact('dausers'));
+    }
+
+    public function createdausers()
+    {
+        $user = Auth::user();
+
+        if ($user->role_id != 4) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        // Fetch only Agricultural Development Sector for this kebele
+        $sectors = \App\Models\KebeleSectors::where('kebele_id', $user->kebele_id)
+            ->where('id', 2) // Assuming ID 2 is Agricultural Development Sector
+            ->get();
+
+        return view('setting.da.create_admin', compact('sectors'));
+    }
+
+    public function storedausers(Request $request)
+    {
+        $user = Auth::user();
+
+        if ($user->role_id != 4) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users',
+            'phone' => ['required', 'regex:/^(\+251|0)(9|7)\d{8}$/', 'unique:users'],
+            'gender' => 'nullable|in:male,female,other',
+            'sector_id' => 'required|exists:kebele_sectors,id',
+            'password' => ['required', 'confirmed', Password::min(8)->mixedCase()->numbers()->symbols()],
+        ]);
+
+        // Ensure the sector belongs to Agricultural Development only
+        $sector = \App\Models\KebeleSectors::where('id', $request->sector_id)
+            ->where('kebele_id', $user->kebele_id)
+            ->where('id', 2) // Agricultural Development Sector
+            ->firstOrFail();
+
+        User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'phone' => $request->phone,
+            'gender' => $request->gender,
+            'region_id' => $user->region_id,
+            'zone_id' => $user->zone_id,
+            'woreda_id' => $user->woreda_id,
+            'kebele_id' => $user->kebele_id,
+            'sector_id' => $sector->id,
+            'role_id' => 6, // DA User
+            'created_by' => $user->id,
+            'employee_id' => 'DA-' . strtoupper(uniqid()),
+            'password' => Hash::make($request->password),
+        ]);
+
+        return redirect()->route('dausers.index')->with('success', 'Agricultural DA User created successfully!');
+    }
+
+    public function editdausers($id)
+    {
+        $user = Auth::user();
+
+        if ($user->role_id != 4) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        $dauser = User::where('id', $id)
+            ->where('kebele_id', $user->kebele_id)
+            ->where('role_id', 6)
+            ->whereHas('sector', function ($query) {
+                $query->where('id', 2); // Agricultural Development Sector');
+            })
+            ->firstOrFail();
+
+        $sectors = \App\Models\KebeleSectors::where('kebele_id', $user->kebele_id)
+            ->where('id', 2) // Agricultural Development Sector
+            ->get();
+
+        return view('setting.da.edit_admin', compact('dauser', 'sectors'));
+    }
+
+    public function updatedausers(Request $request, $id)
+    {
+        $auth = Auth::user();
+
+        if ($auth->role_id != 4) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        $dauser = User::where('id', $id)
+            ->where('kebele_id', $auth->kebele_id)
+            ->where('role_id', 6)
+            ->whereHas('sector', function ($query) {
+                $query->where('id', 2); // Agricultural Development Sector
+            })
+            ->firstOrFail();
+
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users,email,' . $dauser->id,
+            'phone' => ['required', 'regex:/^(\+251|0)(9|7)\d{8}$/', 'unique:users,phone,' . $dauser->id],
+            'gender' => 'nullable|in:male,female,other',
+            'sector_id' => 'required|exists:kebele_sectors,id',
+            'password' => ['nullable', 'confirmed', Password::min(8)->mixedCase()->numbers()->symbols()],
+        ]);
+
+        // Make sure sector belongs to Agricultural Development Sector
+        $sector = \App\Models\KebeleSectors::where('id', $validated['sector_id'])
+            ->where('kebele_id', $auth->kebele_id)
+            ->where('id', 2) // Agricultural Development Sector
+            ->firstOrFail();
+
+        $dauser->update([
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+            'phone' => $validated['phone'],
+            'gender' => $validated['gender'] ?? null,
+            'sector_id' => $sector->id,
+            'password' => !empty($validated['password'])
+                ? Hash::make($validated['password'])
+                : $dauser->password,
+        ]);
+
+        return redirect()->route('dausers.index')->with('success', 'Agricultural DA User updated successfully!');
+    }
+
+    public function destroydausers($id)
+    {
+        // Find the DA user by ID
+        $user = User::findOrFail($id);
+
+        // Optional: you can restrict deletion to DA users only
+        if ($user->role_id != 6) { // assuming role_id = 4 is for DA users
+            return redirect()->route('dausers.index')
+                ->with('error', 'You can only delete DA users.');
+        }
+
+        // Delete the record
+        $user->delete();
+
+        // Redirect back with a success message
+        return redirect()->route('dausers.index')
+            ->with('success', 'DA user deleted successfully.');
+    }
+
+
 
     /**
      * Show the form for creating a new resource.

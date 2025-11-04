@@ -4,9 +4,15 @@ namespace App\Http\Controllers;
 
 use App\Models\Crop;
 use App\Models\CropType;
-use App\Models\KebeleCropPlan;
 use Illuminate\Http\Request;
+use App\Models\KebeleCropPlan;
+use App\Models\CropConfiguration;
 use Illuminate\Support\Facades\Auth;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Imports\KebeleCropPlanImport;
+use App\Imports\KebeleCropPlansImport;
+use App\Exports\KebeleCropPlanTemplateExport;
+
 
 class KebeleCropPlanController extends Controller
 {
@@ -23,39 +29,68 @@ class KebeleCropPlanController extends Controller
 
 
 
-    // Optional: AJAX route to fetch crops by crop type
-    public function getCropsByType($croptypeId)
+        // Optional: AJAX route to fetch crops by crop type
+  
+public function getCropTypesByYear($year)
+{
+    $user = auth()->user();
+    $cropTypes = CropConfiguration::where('kebele_id', $user->kebele_id)
+        ->where('year', $year)
+        ->with('cropType')
+        ->get()
+        ->pluck('cropType')
+        ->unique('id')
+        ->values();
+
+    return response()->json($cropTypes);
+}
+
+public function getCropsByYearAndType($year, $croptypeId)
+{
+    $user = auth()->user();
+    $configs = CropConfiguration::with('crop')
+        ->where('kebele_id', $user->kebele_id)
+        ->where('year', $year)
+        ->where('croptype_id', $croptypeId)
+        ->get();
+
+    $crops = $configs->map(function($config) {
+        return [
+            'id' => $config->crop->id,
+            'name' => $config->crop->name,
+            'productivity' => $config->productivity_per_ha,
+            'seed_rate' => $config->seed_rate_kg_per_ha,
+            'fertilizers' => $config->fertilizer_requirements,
+        ];
+    });
+
+    return response()->json($crops);
+}
+
+  public function create()
     {
-        $crops = Crop::with('fertilizers')
-            ->where('croptype_id', $croptypeId)
+        $user = Auth::user();
+        $kebeleId = $user->kebele_id;
+
+        // ✅ Get distinct years, crop types, and crops available for the user's kebele
+        $years = CropConfiguration::where('kebele_id', $kebeleId)
+            ->select('year')
+            ->distinct()
+            ->pluck('year')
+            ->sortDesc();
+
+        $cropTypes = CropConfiguration::where('kebele_id', $kebeleId)
+            ->with('cropType')
+            ->select('croptype_id')
+            ->distinct()
             ->get()
-            ->mapWithKeys(function ($crop) {
-                return [
-                    $crop->id => [
-                        'name' => $crop->name,
-                        'seeds_per_ha' => $crop->seeds_per_ha ?? 20,
-                        'fertilizers' => $crop->fertilizers->map(fn($f) => [
-                            'type' => $f->type,
-                            'quantity_per_ha' => $f->quantity_per_ha,
-                        ])->toArray(),
-                    ],
-                ];
-            });
+            ->pluck('cropType')
+            ->filter();
 
-        return response()->json($crops);
+        return view('sector.crop_plans.create', compact('years', 'cropTypes'));
     }
 
-
-
-    public function create()
-    {
-        $cropTypes = CropType::all();
-        $crops = Crop::with('fertilizers')->get();
-
-        return view('sector.crop_plans.create', compact('cropTypes', 'crops'));
-    }
-
-     public function store(Request $request)
+    public function store(Request $request)
     {
         $user = Auth::user();
 
@@ -67,18 +102,9 @@ class KebeleCropPlanController extends Controller
             'year' => 'required|integer|min:1',
             'season' => 'required|string|max:255',
             'responsible_staff' => 'nullable|string|max:255',
-            'notes' => 'nullable|string',
         ]);
 
-        // ✅ Prevent planning for past Ethiopian years
-        $currentEthYear = \App\Helpers\EthiopianDateHelper::currentEthiopianYear();
-        if ($validated['year'] < $currentEthYear) {
-            return back()->withErrors([
-                'year' => "You cannot plan for past years. Current Ethiopian year is $currentEthYear."
-            ])->withInput();
-        }
-
-        // Duplicate check
+        // ✅ Prevent duplicates
         $existingPlan = KebeleCropPlan::where('kebele_id', $user->kebele_id)
             ->where('sector_id', $user->sector_id)
             ->where('year', $validated['year'])
@@ -94,25 +120,22 @@ class KebeleCropPlanController extends Controller
         }
 
         $area = $validated['area_to_plant'];
-        $responsible = $validated['responsible_staff'];
         $productivity = $validated['productivity'];
         $expectedYield = $area * $productivity;
 
-        $crop = Crop::with('fertilizers')->find($validated['crop_id']);
+        // ✅ Fetch CropConfiguration for selected year, crop, and type
+        $config = CropConfiguration::where('year', $validated['year'])
+            ->where('crop_id', $validated['crop_id'])
+            ->where('croptype_id', $validated['croptype_id'])
+            ->where('kebele_id', $user->kebele_id)
+            ->first();
 
-        // Seeds
-        $seedType = $crop->name ?? 'Seeds';
-        $seedsPerHa = $crop->seeds_per_ha ?? 20;
+        $seedType = $config?->crop?->name ?? 'Seeds';
+        $seedsPerHa = $config?->seed_rate_kg_per_ha ?? 20;
         $totalSeeds = $area * $seedsPerHa;
 
-        // Fertilizers
-        $fertList = $crop->fertilizers->map(function ($f) use ($area) {
-            return $f->type . ': ' . ($f->quantity_per_ha * $area) . ' kg';
-        })->implode(', ');
+        
 
-        $inputNeeded = $seedType . ': ' . $totalSeeds . ' kg' . ($fertList ? ', ' . $fertList : '');
-
-        // Save crop plan
         KebeleCropPlan::create([
             'kebele_id' => $user->kebele_id,
             'sector_id' => $user->sector_id,
@@ -121,10 +144,10 @@ class KebeleCropPlanController extends Controller
             'area_to_plant' => $area,
             'productivity' => $productivity,
             'expected_yield' => $expectedYield,
-            'input_needed' => $inputNeeded,
+        
             'year' => $validated['year'],
             'season' => $validated['season'],
-            'responsible_staff' => $responsible,
+            'responsible_staff' => $validated['responsible_staff'] ?? null,
             'notes' => $validated['notes'] ?? null,
             'created_by' => $user->id,
         ]);
@@ -201,5 +224,52 @@ class KebeleCropPlanController extends Controller
         $plan->delete();
 
         return back()->with('success', 'Crop plan deleted successfully!');
+        
     }
+
+
+ 
+
+public function importExcel(Request $request)
+{
+    $request->validate([
+        'file' => 'required|mimes:xlsx,xls'
+    ]);
+
+    Excel::import(new KebeleCropPlansImport, $request->file('file'));
+
+    return redirect()->route('sector.crop-plans.index')
+        ->with('success', '✅ Crop plans imported successfully!');
+}
+
+
+
+ 
+public function downloadTemplate()
+{
+    return Excel::download(new KebeleCropPlanTemplateExport, 'kebele_crop_plan_template.xlsx');
+}
+
+
+ 
+
+public function showImportForm()
+{
+    return view('sector.crop_plans.import');
+}
+
+public function import(Request $request)
+{
+    $request->validate([
+        'file' => 'required|mimes:xlsx,xls',
+    ]);
+
+    Excel::import(new KebeleCropPlanImport, $request->file('file'));
+
+    return redirect()->route('sector.crop-plans.index')
+        ->with('success', '✅ Kebele Crop Plans imported successfully!');
+}
+
+
+
 }

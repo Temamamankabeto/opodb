@@ -21,10 +21,16 @@ class Farmer extends Model
         'association_id',
         'house_number',
         'field_description',
-        'landholding_size',
-        'gps_coordinates',
-        'irrigation_type',
-        'soil_type'
+        'land_details',
+        'total_land',
+        'land_type_details',
+        'created_by',
+    ];
+
+    protected $casts = [
+        'land_details' => 'array',
+        'total_land' => 'array',
+        'land_type_details' => 'array',
     ];
 
     public function zone()

@@ -136,212 +136,651 @@
     <nav class="sidebar">
         <ul class="sidebar-tree">
             <!-- super admin  -->
-            @if(Auth::user()->role_id == 5)
+            @if (Auth::user()->role_id == 1)
+                <li>
+                    <span class="caret"><i class="fa-solid fa-folder folder-icon"></i>User Management</span>
+                    <ul>
+                        <li><i class="fa-regular fa-file file-icon"></i><a href="{{ url('admin/users') }}"> Zonal
+                                Admin</a></li>
+
+                    </ul>
+                </li>
+
+
+                <li>
+                    <span class="caret"><i class="fa-solid fa-folder folder-icon"></i>Structure</span>
+                    <ul>
+
+                        <li> <i class="fa-regular fa-file file-icon"></i><a href="{{ url('admin/zones') }}">Zones</a>
+                        </li>
+                        <li> <i class="fa-regular fa-file file-icon"></i><a href="/karoora-jia">Sectors</a></li>
+
+                    </ul>
+                </li>
+
+                <li>
+                    <span class="caret"><i class="fa-solid fa-folder folder-icon"></i>Report</span>
+                    <ul>
+                        <li><i class="fa-regular fa-file file-icon"></i><a href="/karoora-wagga">Misoomaa
+                                Midhaanii</a></li>
+                        <li><i class="fa-regular fa-file file-icon"></i><a href="/karoora-jia">Bu'uuraalee
+                                Misoomaa</a></li>
+                        <li><i class="fa-regular fa-file file-icon"></i><a href="/karoora-jia">Misoomaa
+                                Hawaasummaa</a></li>
+                        <li><i class="fa-regular fa-file file-icon"></i><a href="/karoora-jia">Carraaa Hojii Uumuu</a>
+                        </li>
+                        <li><i class="fa-regular fa-file file-icon"></i><a href="/karoora-jia">Horataalee
+                                Mootummaa</a></li>
+                        <li style="color: #007bff;"><i class="fa-regular fa-file file-icon"></i><a
+                                href="/karoora-jia">Gabasa Woliigalaa</a></li>
+                    </ul>
+                </li>
             @endif
 
             <!-- Admin admin  -->
 
-            @if(Auth::user()->role_id == 5)
+            @if (Auth::user()->role_id == 2)
+                <span class="caret"><i class="fa-solid fa-folder folder-icon"></i>Use Management</span>
+                <ul>
+                    <li>
+                        <span class="caret"><i class="fa-solid fa-folder folder-icon"></i>users</span>
+                        <ul>
+                            <li><i class="fa-regular fa-file file-icon"></i><a href="{{ url('admin/users') }}">Woreda
+                                    Users</a></li>
+                            <li><i class="fa-regular fa-file file-icon"></i><a href="/fertilizer-type">Kebele Users</a>
+                            </li>
+
+                        </ul>
+                    </li>
+
+
+                </ul>
             @endif
             <!-- Regional admin  -->
 
-            @if(Auth::user()->role_id == 5)
+            @if (Auth::user()->role_id == 5)
             @endif
             <!-- zonal  admin  -->
 
-            @if(Auth::user()->role_id == 5)
+            @if (Auth::user()->role_id == 5)
             @endif
             <!-- Woreda admin  -->
 
-            @if(Auth::user()->role_id == 5)
+            @if (Auth::user()->role_id == 5)
             @endif
             <!-- kebele admin  -->
 
-            @if(Auth::user()->role_id == 5)
+            @if (Auth::user()->role_id == 4)
+                <li>
+                    <h5><i class="fa-regular  ">
+                            <a href="{{ url('kebele/dashboard') }}">Dashboard</a>
+                        </i> </h5>
+                    <hr>
+                </li>
+
+                <li>
+                    <span class="caret"><i class="fa-solid fa-folder folder-icon"></i>User Management</span>
+                    <ul>
+                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                href="{{ url('kebele/sector-admins') }}">Sector Admins</a></li>
+
+                        <li><i class="fa-regular fa-file file-icon"></i><a href="{{ url('kebele/da-users') }}">DA
+                                Expert</a></li>
+
+                    </ul>
+                </li>
+
+                <li>
+
+                    <span class="caret"><i class="fa-solid fa-folder folder-icon"></i>Configuration</span>
+                    <ul>
+                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                href="{{ url('kebele/crop-configurations') }}">Productivity</a></li>
+
+
+
+                    </ul>
+
+                </li>
             @endif
             <!-- sector admin  -->
 
-            @if(in_array(Auth::user()->role_id, [4, 5]))
+            @if (in_array(Auth::user()->role_id, [4]))
+                <li>
+                    <span class="caret"><i class="fa-solid fa-folder folder-icon"></i>Karoora</span>
+                    <ul>
+                        <li>
+                            <span class="caret"><i class="fa-solid fa-folder folder-icon"></i>Karrora Waggaa</span>
+                            <ul>
+                                <li>
+                                    <span class="caret"><i class="fa-solid fa-folder folder-icon"></i>Misooma
+                                        Midhaanii</span>
+                                    <ul>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                                href="{{ url('sector/crop-plans') }}">Midhaan</a></li>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                                href="/fertilizer-type">Dhiyeessii LQ</a></li>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a href="/fertilizer-type">Hojii
+                                                Gabbina Biyyoo</a></li>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                                href="/fertilizer-type">Qophii Fi Dhaabbii Biqiltuuwwanii</a></li>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                                href="/fertilizer-type">Dhiyeessii Beeyladaa</a></li>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                                href="/fertilizer-type">Oomisha fi Bu'aa Beeyladaa Beeyladaa</a></li>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                                href="/fertilizer-type">Oomisha Beeyladaa Beeyladaa</a></li>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a href="/fertilizer-type">Hojii
+                                                Qabeenya Uumamaa</a></li>
+                                    </ul>
+                                </li>
+                                <li>
+                                    <span class="caret"><i class="fa-solid fa-folder folder-icon"></i>Bu'uuraalee
+                                        Misooma </span>
+                                    <ul>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a href="/crop-plan">Ijaarsa
+                                                Dhaabbilee</a></li>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                                href="/fertilizer-type">Haaromsa Dhaabbilee</a></li>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                                href="/fertilizer-type">Ijaarsa Faasiliitiwwanii</a></li>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                                href="/fertilizer-type">Ijaarsa Faasiliitiwwan Cie'uumsa diinagdee</a>
+                                        </li>
+                                    </ul>
+                                </li>
+                                <li>
+                                    <span class="caret"><i class="fa-solid fa-folder folder-icon"></i>Misooma
+                                        Hawaasummaa </span>
+                                    <ul>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a href="/crop-plan">Hirmaannaa
+                                                Fi Itti Fufiinsa</a></li>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                                href="/fertilizer-type">Bu'aqabeessummaa Barnootaa</a></li>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                                href="/fertilizer-type">Dhiyeessii Nyaata Barattootaa</a></li>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a href="/fertilizer-type">Aadaa
+                                                Fi Aartii</a></li>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                                href="/fertilizer-type">Galmeessa Sivilii</a></li>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                                href="/fertilizer-type">Fayyaa</a></li>
+                                    </ul>
+                                </li>
+                                <li>
+                                    <span class="caret"><i class="fa-solid fa-folder folder-icon"></i>Carraa Hojii
+                                        Uumuu</span>
+                                    <ul>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a href="/crop-plan">Carraa
+                                                Hojii Uumuu</a></li>
+                                    </ul>
+                                </li>
+                                <li>
+                                    <span class="caret"><i class="fa-solid fa-folder folder-icon"></i>Horataalee
+                                        Motummaa</span>
+                                    <ul>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                                href="/crop-plan">Horataalee
+                                                Motummaa</a></li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </li>
 
-            <li>
-                <span class="caret"><i class="fa-solid fa-folder folder-icon"></i>Karoora</span>
-                <ul>
-                    <li>
-                        <span class="caret"><i class="fa-solid fa-folder folder-icon"></i>Karrora Waggaa</span>
-                        <ul>
-                            <li>
-                                <span class="caret"><i class="fa-solid fa-folder folder-icon"></i>Misooma Midhaanii</span>
-                                <ul>
-                                    <li><i class="fa-regular fa-file file-icon"></i><a href="{{url('sector/crop-plans')}}">Midhaan</a></li>
-                                    <li><i class="fa-regular fa-file file-icon"></i><a href="/fertilizer-type">Dhiyeessii LQ</a></li>
-                                    <li><i class="fa-regular fa-file file-icon"></i><a href="/fertilizer-type">Hojii Gabbina Biyyoo</a></li>
-                                    <li><i class="fa-regular fa-file file-icon"></i><a href="/fertilizer-type">Qophii Fi Dhaabbii Biqiltuuwwanii</a></li>
-                                    <li><i class="fa-regular fa-file file-icon"></i><a href="/fertilizer-type">Dhiyeessii Beeyladaa</a></li>
-                                    <li><i class="fa-regular fa-file file-icon"></i><a href="/fertilizer-type">Oomisha fi Bu'aa Beeyladaa Beeyladaa</a></li>
-                                    <li><i class="fa-regular fa-file file-icon"></i><a href="/fertilizer-type">Oomisha Beeyladaa Beeyladaa</a></li>
-                                    <li><i class="fa-regular fa-file file-icon"></i><a href="/fertilizer-type">Hojii Qabeenya Uumamaa</a></li>
-                                </ul>
-                            </li>
-                            <li>
-                                <span class="caret"><i class="fa-solid fa-folder folder-icon"></i>Bu'uuraalee Misooma </span>
-                                <ul>
-                                    <li><i class="fa-regular fa-file file-icon"></i><a href="/crop-plan">Ijaarsa Dhaabbilee</a></li>
-                                    <li><i class="fa-regular fa-file file-icon"></i><a href="/fertilizer-type">Haaromsa Dhaabbilee</a></li>
-                                    <li><i class="fa-regular fa-file file-icon"></i><a href="/fertilizer-type">Ijaarsa Faasiliitiwwanii</a></li>
-                                    <li><i class="fa-regular fa-file file-icon"></i><a href="/fertilizer-type">Ijaarsa Faasiliitiwwan Cie'uumsa diinagdee</a></li>
-                                </ul>
-                            </li>
-                            <li>
-                                <span class="caret"><i class="fa-solid fa-folder folder-icon"></i>Misooma Hawaasummaa </span>
-                                <ul>
-                                    <li><i class="fa-regular fa-file file-icon"></i><a href="/crop-plan">Hirmaannaa Fi Itti Fufiinsa</a></li>
-                                    <li><i class="fa-regular fa-file file-icon"></i><a href="/fertilizer-type">Bu'aqabeessummaa Barnootaa</a></li>
-                                    <li><i class="fa-regular fa-file file-icon"></i><a href="/fertilizer-type">Dhiyeessii Nyaata Barattootaa</a></li>
-                                    <li><i class="fa-regular fa-file file-icon"></i><a href="/fertilizer-type">Aadaa Fi Aartii</a></li>
-                                    <li><i class="fa-regular fa-file file-icon"></i><a href="/fertilizer-type">Galmeessa Sivilii</a></li>
-                                    <li><i class="fa-regular fa-file file-icon"></i><a href="/fertilizer-type">Fayyaa</a></li>
-                                </ul>
-                            </li>
-                            <li>
-                                <span class="caret"><i class="fa-solid fa-folder folder-icon"></i>Carraa Hojii Uumuu</span>
-                                <ul>
-                                    <li><i class="fa-regular fa-file file-icon"></i><a href="/crop-plan">Carraa Hojii Uumuu</a></li>
-                                </ul>
-                            </li>
-                            <li>
-                                <span class="caret"><i class="fa-solid fa-folder folder-icon"></i>Horataalee Motummaa</span>
-                                <ul>
-                                    <li><i class="fa-regular fa-file file-icon"></i><a href="/crop-plan">Horataalee Motummaa</a></li>
-                                </ul>
-                            </li>
-                        </ul>
-                    </li>
+                        <li>
+                            <span class="caret"><i class="fa-solid fa-folder folder-icon"></i>Karrora
+                                Kurmaanaa</span>
+                            <ul>
+                                <li>
+                                    <span class="caret"><i class="fa-solid fa-folder folder-icon"></i>Misooma
+                                        Midhaanii</span>
+                                    <ul>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                                href="/crop-plan">Midhaan</a>
+                                        </li>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                                href="/fertilizer-type">Dhiyeessii LQ</a></li>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                                href="/fertilizer-type">Hojii
+                                                Gabbina Biyyoo</a></li>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                                href="/fertilizer-type">Qophii Fi Dhaabbii Biqiltuuwwanii</a></li>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                                href="/fertilizer-type">Dhiyeessii Beeyladaa</a></li>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                                href="/fertilizer-type">Oomisha fi Bu'aa Beeyladaa Beeyladaa</a></li>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                                href="/fertilizer-type">Oomisha Beeyladaa Beeyladaa</a></li>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                                href="/fertilizer-type">Hojii
+                                                Qabeenya Uumamaa</a></li>
+                                    </ul>
+                                </li>
+                                <li>
+                                    <span class="caret"><i class="fa-solid fa-folder folder-icon"></i>Bu'uuraalee
+                                        Misooma </span>
+                                    <ul>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a href="/crop-plan">Ijaarsa
+                                                Dhaabbilee</a></li>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                                href="/fertilizer-type">Haaromsa Dhaabbilee</a></li>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                                href="/fertilizer-type">Ijaarsa Faasiliitiwwanii</a></li>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                                href="/fertilizer-type">Ijaarsa Faasiliitiwwan Cie'uumsa diinagdee</a>
+                                        </li>
+                                    </ul>
+                                </li>
+                                <li>
+                                    <span class="caret"><i class="fa-solid fa-folder folder-icon"></i>Misooma
+                                        Hawaasummaa </span>
+                                    <ul>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                                href="/crop-plan">Hirmaannaa
+                                                Fi Itti Fufiinsa</a></li>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                                href="/fertilizer-type">Bu'aqabeessummaa Barnootaa</a></li>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                                href="/fertilizer-type">Dhiyeessii Nyaata Barattootaa</a></li>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                                href="/fertilizer-type">Aadaa Fi Aartii</a></li>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                                href="/fertilizer-type">Galmeessa Sivilii</a></li>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                                href="/fertilizer-type">Fayyaa</a></li>
+                                    </ul>
+                                </li>
+                                <li>
+                                    <span class="caret"><i class="fa-solid fa-folder folder-icon"></i>Carraa Hojii
+                                        Uumuu</span>
+                                    <ul>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a href="/crop-plan">Carraa
+                                                Hojii Uumuu</a></li>
+                                    </ul>
+                                </li>
+                                <li>
+                                    <span class="caret"><i class="fa-solid fa-folder folder-icon"></i>Horataalee
+                                        Motummaa</span>
+                                    <ul>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                                href="/crop-plan">Horataalee Motummaa</a></li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </li>
+                        <li>
+                            <span class="caret"><i class="fa-solid fa-folder folder-icon"></i>Karrora Ji'aa</span>
+                            <ul>
+                                <li>
+                                    <span class="caret"><i class="fa-solid fa-folder folder-icon"></i>Misooma
+                                        Midhaanii</span>
+                                    <ul>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                                href="/crop-plan">Midhaan</a></li>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                                href="/fertilizer-type">Dhiyeessii LQ</a></li>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                                href="/fertilizer-type">Hojii Gabbina Biyyoo</a></li>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                                href="/fertilizer-type">Qophii Fi Dhaabbii Biqiltuuwwanii</a></li>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                                href="/fertilizer-type">Dhiyeessii Beeyladaa</a></li>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                                href="/fertilizer-type">Oomisha fi Bu'aa Beeyladaa Beeyladaa</a></li>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                                href="/fertilizer-type">Oomisha Beeyladaa Beeyladaa</a></li>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                                href="/fertilizer-type">Hojii Qabeenya Uumamaa</a></li>
+                                    </ul>
+                                </li>
+                                <li>
+                                    <span class="caret"><i class="fa-solid fa-folder folder-icon"></i>Bu'uuraalee
+                                        Misooma </span>
+                                    <ul>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a href="/crop-plan">Ijaarsa
+                                                Dhaabbilee</a></li>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                                href="/fertilizer-type">Haaromsa Dhaabbilee</a></li>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                                href="/fertilizer-type">Ijaarsa Faasiliitiwwanii</a></li>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                                href="/fertilizer-type">Ijaarsa Faasiliitiwwan Cie'uumsa diinagdee</a>
+                                        </li>
+                                    </ul>
+                                </li>
+                                <li>
+                                    <span class="caret"><i class="fa-solid fa-folder folder-icon"></i>Misooma
+                                        Hawaasummaa </span>
+                                    <ul>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                                href="/crop-plan">Hirmaannaa Fi Itti Fufiinsa</a></li>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                                href="/fertilizer-type">Bu'aqabeessummaa Barnootaa</a></li>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                                href="/fertilizer-type">Dhiyeessii Nyaata Barattootaa</a></li>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                                href="/fertilizer-type">Aadaa Fi Aartii</a></li>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                                href="/fertilizer-type">Galmeessa Sivilii</a></li>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                                href="/fertilizer-type">Fayyaa</a></li>
+                                    </ul>
+                                </li>
+                                <li>
+                                    <span class="caret"><i class="fa-solid fa-folder folder-icon"></i>Carraa Hojii
+                                        Uumuu</span>
+                                    <ul>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a href="/crop-plan">Carraa
+                                                Hojii Uumuu</a></li>
+                                    </ul>
+                                </li>
+                                <li>
+                                    <span class="caret"><i class="fa-solid fa-folder folder-icon"></i>Horataalee
+                                        Motummaa</span>
+                                    <ul>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                                href="/crop-plan">Horataalee Motummaa</a></li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
 
-                    <li>
-                        <span class="caret"><i class="fa-solid fa-folder folder-icon"></i>Karrora Kurmaanaa</span>
-                        <ul>
-                            <li>
-                                <span class="caret"><i class="fa-solid fa-folder folder-icon"></i>Misooma Midhaanii</span>
-                                <ul>
-                                    <li><i class="fa-regular fa-file file-icon"></i><a href="/crop-plan">Midhaan</a></li>
-                                    <li><i class="fa-regular fa-file file-icon"></i><a href="/fertilizer-type">Dhiyeessii LQ</a></li>
-                                    <li><i class="fa-regular fa-file file-icon"></i><a href="/fertilizer-type">Hojii Gabbina Biyyoo</a></li>
-                                    <li><i class="fa-regular fa-file file-icon"></i><a href="/fertilizer-type">Qophii Fi Dhaabbii Biqiltuuwwanii</a></li>
-                                    <li><i class="fa-regular fa-file file-icon"></i><a href="/fertilizer-type">Dhiyeessii Beeyladaa</a></li>
-                                    <li><i class="fa-regular fa-file file-icon"></i><a href="/fertilizer-type">Oomisha fi Bu'aa Beeyladaa Beeyladaa</a></li>
-                                    <li><i class="fa-regular fa-file file-icon"></i><a href="/fertilizer-type">Oomisha Beeyladaa Beeyladaa</a></li>
-                                    <li><i class="fa-regular fa-file file-icon"></i><a href="/fertilizer-type">Hojii Qabeenya Uumamaa</a></li>
-                                </ul>
-                            </li>
-                            <li>
-                                <span class="caret"><i class="fa-solid fa-folder folder-icon"></i>Bu'uuraalee Misooma </span>
-                                <ul>
-                                    <li><i class="fa-regular fa-file file-icon"></i><a href="/crop-plan">Ijaarsa Dhaabbilee</a></li>
-                                    <li><i class="fa-regular fa-file file-icon"></i><a href="/fertilizer-type">Haaromsa Dhaabbilee</a></li>
-                                    <li><i class="fa-regular fa-file file-icon"></i><a href="/fertilizer-type">Ijaarsa Faasiliitiwwanii</a></li>
-                                    <li><i class="fa-regular fa-file file-icon"></i><a href="/fertilizer-type">Ijaarsa Faasiliitiwwan Cie'uumsa diinagdee</a></li>
-                                </ul>
-                            </li>
-                            <li>
-                                <span class="caret"><i class="fa-solid fa-folder folder-icon"></i>Misooma Hawaasummaa </span>
-                                <ul>
-                                    <li><i class="fa-regular fa-file file-icon"></i><a href="/crop-plan">Hirmaannaa Fi Itti Fufiinsa</a></li>
-                                    <li><i class="fa-regular fa-file file-icon"></i><a href="/fertilizer-type">Bu'aqabeessummaa Barnootaa</a></li>
-                                    <li><i class="fa-regular fa-file file-icon"></i><a href="/fertilizer-type">Dhiyeessii Nyaata Barattootaa</a></li>
-                                    <li><i class="fa-regular fa-file file-icon"></i><a href="/fertilizer-type">Aadaa Fi Aartii</a></li>
-                                    <li><i class="fa-regular fa-file file-icon"></i><a href="/fertilizer-type">Galmeessa Sivilii</a></li>
-                                    <li><i class="fa-regular fa-file file-icon"></i><a href="/fertilizer-type">Fayyaa</a></li>
-                                </ul>
-                            </li>
-                            <li>
-                                <span class="caret"><i class="fa-solid fa-folder folder-icon"></i>Carraa Hojii Uumuu</span>
-                                <ul>
-                                    <li><i class="fa-regular fa-file file-icon"></i><a href="/crop-plan">Carraa Hojii Uumuu</a></li>
-                                </ul>
-                            </li>
-                            <li>
-                                <span class="caret"><i class="fa-solid fa-folder folder-icon"></i>Horataalee Motummaa</span>
-                                <ul>
-                                    <li><i class="fa-regular fa-file file-icon"></i><a href="/crop-plan">Horataalee Motummaa</a></li>
-                                </ul>
-                            </li>
-                        </ul>
-                    </li>
-                    <li>
-                        <span class="caret"><i class="fa-solid fa-folder folder-icon"></i>Karrora Ji'aa</span>
-                        <ul>
-                            <li>
-                                <span class="caret"><i class="fa-solid fa-folder folder-icon"></i>Misooma Midhaanii</span>
-                                <ul>
-                                    <li><i class="fa-regular fa-file file-icon"></i><a href="/crop-plan">Midhaan</a></li>
-                                    <li><i class="fa-regular fa-file file-icon"></i><a href="/fertilizer-type">Dhiyeessii LQ</a></li>
-                                    <li><i class="fa-regular fa-file file-icon"></i><a href="/fertilizer-type">Hojii Gabbina Biyyoo</a></li>
-                                    <li><i class="fa-regular fa-file file-icon"></i><a href="/fertilizer-type">Qophii Fi Dhaabbii Biqiltuuwwanii</a></li>
-                                    <li><i class="fa-regular fa-file file-icon"></i><a href="/fertilizer-type">Dhiyeessii Beeyladaa</a></li>
-                                    <li><i class="fa-regular fa-file file-icon"></i><a href="/fertilizer-type">Oomisha fi Bu'aa Beeyladaa Beeyladaa</a></li>
-                                    <li><i class="fa-regular fa-file file-icon"></i><a href="/fertilizer-type">Oomisha Beeyladaa Beeyladaa</a></li>
-                                    <li><i class="fa-regular fa-file file-icon"></i><a href="/fertilizer-type">Hojii Qabeenya Uumamaa</a></li>
-                                </ul>
-                            </li>
-                            <li>
-                                <span class="caret"><i class="fa-solid fa-folder folder-icon"></i>Bu'uuraalee Misooma </span>
-                                <ul>
-                                    <li><i class="fa-regular fa-file file-icon"></i><a href="/crop-plan">Ijaarsa Dhaabbilee</a></li>
-                                    <li><i class="fa-regular fa-file file-icon"></i><a href="/fertilizer-type">Haaromsa Dhaabbilee</a></li>
-                                    <li><i class="fa-regular fa-file file-icon"></i><a href="/fertilizer-type">Ijaarsa Faasiliitiwwanii</a></li>
-                                    <li><i class="fa-regular fa-file file-icon"></i><a href="/fertilizer-type">Ijaarsa Faasiliitiwwan Cie'uumsa diinagdee</a></li>
-                                </ul>
-                            </li>
-                            <li>
-                                <span class="caret"><i class="fa-solid fa-folder folder-icon"></i>Misooma Hawaasummaa </span>
-                                <ul>
-                                    <li><i class="fa-regular fa-file file-icon"></i><a href="/crop-plan">Hirmaannaa Fi Itti Fufiinsa</a></li>
-                                    <li><i class="fa-regular fa-file file-icon"></i><a href="/fertilizer-type">Bu'aqabeessummaa Barnootaa</a></li>
-                                    <li><i class="fa-regular fa-file file-icon"></i><a href="/fertilizer-type">Dhiyeessii Nyaata Barattootaa</a></li>
-                                    <li><i class="fa-regular fa-file file-icon"></i><a href="/fertilizer-type">Aadaa Fi Aartii</a></li>
-                                    <li><i class="fa-regular fa-file file-icon"></i><a href="/fertilizer-type">Galmeessa Sivilii</a></li>
-                                    <li><i class="fa-regular fa-file file-icon"></i><a href="/fertilizer-type">Fayyaa</a></li>
-                                </ul>
-                            </li>
-                            <li>
-                                <span class="caret"><i class="fa-solid fa-folder folder-icon"></i>Carraa Hojii Uumuu</span>
-                                <ul>
-                                    <li><i class="fa-regular fa-file file-icon"></i><a href="/crop-plan">Carraa Hojii Uumuu</a></li>
-                                </ul>
-                            </li>
-                            <li>
-                                <span class="caret"><i class="fa-solid fa-folder folder-icon"></i>Horataalee Motummaa</span>
-                                <ul>
-                                    <li><i class="fa-regular fa-file file-icon"></i><a href="/crop-plan">Horataalee Motummaa</a></li>
-                                </ul>
-                            </li>
-                        </ul>
-                    </li>
-                </ul>
-
-            </li>
+                </li>
 
 
-            <li>
-                <span class="caret"><i class="fa-solid fa-folder folder-icon"></i>Gabaasaa</span>
-                <ul>
-                    <li><i class="fa-regular fa-file file-icon"></i><a href="/karoora-wagga">Misoomaa Midhaanii</a></li>
-                    <li><i class="fa-regular fa-file file-icon"></i><a href="/karoora-jia">Bu'uuraalee Misoomaa</a></li>
-                    <li><i class="fa-regular fa-file file-icon"></i><a href="/karoora-jia">Misoomaa Hawaasummaa</a></li>
-                    <li><i class="fa-regular fa-file file-icon"></i><a href="/karoora-jia">Carraaa Hojii Uumuu</a></li>
-                    <li><i class="fa-regular fa-file file-icon"></i><a href="/karoora-jia">Horataalee Mootummaa</a></li>
-                    <li style="color: #007bff;"><i class="fa-regular fa-file file-icon"></i><a href="/karoora-jia">Gabasa Woliigalaa</a></li>
-                </ul>
-            </li>
+                <li>
+                    <span class="caret"><i class="fa-solid fa-folder folder-icon"></i>Gabaasaa</span>
+                    <ul>
+                        <li><i class="fa-regular fa-file file-icon"></i><a href="/karoora-wagga">Misoomaa
+                                Midhaanii</a></li>
+                        <li><i class="fa-regular fa-file file-icon"></i><a href="/karoora-jia">Bu'uuraalee
+                                Misoomaa</a></li>
+                        <li><i class="fa-regular fa-file file-icon"></i><a href="/karoora-jia">Misoomaa
+                                Hawaasummaa</a></li>
+                        <li><i class="fa-regular fa-file file-icon"></i><a href="/karoora-jia">Carraaa Hojii Uumuu</a>
+                        </li>
+                        <li><i class="fa-regular fa-file file-icon"></i><a href="/karoora-jia">Horataalee
+                                Mootummaa</a></li>
+                        <li style="color: #007bff;"><i class="fa-regular fa-file file-icon"></i><a
+                                href="/karoora-jia">Gabasa Woliigalaa</a></li>
+                    </ul>
+                </li>
+            @endif
 
-            <li>
-                <span class="caret"><i class="fa-solid fa-folder folder-icon"></i>setting</span>
-                <ul>
-                    <li><i class="fa-regular fa-file file-icon"></i><a href="/karoora-wagga">Pirofaayilii</a></li>
-                    <li><i class="fa-regular fa-file file-icon"></i><a href="/karoora-jia">Sirreeffamaaf Iyyachuu</a></li>
-                    <li><i class="fa-regular fa-file file-icon"></i><a href="/karoora-jia">Duubdeebi Kennuu</a></li>
-                </ul>
-            </li>
+
+
+            @if (Auth::user()->role_id == 5 && Auth::user()->sector_id == 1)
+                <li>
+                    <h5><i class="fa-regular  ">
+                            <a href="{{ url('sector/dashboard/sector') }}">Dashboard</a>
+                        </i> </h5>
+                    <hr>
+                </li>
+                <li>
+                    <span class="caret"><i class="fa-solid fa-folder folder-icon"></i>Karoora</span>
+                    <ul>
+                        <li>
+                            <span class="caret"><i class="fa-solid fa-folder folder-icon"></i>Karrora Waggaa</span>
+                            <ul>
+                                <li>
+                                    <span class="caret"><i class="fa-solid fa-folder folder-icon"></i>Misooma
+                                        Midhaanii</span>
+                                    <ul>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                                href="{{ url('sector/crop-plans') }}">Midhaan</a></li>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                                href="/fertilizer-type">Dhiyeessii LQ</a></li>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                                href="/fertilizer-type">Hojii
+                                                Gabbina Biyyoo</a></li>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                                href="/fertilizer-type">Qophii Fi Dhaabbii Biqiltuuwwanii</a></li>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                                href="/fertilizer-type">Dhiyeessii Beeyladaa</a></li>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                                href="/fertilizer-type">Oomisha fi Bu'aa Beeyladaa Beeyladaa</a></li>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                                href="/fertilizer-type">Oomisha Beeyladaa Beeyladaa</a></li>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                                href="/fertilizer-type">Hojii
+                                                Qabeenya Uumamaa</a></li>
+                                    </ul>
+                                </li>
+                                <li>
+                                    <span class="caret"><i class="fa-solid fa-folder folder-icon"></i>Bu'uuraalee
+                                        Misooma </span>
+                                    <ul>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a href="/crop-plan">Ijaarsa
+                                                Dhaabbilee</a></li>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                                href="/fertilizer-type">Haaromsa Dhaabbilee</a></li>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                                href="/fertilizer-type">Ijaarsa Faasiliitiwwanii</a></li>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                                href="/fertilizer-type">Ijaarsa Faasiliitiwwan Cie'uumsa diinagdee</a>
+                                        </li>
+                                    </ul>
+                                </li>
+                                <li>
+                                    <span class="caret"><i class="fa-solid fa-folder folder-icon"></i>Misooma
+                                        Hawaasummaa </span>
+                                    <ul>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                                href="/crop-plan">Hirmaannaa
+                                                Fi Itti Fufiinsa</a></li>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                                href="/fertilizer-type">Bu'aqabeessummaa Barnootaa</a></li>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                                href="/fertilizer-type">Dhiyeessii Nyaata Barattootaa</a></li>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                                href="/fertilizer-type">Aadaa
+                                                Fi Aartii</a></li>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                                href="/fertilizer-type">Galmeessa Sivilii</a></li>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                                href="/fertilizer-type">Fayyaa</a></li>
+                                    </ul>
+                                </li>
+                                <li>
+                                    <span class="caret"><i class="fa-solid fa-folder folder-icon"></i>Carraa Hojii
+                                        Uumuu</span>
+                                    <ul>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a href="/crop-plan">Carraa
+                                                Hojii Uumuu</a></li>
+                                    </ul>
+                                </li>
+                                <li>
+                                    <span class="caret"><i class="fa-solid fa-folder folder-icon"></i>Horataalee
+                                        Motummaa</span>
+                                    <ul>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                                href="/crop-plan">Horataalee
+                                                Motummaa</a></li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </li>
+
+                        <li>
+                            <span class="caret"><i class="fa-solid fa-folder folder-icon"></i>Karrora
+                                Kurmaanaa</span>
+                            <ul>
+                                <li>
+                                    <span class="caret"><i class="fa-solid fa-folder folder-icon"></i>Misooma
+                                        Midhaanii</span>
+                                    <ul>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                                href="/crop-plan">Midhaan</a>
+                                        </li>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                                href="/fertilizer-type">Dhiyeessii LQ</a></li>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                                href="/fertilizer-type">Hojii
+                                                Gabbina Biyyoo</a></li>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                                href="/fertilizer-type">Qophii Fi Dhaabbii Biqiltuuwwanii</a></li>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                                href="/fertilizer-type">Dhiyeessii Beeyladaa</a></li>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                                href="/fertilizer-type">Oomisha fi Bu'aa Beeyladaa Beeyladaa</a></li>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                                href="/fertilizer-type">Oomisha Beeyladaa Beeyladaa</a></li>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                                href="/fertilizer-type">Hojii
+                                                Qabeenya Uumamaa</a></li>
+                                    </ul>
+                                </li>
+                                <li>
+                                    <span class="caret"><i class="fa-solid fa-folder folder-icon"></i>Bu'uuraalee
+                                        Misooma </span>
+                                    <ul>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a href="/crop-plan">Ijaarsa
+                                                Dhaabbilee</a></li>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                                href="/fertilizer-type">Haaromsa Dhaabbilee</a></li>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                                href="/fertilizer-type">Ijaarsa Faasiliitiwwanii</a></li>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                                href="/fertilizer-type">Ijaarsa Faasiliitiwwan Cie'uumsa diinagdee</a>
+                                        </li>
+                                    </ul>
+                                </li>
+                                <li>
+                                    <span class="caret"><i class="fa-solid fa-folder folder-icon"></i>Misooma
+                                        Hawaasummaa </span>
+                                    <ul>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                                href="/crop-plan">Hirmaannaa
+                                                Fi Itti Fufiinsa</a></li>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                                href="/fertilizer-type">Bu'aqabeessummaa Barnootaa</a></li>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                                href="/fertilizer-type">Dhiyeessii Nyaata Barattootaa</a></li>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                                href="/fertilizer-type">Aadaa Fi Aartii</a></li>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                                href="/fertilizer-type">Galmeessa Sivilii</a></li>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                                href="/fertilizer-type">Fayyaa</a></li>
+                                    </ul>
+                                </li>
+                                <li>
+                                    <span class="caret"><i class="fa-solid fa-folder folder-icon"></i>Carraa Hojii
+                                        Uumuu</span>
+                                    <ul>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a href="/crop-plan">Carraa
+                                                Hojii Uumuu</a></li>
+                                    </ul>
+                                </li>
+                                <li>
+                                    <span class="caret"><i class="fa-solid fa-folder folder-icon"></i>Horataalee
+                                        Motummaa</span>
+                                    <ul>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                                href="/crop-plan">Horataalee Motummaa</a></li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </li>
+                        <li>
+                            <span class="caret"><i class="fa-solid fa-folder folder-icon"></i>Karrora Ji'aa</span>
+                            <ul>
+                                <li>
+                                    <span class="caret"><i class="fa-solid fa-folder folder-icon"></i>Misooma
+                                        Midhaanii</span>
+                                    <ul>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                                href="/crop-plan">Midhaan</a></li>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                                href="/fertilizer-type">Dhiyeessii LQ</a></li>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                                href="/fertilizer-type">Hojii Gabbina Biyyoo</a></li>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                                href="/fertilizer-type">Qophii Fi Dhaabbii Biqiltuuwwanii</a></li>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                                href="/fertilizer-type">Dhiyeessii Beeyladaa</a></li>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                                href="/fertilizer-type">Oomisha fi Bu'aa Beeyladaa Beeyladaa</a></li>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                                href="/fertilizer-type">Oomisha Beeyladaa Beeyladaa</a></li>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                                href="/fertilizer-type">Hojii Qabeenya Uumamaa</a></li>
+                                    </ul>
+                                </li>
+                                <li>
+                                    <span class="caret"><i class="fa-solid fa-folder folder-icon"></i>Bu'uuraalee
+                                        Misooma </span>
+                                    <ul>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a href="/crop-plan">Ijaarsa
+                                                Dhaabbilee</a></li>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                                href="/fertilizer-type">Haaromsa Dhaabbilee</a></li>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                                href="/fertilizer-type">Ijaarsa Faasiliitiwwanii</a></li>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                                href="/fertilizer-type">Ijaarsa Faasiliitiwwan Cie'uumsa diinagdee</a>
+                                        </li>
+                                    </ul>
+                                </li>
+                                <li>
+                                    <span class="caret"><i class="fa-solid fa-folder folder-icon"></i>Misooma
+                                        Hawaasummaa </span>
+                                    <ul>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                                href="/crop-plan">Hirmaannaa Fi Itti Fufiinsa</a></li>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                                href="/fertilizer-type">Bu'aqabeessummaa Barnootaa</a></li>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                                href="/fertilizer-type">Dhiyeessii Nyaata Barattootaa</a></li>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                                href="/fertilizer-type">Aadaa Fi Aartii</a></li>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                                href="/fertilizer-type">Galmeessa Sivilii</a></li>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                                href="/fertilizer-type">Fayyaa</a></li>
+                                    </ul>
+                                </li>
+                                <li>
+                                    <span class="caret"><i class="fa-solid fa-folder folder-icon"></i>Carraa Hojii
+                                        Uumuu</span>
+                                    <ul>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a href="/crop-plan">Carraa
+                                                Hojii Uumuu</a></li>
+                                    </ul>
+                                </li>
+                                <li>
+                                    <span class="caret"><i class="fa-solid fa-folder folder-icon"></i>Horataalee
+                                        Motummaa</span>
+                                    <ul>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                                href="/crop-plan">Horataalee Motummaa</a></li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+
+                </li>
+
+
+                <li>
+                    <span class="caret"><i class="fa-solid fa-folder folder-icon"></i>Gabaasaa</span>
+                    <ul>
+                        <li><i class="fa-regular fa-file file-icon"></i><a href="/karoora-wagga">Misoomaa
+                                Midhaanii</a></li>
+                        <li><i class="fa-regular fa-file file-icon"></i><a href="/karoora-jia">Bu'uuraalee
+                                Misoomaa</a></li>
+                        <li><i class="fa-regular fa-file file-icon"></i><a href="/karoora-jia">Misoomaa
+                                Hawaasummaa</a></li>
+                        <li><i class="fa-regular fa-file file-icon"></i><a href="/karoora-jia">Carraaa Hojii Uumuu</a>
+                        </li>
+                        <li><i class="fa-regular fa-file file-icon"></i><a href="/karoora-jia">Horataalee
+                                Mootummaa</a></li>
+                        <li style="color: #007bff;"><i class="fa-regular fa-file file-icon"></i><a
+                                href="/karoora-jia">Gabasa Woliigalaa</a></li>
+                    </ul>
+                </li>
             @endif
 
         </ul>

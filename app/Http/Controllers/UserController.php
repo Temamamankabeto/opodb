@@ -2,23 +2,26 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Support\Facades\RateLimiter;
-
-use App\Models\Kebele;
-use App\Models\KebeleSectors;
-use App\Models\Region;
 use App\Models\Role;
+
 use App\Models\User;
-use App\Models\Woreda;
 use App\Models\Zone;
+use App\Models\Kebele;
+use App\Models\Region;
+use App\Models\Woreda;
 use Illuminate\Http\Request;
+use App\Models\KebeleSectors;
+use Illuminate\Routing\Controller;
+use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Password;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Pagination\Paginator;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Validation\Rules\Password as PasswordRule;
+
+
 
 
 class UserController extends Controller
@@ -79,7 +82,7 @@ class UserController extends Controller
                 case 5:
                     return redirect('sector/dashboard/sector');
                 case 6:
-                    return redirect()->route('dashboard.sector');
+                    return redirect()->route('da.dashboard');
                 default:
                     return redirect()->route('users.login');
             }
@@ -140,37 +143,41 @@ class UserController extends Controller
     {
         $authUser = Auth::user();
 
-        // ✅ Allow only role_id 1 or 2 to create users
+        // ✅ Only Superadmin (1) or Admin (2) can create users
         if (!in_array($authUser->role_id, [1, 2])) {
             abort(403, 'Unauthorized action.');
         }
 
-        // Validation
+        // ✅ Validation rules
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255', 'regex:/^[a-zA-Z\s]+$/u'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email'],
-            // ✅ Ethiopian phone number
+
+            // ✅ Ethiopian phone number pattern (+2519XXXXXXXX or 09XXXXXXXX)
             'phone' => [
                 'required',
                 'string',
                 'regex:/^(\+251|0)(9|7)\d{8}$/',
-                'unique:users,phone', // Ensure phone is unique in 'users' table
+                'unique:users,phone',
             ],
+
             'gender' => ['nullable', 'in:male,female,other'],
             'zone_id' => ['nullable', 'exists:zones,id'],
             'woreda_id' => ['nullable', 'exists:woredas,id'],
             'kebele_id' => ['nullable', 'exists:kebeles,id'],
             'sector_id' => ['nullable', 'exists:sectors,id'],
             'role_id' => ['required', 'exists:roles,id'],
-            'password' => 'required',
-            'confirmed',
-            Password::min(8)           // Minimum 8 characters
-                ->mixedCase()          // Must include both uppercase and lowercase letters
-                ->numbers()            // Must include at least one number
-                ->symbols()            // Must include at least one special character
+
+            // ✅ Strong password validation
+            'password' => [
+                'required',
+                'confirmed',
+                'min:8', // Minimum 8 characters
+                'regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$/', // Must include upper, lower, number & special char
+            ],
         ]);
 
-        // Create user safely
+        // ✅ Create user safely
         User::create([
             'region_id'   => 1,
             'name'        => $validated['name'],
@@ -182,7 +189,7 @@ class UserController extends Controller
             'kebele_id'   => $validated['kebele_id'] ?? null,
             'sector_id'   => $validated['sector_id'] ?? null,
             'role_id'     => $validated['role_id'],
-            'employee_id' => '123390',
+            'employee_id' => '123390', // You can make this dynamic later
             'created_by'  => $authUser->id,
             'password'    => Hash::make($validated['password']),
         ]);

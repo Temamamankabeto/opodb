@@ -14,6 +14,12 @@ class DashboardController extends Controller
     {
         return view('components.dashboard.kebele');
     }
+    public function daDashboard()
+    {
+        return view('components.dashboard.da');
+    }
+
+    
     public function sectorDashboard()
     {
         return view('components.dashboard.sector');

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\CropConfiguration;
 use Illuminate\Database\Eloquent\Model;
 
 class Crop extends Model
@@ -21,5 +22,10 @@ public function karorQonnaWoggaas()
     public function fertilizers()
     {
         return $this->hasMany(CropFertilizer::class);
+    }
+
+    public function cropConfigurations()
+    {
+        return $this->hasMany(CropConfiguration::class, 'crop_id');
     }
 }

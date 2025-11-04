@@ -10,6 +10,11 @@ class CropType extends Model
     protected $fillable = [
         'name'
     ];
+    public function cropConfigurations()
+    {
+        return $this->hasMany(CropConfiguration::class, 'croptype_id');
+    }
+
     public function crops()
     {
         return $this->hasMany(Crop::class,'croptype_id');
