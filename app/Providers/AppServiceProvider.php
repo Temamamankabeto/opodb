@@ -2,27 +2,26 @@
 
 namespace App\Providers;
 
-use Illuminate\Support\Facades\Route;
-use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
-use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Session;
+use Illuminate\Support\ServiceProvider;
 
-
-class RouteServiceProvider extends ServiceProvider
+class AppServiceProvider extends ServiceProvider
 {
-    public function boot(): void
+    /**
+     * Register any application services.
+     */
+    public function register()
     {
-        // ✅ Register your custom middleware
-        Route::aliasMiddleware('auth.check', \App\Http\Middleware\AuthCheck::class);
+        //
+    }
 
-        $this->routes(function () {
-            Route::middleware('web')
-                ->group(base_path('routes/web.php'));
+    /**
+     * Bootstrap any application services.
+     */
+    public function boot()
+    {
+        // Automatically set app locale from session
 
-            Route::middleware('api')
-                ->prefix('api')
-                ->group(base_path('routes/api.php'));
-        });
-
-        Paginator::useBootstrapFive();
     }
 }
