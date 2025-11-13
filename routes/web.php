@@ -4,6 +4,7 @@ use App\Models\Kunuunsa;
 use App\Models\YealrlyCropPlan;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Request;
+use Illuminate\Support\Facades\Session;
 use App\Http\Controllers\LoanController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ZoneController;
@@ -33,9 +34,9 @@ use App\Http\Controllers\CompostTypeController;
 use App\Http\Controllers\JobCreationController;
 use App\Http\Controllers\KebeleAdminController;
 use App\Http\Controllers\MonthlyPlanController;
+
+
 use App\Http\Controllers\NurserySiteController;
-
-
 use App\Http\Controllers\ConstructionController;
 use App\Http\Controllers\QabenyaUmamaController;
 use App\Http\Controllers\SeedlingTypeController;
@@ -56,12 +57,13 @@ use App\Http\Controllers\YearlyCropPlanController;
 use App\Http\Controllers\LivestockSupplyController;
 use App\Http\Controllers\NaturalResourceController;
 use App\Http\Controllers\NurserySeedlingController;
+
+
+
 use App\Http\Controllers\VillageResourceController;
-
-
-
 use App\Http\Controllers\ForestManagementController;
 use App\Http\Controllers\LivestockProductController;
+use App\Http\Controllers\Setting\LanguageController;
 use App\Http\Controllers\AgriculturalInputController;
 use App\Http\Controllers\CivilRegistrationController;
 use App\Http\Controllers\CropConfigurationController;
@@ -185,13 +187,8 @@ Route::middleware([SecurityHeaders::class])->group(function () {
             Route::post('/naturals/update/{id}', [NaturalResourceController  ::class, 'update'])->name('natural.update');
             Route::get('/naturals/delete/{id}', [NaturalResourceController  ::class, 'destroy'])->name('naturals.delete');
 
-    Route::get('/enviromental-activity', [EnvironmentalActivityController  ::class, 'index'])->name('enviromental-activity.index');
-            Route::get('/enviromental-activity/create', [EnvironmentalActivityController  ::class, 'create'])->name('enviromental-activity.create');
-            Route::post('/enviromental-activity/store', [EnvironmentalActivityController  ::class, 'store'])->name('enviromental-activity.store');
-            Route::get('/enviromental-activity/edit/{id}', [EnvironmentalActivityController  ::class, 'edit'])->name('enviromental-activity.edit');
-            Route::post('/enviromental-activity/update/{id}', [EnvironmentalActivityController  ::class, 'update'])->name('enviromental-activity.update');
-            Route::get('/enviromental-activity/delete/{id}', [EnvironmentalActivityController  ::class, 'destroy'])->name('enviromental-activity.delete');
-            
+
+
         });
 
         // Zone Admin only
@@ -205,7 +202,7 @@ Route::middleware([SecurityHeaders::class])->group(function () {
             Route::get('woreda/users', [UserController::class, 'woredaUsers'])->name('woreda.users');
             Route::get('dashboard', [DashboardController::class, 'zoneDashboard'])->name('zone.dashboard');
 
-           
+
             Route::get('woreda-admins', [UserController::class, 'woredaadmin'])->name('woreda.users.index');
             Route::get('kebele-admins', [UserController::class, 'kebeleadmin'])->name('kebele.users.index');
 
@@ -282,7 +279,7 @@ Route::middleware([SecurityHeaders::class])->group(function () {
             Route::get('/profile/{uuid}', [UserController::class, 'profile'])->name('kebele.profile.users');
             Route::get('/profile/security/{uuid}', [UserController::class, 'changePasswordForm'])->name('kebele.users.password');
             Route::post('/change-password', [UserController::class, 'changePassword'])->name('kebele.password.change');
-         
+
             Route::get('/woreda/users', [UserController::class, 'woredaUsers'])->name('woreda.users');
             // add more woreda admin routes here
             Route::get('profile/{uuid}/edit', [UserController::class, 'edit'])->name('woreda.users.edit');
@@ -303,7 +300,7 @@ Route::middleware([SecurityHeaders::class])->group(function () {
             Route::get('/profile/security/{uuid}', [UserController::class, 'changePasswordForm'])->name('kebele.users.password');
             Route::post('/change-password', [UserController::class, 'changePassword'])->name('kebele.password.change');
 
-          
+
 
             Route::get('sector-admins', [StructureController::class, 'indexSectorAdmins'])->name('sectoradmin.index');
             Route::get('users/sector-user', [UserController::class, 'sectoruser'])->name('sector.users.index');
@@ -365,7 +362,7 @@ Route::get('/associations/filter', [AssociationController::class, 'filter'])->na
     });
 
 
-     
+
 
 
    Route::middleware(['auth', 'role:5'])->prefix('sector')->name('sector.')->group(function () {
@@ -379,7 +376,7 @@ Route::get('/associations/filter', [AssociationController::class, 'filter'])->na
     Route::put('crop-plans/{id}', [KebeleCropPlanController::class, 'update'])->name('crop-plans.update');
     Route::delete('crop-plans/{id}', [KebeleCropPlanController::class, 'destroy'])->name('crop-plans.destroy');
 
-    
+
     // Cascading AJAX routes
     Route::get('crops-by-year/{year}', [KebeleCropPlanController::class, 'getCropTypesByYear'])->name('crops.byYear');
 
@@ -411,12 +408,12 @@ Route::put('/gabbina-biyyee/{id}', [GabbinaBiyyeeController::class, 'update'])->
 Route::delete('/gabbina-biyyee/{id}', [GabbinaBiyyeeController::class, 'destroy'])->name('gabbina_biyyee.destroy');
 
 // Seedling Preparation Routes
- 
+
     Route::get('/seedling-preparations', [SeedlingPreparationController::class, 'index'])->name('seedling-preparations.index');
     Route::get('/seedling-preparations/create', [SeedlingPreparationController::class, 'create'])->name('seedling-preparations.create');
     Route::post('/seedling-preparations', [SeedlingPreparationController::class, 'store'])->name('seedling-preparations.store');
     Route::get('/seedling-preparations/{id}/edit', [SeedlingPreparationController::class, 'edit'])->name('seedling-preparations.edit');
-    
+
     Route::put('/seedling-preparations/{id}', [SeedlingPreparationController::class, 'update'])->name('seedling-preparations.update');
 
     Route::get('/seedling-preparations/{id}/editpreparation', [SeedlingPreparationController::class, 'editpreparation'])->name('seedling-preparations.editpreparation');
@@ -425,13 +422,13 @@ Route::put('/seedling-preparations/update/{id}', [SeedlingPreparationController:
      ->name('seedling-preparations.updatepreparation');
 
     Route::delete('/seedling-preparations/{id}', [SeedlingPreparationController::class, 'destroy'])->name('seedling-preparations.destroy');
-    
+
     // AJAX route for getting seedlings by type
     Route::get('/seedling-preparations/seedlings-by-type/{typeId}', [SeedlingPreparationController::class, 'getSeedlingsByType']);
     // AJAX route for getting group details
 Route::get('/seedling-preparations/group-details/{year}/{typeId}', [SeedlingPreparationController::class, 'getGroupDetails'])->name('seedling-preparations.group-details');
- 
- 
+
+
     Route::get('/livestock-plans', [LivestockPlanController::class, 'index'])->name('livestock_plans.index');
     Route::get('/livestock-plans/create', [LivestockPlanController::class, 'create'])->name('livestock_plans.create');
     Route::post('/livestock-plans/store', [LivestockPlanController::class, 'store'])->name('livestock_plans.store');
@@ -440,14 +437,6 @@ Route::get('/seedling-preparations/group-details/{year}/{typeId}', [SeedlingPrep
     Route::put('/livestock-plans/{id}/update', [LivestockPlanController::class, 'update'])->name('livestock_plans.update');
     Route::delete('/livestock-plans/{id}/delete', [LivestockPlanController::class, 'destroy'])->name('livestock_plans.destroy');
     Route::get('/livestock-plans/{id}', [LivestockPlanController::class, 'show'])->name('livestock_plans.show');
- 
-    Route::get('/natural-plans', [NaturalResourcePlanController::class, 'index'])->name('natural-plans.index');
-    Route::get('/natural-plans/create', [NaturalResourcePlanController::class, 'create'])->name('natural-plans.create');
-    Route::post('/natural-plans/store', [NaturalResourcePlanController::class, 'store'])->name('natural-plans.store');
-    Route::get('/natural-plans/{id}/edit', [NaturalResourcePlanController::class, 'edit'])->name('natural-plans.edit');
-    Route::get('/natural-plans/{id}/product', [NaturalResourcePlanController::class, 'editproduct'])->name('natural-plans.editproduct');
-    Route::put('/natural-plans/{id}/update', [NaturalResourcePlanController::class, 'update'])->name('natural-plans.update');
-    Route::delete('/natural-plans/{id}/delete', [NaturalResourcePlanController::class, 'destroy'])->name('natural-plans.destroy');
 
 
     // Environmental Protection Plans
@@ -470,21 +459,21 @@ Route::delete('/environmental-plans/{id}', [EnvironmentalProtectionPlanControlle
     Route::put('/{id}/update', [MechanizationController::class, 'update'])->name('mechanizations.update');
     Route::get('/{id}', [MechanizationController::class, 'show'])->name('mechanizations.show');
     Route::delete('/{id}', [MechanizationController::class, 'destroy'])->name('mechanizations.destroy');
-   
 
 
-      
+
+
 });
 
 
 
-    
 
 
 
 
 
-        
+
+
 
         Route::get('economic-plans', [KebeleEconomicPlanController::class, 'index'])->name('sector.economic.index');
         Route::get('economic-plans/create', [KebeleEconomicPlanController::class, 'create'])->name('sector.economic.create');
@@ -493,7 +482,7 @@ Route::delete('/environmental-plans/{id}', [EnvironmentalProtectionPlanControlle
         Route::put('economic-plans/{id}/update', [KebeleEconomicPlanController::class, 'update'])->name('sector.economic.update');
         Route::delete('economic-plans/{id}/delete', [KebeleEconomicPlanController::class, 'destroy'])->name('sector.economic.destroy');
 
-        // setting  
+        // setting
 
     });
 
@@ -508,7 +497,7 @@ Route::delete('/environmental-plans/{id}', [EnvironmentalProtectionPlanControlle
     });
 });
 
-// route/web.php 
+// route/web.php
 
 Route::get('/federations', [FederationController::class, 'index'])->name('federations.index');
 Route::get('/federations/create', [FederationController::class, 'create'])->name('federations.create');
@@ -546,7 +535,7 @@ Route::put('/farmers/{id}/land-type-details', [FarmerController::class, 'updateL
 
 
 
- 
+
 
 
 Route::get('/fertilizers/type', [FertilizerTypeController::class, 'index'])->name('fertilizer.type.index');
@@ -585,17 +574,35 @@ Route::delete('/parcel-crop-plans/{id}', [ParcelCropPlanController::class, 'dest
 
 
 
- 
 
- 
- 
+Route::middleware('role:1')->prefix('admin')->group(function () {
+
+    // Important: Put 'create' BEFORE {lang} to avoid conflicts
+    Route::get('/languages/create', [LanguageController::class, 'create'])->name('languages.create');
+    Route::post('/languages/store', [LanguageController::class, 'store'])->name('languages.store');
+
+    Route::get('/languages/', [LanguageController::class, 'index'])->name('languages.list');
+    Route::get('/languages/{lang}/edit', [LanguageController::class, 'edit'])->name('languages.edit');
+    Route::put('/languages/{lang}/update', [LanguageController::class, 'update'])->name('languages.update');
+    Route::get('/languages/{lang}', [LanguageController::class, 'show'])->name('languages.show');
+
+    // Switch language shortcut
 
 
+Route::get('/languages/switch/{lang}', [LanguageController::class, 'switchLanguage'])->name('languages.switch');
+
+});
 
 // Route::post('/parcel-crop-plans/api/fertilizer-recommendation', [ParcelCropPlanController::class, 'getFertilizerRecommendation']);
 
 
+ Route::get('/set-language/{language}', function ($language) {
+        if (in_array($language, ['en', 'am', 'or'])) {
+            Session::put('locale', $language);
+        }
 
+        return redirect()->back();
+    })->name('set.language');
 
 
 // Route::get('/weekly-plans', [WeeklyPlanController::class, 'index'])->name('weekly-plans.index');
