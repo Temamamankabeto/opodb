@@ -266,7 +266,8 @@
                     <ul>
                         <li><i class="fa-regular fa-file file-icon"></i><a
                                 href="{{ url('kebele/crop-configurations') }}">Productivity</a></li>
-
+<li><i class="fa-regular fa-file file-icon"></i><a
+                                href="{{ url('kebele/associations') }}">Association</a></li>
 
 
                     </ul>
@@ -587,7 +588,7 @@
                                     <span class="caret"><i class="fa-solid fa-folder folder-icon"></i>Qabeenya
                                         Uumamaa fi Eegumsa Naannoo</span>
                                     <ul>
-                                        <li><i class="fa-regular fa-file file-icon"></i><a href="/crop-plan">Hojii
+                                        <li><i class="fa-regular fa-file file-icon"></i><a href=" {{url('sector/natural-plans')}}">Hojii
                                                 Qabeenya Uumamaa </a></li>
                                         <li><i class="fa-regular fa-file file-icon"></i><a
                                                 href=" {{url('sector/environmental-plans')}}">Eegumsa Naannoo fi Misooma Sululaa </a></li>

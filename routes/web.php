@@ -1,36 +1,38 @@
 <?php
 
-use App\Http\Controllers\AssociationController;
-use App\Http\Controllers\CropConfigurationController;
-use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\FarmerController;
-use App\Http\Controllers\FederationController;
-use App\Http\Controllers\FertilizerController;
-use App\Http\Controllers\FertilizerTypeController;
-use App\Http\Controllers\GabbinaBiyyeeController;
-use App\Http\Controllers\JobCreationController;
-use App\Http\Controllers\KaroorController;
-use App\Http\Controllers\KebeleAdminController;
-use App\Http\Controllers\KebeleCropPlanController;
-use App\Http\Controllers\KebeleEconomicPlanController;
-use App\Http\Controllers\LivestockPlanController;
-use App\Http\Controllers\LivestockProductController;
-use App\Http\Controllers\LivestockSupplyController;
-use App\Http\Controllers\MechanizationController;
-use App\Http\Controllers\NaturalResourceController;
-use App\Http\Controllers\ParcelCropPlanController;
-use App\Http\Controllers\SeedlingPreparationController;
-use App\Http\Controllers\Setting\LanguageController;
-use App\Http\Controllers\SoilTypeController;
-use App\Http\Controllers\StructureController;
-use App\Http\Controllers\UnionController;
-use App\Http\Controllers\UserController;
-use App\Http\Controllers\WeeklyLandPlanController;
-use App\Http\Controllers\WeeklyPlanController;
-use App\Http\Controllers\ZoneController;
-use App\Http\Middleware\SecurityHeaders;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Session;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\ZoneController;
+use App\Http\Middleware\SecurityHeaders;
+use App\Http\Controllers\UnionController;
+use App\Http\Controllers\FarmerController;
+use App\Http\Controllers\KaroorController;
+use App\Http\Controllers\SoilTypeController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\StructureController;
+use App\Http\Controllers\FederationController;
+use App\Http\Controllers\FertilizerController;
+use App\Http\Controllers\WeeklyPlanController;
+use App\Http\Controllers\AssociationController;
+use App\Http\Controllers\JobCreationController;
+use App\Http\Controllers\KebeleAdminController;
+use App\Http\Controllers\GabbinaBiyyeeController;
+use App\Http\Controllers\LivestockPlanController;
+use App\Http\Controllers\MechanizationController;
+use App\Http\Controllers\FertilizerTypeController;
+use App\Http\Controllers\KebeleCropPlanController;
+use App\Http\Controllers\ParcelCropPlanController;
+use App\Http\Controllers\WeeklyLandPlanController;
+use App\Http\Controllers\LivestockSupplyController;
+use App\Http\Controllers\NaturalResourceController;
+use App\Http\Controllers\LivestockProductController;
+use App\Http\Controllers\Setting\LanguageController;
+use App\Http\Controllers\CropConfigurationController;
+use App\Http\Controllers\KebeleEconomicPlanController;
+use App\Http\Controllers\NaturalResourcePlanController;
+use App\Http\Controllers\SeedlingPreparationController;
+use App\Http\Controllers\EnvironmentalProtectionPlanController;
 
 Route::middleware([SecurityHeaders::class])->group(function () {
     // Public routes
@@ -277,10 +279,16 @@ Route::middleware([SecurityHeaders::class])->group(function () {
             Route::delete('/associations/destroy/{id}', [AssociationController::class, 'destroy'])->name('associations.destroy');
             Route::get('/associations/show/{id}', [AssociationController::class, 'show'])->name('associations.show');
 
-            Route::get('/associations/get-unions/{federation}', [AssociationController::class, 'getUnions']);
-            Route::get('/associations/get-woredas/{zone}', [AssociationController::class, 'getWoredas']);
-            Route::get('/associations/get-kebeles/{woreda}', [AssociationController::class, 'getKebeles']);
-            Route::get('/associations/filter', [AssociationController::class, 'filter'])->name('associations.filter');
+           // AJAX Routes for cascading dropdowns
+            Route::get('/associations/get-unions/{federation_id}', [AssociationController::class, 'getUnions'])->name('associations.get-unions');
+            Route::get('/associations/get-woredas/{zone_id}', [AssociationController::class, 'getWoredas'])->name('associations.get-woredas');
+            Route::get('/associations/get-kebeles/{woreda_id}', [AssociationController::class, 'getKebeles'])->name('associations.get-kebeles');
+            Route::get('/associations/get-services', [AssociationController::class, 'getServices'])->name('associations.get-services');
+
+
+             
+
+
 
         });
 
@@ -372,15 +380,25 @@ Route::middleware([SecurityHeaders::class])->group(function () {
             Route::get('/{id}', [MechanizationController::class, 'show'])->name('mechanizations.show');
             Route::delete('/{id}', [MechanizationController::class, 'destroy'])->name('mechanizations.destroy');
 
+
+           
         });
 
-        Route::get('economic-plans', [KebeleEconomicPlanController::class, 'index'])->name('sector.economic.index');
-        Route::get('economic-plans/create', [KebeleEconomicPlanController::class, 'create'])->name('sector.economic.create');
-        Route::post('economic-plans/store', [KebeleEconomicPlanController::class, 'store'])->name('sector.economic.store');
-        Route::get('economic-plans/{id}/edit', [KebeleEconomicPlanController::class, 'edit'])->name('sector.economic.edit');
-        Route::put('economic-plans/{id}/update', [KebeleEconomicPlanController::class, 'update'])->name('sector.economic.update');
-        Route::delete('economic-plans/{id}/delete', [KebeleEconomicPlanController::class, 'destroy'])->name('sector.economic.destroy');
+          // Environmental Protection Plans
+            Route::get('/environmental-plans', [EnvironmentalProtectionPlanController::class, 'index'])->name('environmental-plans.index');
+            Route::get('/environmental-plans/create', [EnvironmentalProtectionPlanController::class, 'create'])->name('environmental-plans.create');
+            Route::post('/environmental-plans', [EnvironmentalProtectionPlanController::class, 'store'])->name('environmental-plans.store');
+            Route::get('/environmental-plans/{id}/edit', [EnvironmentalProtectionPlanController::class, 'edit'])->name('environmental-plans.edit');
+            Route::put('/environmental-plans/{id}', [EnvironmentalProtectionPlanController::class, 'update'])->name('environmental-plans.update');
+            Route::delete('/environmental-plans/{id}', [EnvironmentalProtectionPlanController::class, 'destroy'])->name('environmental-plans.destroy');
 
+Route::get('/natural-plans', [NaturalResourcePlanController::class, 'index'])->name('natural-plans.index');
+    Route::get('/natural-plans/create', [NaturalResourcePlanController::class, 'create'])->name('natural-plans.create');
+    Route::post('/natural-plans/store', [NaturalResourcePlanController::class, 'store'])->name('natural-plans.store');
+    Route::get('/natural-plans/{id}/edit', [NaturalResourcePlanController::class, 'edit'])->name('natural-plans.edit');
+    Route::get('/natural-plans/{id}/product', [NaturalResourcePlanController::class, 'editproduct'])->name('natural-plans.editproduct');
+    Route::put('/natural-plans/{id}/update', [NaturalResourcePlanController::class, 'update'])->name('natural-plans.update');
+    Route::delete('/natural-plans/{id}/delete', [NaturalResourcePlanController::class, 'destroy'])->name('natural-plans.destroy');
         // setting
 
     });
