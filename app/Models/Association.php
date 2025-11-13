@@ -11,11 +11,18 @@ class Association extends Model
 
     protected $fillable = [
         'name',
+        'association_type',
+        'service_data',
         'federation_id',
         'union_id',
         'zone_id',
         'woreda_id',
         'kebele_id'
+    ];
+        
+    protected $casts = [
+     
+         'service_data' => 'array',
     ];
 
     public function federation()
