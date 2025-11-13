@@ -33,13 +33,15 @@ class AssociationController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
+            'association_type' => 'required|string|max:100',
             'federation_id' => 'required|exists:federations,id',
             'union_id' => 'required|exists:unions,id',
-            'association_type' => 'required|string|max:100',
+            'service_data' => 'nullable|array',
+            'service_data.*.name' => 'required_with:service_data|string|max:255',
+            'service_data.*.description' => 'nullable|string',
         ]);
 
         $user = Auth::user();
-        
 
         Association::create([
             'name' => $request->name,
@@ -51,6 +53,7 @@ class AssociationController extends Controller
             'kebele_id' => $user->kebele_id,
             'region_id' => $user->region_id,
             'created_by' => $user->id,
+            'service_data' => $request->service_data ?? [],
         ]);
 
         return redirect()->route('associations.index')->with('success', 'Association created successfully!');
@@ -61,7 +64,6 @@ class AssociationController extends Controller
         $association = Association::findOrFail($id);
         $federations = Federation::all();
         $zones = Zone::all();
-
         return view('associations.edit', compact('association', 'federations', 'zones'));
     }
 
@@ -69,9 +71,12 @@ class AssociationController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
+            'association_type' => 'required|string|max:100',
             'federation_id' => 'required|exists:federations,id',
             'union_id' => 'required|exists:unions,id',
-            'association_type' => 'required|string|max:100',
+            'service_data' => 'nullable|array',
+            'service_data.*.name' => 'required_with:service_data|string|max:255',
+            'service_data.*.description' => 'nullable|string',
         ]);
 
         $association = Association::findOrFail($id);
@@ -86,6 +91,7 @@ class AssociationController extends Controller
             'woreda_id' => $user->woreda_id,
             'kebele_id' => $user->kebele_id,
             'region_id' => $user->region_id,
+            'service_data' => $request->service_data ?? [],
         ]);
 
         return redirect()->route('associations.index')->with('success', 'Association updated successfully!');
@@ -107,22 +113,24 @@ class AssociationController extends Controller
 
     // AJAX cascading selects
     public function getUnions($federation_id)
-{
-    $unions = Union::where('federation_id', $federation_id)
-        ->select('id', 'name')
-        ->orderBy('name')
-        ->get();
+    {
+        $unions = Union::where('federation_id', $federation_id)
+            ->select('id', 'name')
+            ->orderBy('name')
+            ->get();
 
-    return response()->json($unions);
-}
+        return response()->json($unions);
+    }
 
     public function getWoredas($zone_id)
     {
-        return response()->json(Woreda::where('zone_id', $zone_id)->get());
+        $woredas = Woreda::where('zone_id', $zone_id)->orderBy('name')->get();
+        return response()->json($woredas);
     }
 
     public function getKebeles($woreda_id)
     {
-        return response()->json(Kebele::where('woreda_id', $woreda_id)->get());
+        $kebeles = Kebele::where('woreda_id', $woreda_id)->orderBy('name')->get();
+        return response()->json($kebeles);
     }
 }

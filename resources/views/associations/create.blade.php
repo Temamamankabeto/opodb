@@ -72,55 +72,72 @@
             @enderror
         </div>
 
-        
- 
+        {{-- Service Data --}}
+        @php
+            $serviceOptions = ['Extension', 'Training', 'Consultancy', 'Support', 'Other']; // predefined service names
+            $services = old('service_data', $association->service_data ?? []);
+        @endphp
+        <div class="mb-3">
+            <label class="form-label fw-bold">Service Data</label>
+            <div id="servicesContainer">
+                @foreach($services as $index => $service)
+                    <div class="service-item mb-2 border p-2 rounded d-flex gap-2 align-items-center">
+                        <select name="service_data[{{ $index }}][name]" class="form-select" required>
+                            <option value="">-- Select Service --</option>
+                            @foreach($serviceOptions as $option)
+                                <option value="{{ $option }}" @selected(($service['name'] ?? '') == $option)>{{ $option }}</option>
+                            @endforeach
+                        </select>
+                        <input type="text" name="service_data[{{ $index }}][description]" 
+                               class="form-control" 
+                               placeholder="Description (optional)" 
+                               value="{{ $service['description'] ?? '' }}">
+                        <button type="button" class="btn btn-danger remove-service">Remove</button>
+                    </div>
+                @endforeach
+            </div>
+            <button type="button" class="btn btn-primary mt-2" id="addService">Add Service</button>
+            @error('service_data')
+                <small class="text-danger d-block">{{ $message }}</small>
+            @enderror
+        </div>
 
         {{-- Buttons --}}
         <div class="mt-4">
             <button class="btn btn-success">
                 {{ isset($association) ? 'Update' : 'Save' }}
             </button>
-            <a href="{{ route('associations.index') }}" class="btn btn-secondary">
-                Cancel
-            </a>
+            <a href="{{ route('associations.index') }}" class="btn btn-secondary">Cancel</a>
         </div>
     </form>
 </div>
 
-{{-- AJAX Script for Federation → Union --}}
+{{-- Scripts --}}
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
 $(function() {
+    // Federation → Union
     $('#federation').on('change', function() {
         const federationId = $(this).val();
         const unionSelect = $('#union');
         unionSelect.html('<option value="">Loading...</option>');
-
         if (!federationId) {
             unionSelect.html('<option value="">-- Select Federation First --</option>');
             return;
         }
-
-        $.ajax({
-            url: `/kebele/associations/get-unions/${federationId}`,
-            method: 'GET',
-            success: function(data) {
-                let options = '<option value="">-- Select Union --</option>';
-                data.forEach(function(u) {
-                    options += `<option value="${u.id}">${u.name}</option>`;
-                });
-                unionSelect.html(options);
-            },
-            error: function() {
-                unionSelect.html('<option value="">Error loading unions</option>');
-            }
+        $.get(`/associations/get-unions/${federationId}`, function(data) {
+            let options = '<option value="">-- Select Union --</option>';
+            data.forEach(function(u) {
+                options += `<option value="${u.id}">${u.name}</option>`;
+            });
+            unionSelect.html(options);
         });
     });
 
     // Auto-load unions when editing
     const existingFederation = $('#federation').val();
     const existingUnion = "{{ $association->union_id ?? '' }}";
-    if (existingFederation && !$('#union').children('option').length > 1) {
+    if (existingFederation && existingUnion) {
         $.get(`/associations/get-unions/${existingFederation}`, function(data) {
             let options = '<option value="">-- Select Union --</option>';
             data.forEach(function(u) {
@@ -130,6 +147,29 @@ $(function() {
             $('#union').html(options);
         });
     }
+
+    // Add/Remove service items
+    let serviceIndex = {{ count($services) ?? 0 }};
+    const serviceOptions = {!! json_encode($serviceOptions) !!};
+
+    $('#addService').on('click', function() {
+        let html = `<div class="service-item mb-2 border p-2 rounded d-flex gap-2 align-items-center">`;
+        html += `<select name="service_data[${serviceIndex}][name]" class="form-select" required>`;
+        html += `<option value="">-- Select Service --</option>`;
+        serviceOptions.forEach(function(opt) {
+            html += `<option value="${opt}">${opt}</option>`;
+        });
+        html += `</select>`;
+        html += `<input type="text" name="service_data[${serviceIndex}][description]" class="form-control" placeholder="Description (optional)">`;
+        html += `<button type="button" class="btn btn-danger remove-service">Remove</button>`;
+        html += `</div>`;
+        $('#servicesContainer').append(html);
+        serviceIndex++;
+    });
+
+    $(document).on('click', '.remove-service', function() {
+        $(this).closest('.service-item').remove();
+    });
 });
 </script>
 </x-layout>
