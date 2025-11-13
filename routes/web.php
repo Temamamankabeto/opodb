@@ -334,6 +334,30 @@ Route::middleware([SecurityHeaders::class])->group(function () {
             Route::put('/crop-configurations/{id}', [CropConfigurationController::class, 'update'])->name('crop-configurations.update');
             Route::delete('/crop-configurations/{id}', [CropConfigurationController::class, 'destroy'])->name('crop-configurations.destroy');
             Route::get('/crop-configurations/get-crops-by-type/{croptype_id}', [CropConfigurationController::class, 'getCropsByType']);
+
+            
+Route::get('/unions', [UnionController::class, 'index'])->name('unions.index');
+Route::get('/unions/create', [UnionController::class, 'create'])->name('unions.create');
+Route::post('/unions/store', [UnionController::class, 'store'])->name('unions.store');
+Route::get('/unions/{id}/edit', [UnionController::class, 'edit'])->name('unions.edit');
+Route::post('/unions/{id}/update', [UnionController::class, 'update'])->name('unions.update');
+Route::get('/unions/{id}/show', [UnionController::class, 'show'])->name('unions.show');
+Route::delete('/unions/{id}', [UnionController::class, 'destroy'])->name('unions.destroy');
+
+
+Route::get('/associations', [AssociationController::class, 'index'])->name('associations.index');
+Route::get('/associations/create', [AssociationController::class, 'create'])->name('associations.create');
+Route::post('/associations/store', [AssociationController::class, 'store'])->name('associations.store');
+Route::get('/associations/edit/{id}', [AssociationController::class, 'edit'])->name('associations.edit');
+Route::post('/associations/update/{id}', [AssociationController::class, 'update'])->name('associations.update');
+Route::delete('/associations/destroy/{id}', [AssociationController::class, 'destroy'])->name('associations.destroy');
+Route::get('/associations/show/{id}', [AssociationController::class, 'show'])->name('associations.show');
+
+Route::get('/associations/get-unions/{federation}', [AssociationController::class, 'getUnions']);
+Route::get('/associations/get-woredas/{zone}', [AssociationController::class, 'getWoredas']);
+Route::get('/associations/get-kebeles/{woreda}', [AssociationController::class, 'getKebeles']);
+Route::get('/associations/filter', [AssociationController::class, 'filter'])->name('associations.filter');
+
         });
 
         // Logout
@@ -496,28 +520,6 @@ Route::delete('/federations/{id}/delete', [FederationController::class, 'destroy
 
 
 
-
-Route::get('/unions', [UnionController::class, 'index'])->name('unions.index');
-Route::get('/unions/create', [UnionController::class, 'create'])->name('unions.create');
-Route::post('/unions/store', [UnionController::class, 'store'])->name('unions.store');
-Route::get('/unions/{id}/edit', [UnionController::class, 'edit'])->name('unions.edit');
-Route::post('/unions/{id}/update', [UnionController::class, 'update'])->name('unions.update');
-Route::get('/unions/{id}/show', [UnionController::class, 'show'])->name('unions.show');
-Route::delete('/unions/{id}', [UnionController::class, 'destroy'])->name('unions.destroy');
-
-
-Route::get('/associations', [AssociationController::class, 'index'])->name('associations.index');
-Route::get('/associations/create', [AssociationController::class, 'create'])->name('associations.create');
-Route::post('/associations/store', [AssociationController::class, 'store'])->name('associations.store');
-Route::get('/associations/edit/{id}', [AssociationController::class, 'edit'])->name('associations.edit');
-Route::post('/associations/update/{id}', [AssociationController::class, 'update'])->name('associations.update');
-Route::delete('/associations/destroy/{id}', [AssociationController::class, 'destroy'])->name('associations.destroy');
-Route::get('/associations/show/{id}', [AssociationController::class, 'show'])->name('associations.show');
-
-Route::get('/associations/get-unions/{federation}', [AssociationController::class, 'getUnions']);
-Route::get('/associations/get-woredas/{zone}', [AssociationController::class, 'getWoredas']);
-Route::get('/associations/get-kebeles/{woreda}', [AssociationController::class, 'getKebeles']);
-Route::get('/associations/filter', [AssociationController::class, 'filter'])->name('associations.filter');
 
 
 Route::get('/farmers', [FarmerController::class, 'index'])->name('farmers.index');

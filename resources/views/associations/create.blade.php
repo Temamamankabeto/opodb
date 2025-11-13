@@ -1,105 +1,135 @@
 <x-layout>
 <div class="container py-5">
-    <h2>{{ isset($association) ? 'Edit Association' : 'Add New Association' }}</h2>
+    <h2 class="mb-4">
+        {{ isset($association) ? 'Edit Association' : 'Add New Association' }}
+    </h2>
 
-    <form action="{{ isset($association) ? route('associations.update',$association->id) : route('associations.store') }}" method="POST">
+    {{-- Form --}}
+    <form action="{{ isset($association) ? route('associations.update', $association->id) : route('associations.store') }}" method="POST">
         @csrf
-        @if(isset($association)) @method('POST') @endif
+        @if(isset($association))
+            @method('PUT')
+        @endif
 
+        {{-- Association Name --}}
         <div class="mb-3">
-            <label>Name</label>
-            <input type="text" name="name" class="form-control" value="{{ $association->name ?? '' }}" required>
+            <label class="form-label fw-bold">Association Name</label>
+            <input 
+                type="text" 
+                name="name" 
+                class="form-control @error('name') is-invalid @enderror"
+                value="{{ old('name', $association->name ?? '') }}" 
+                placeholder="Enter association name"
+                required>
+            @error('name')
+                <small class="text-danger">{{ $message }}</small>
+            @enderror
         </div>
 
+        {{-- Association Type --}}
         <div class="mb-3">
-            <label>Federation</label>
-            <select id="federation" name="federation_id" class="form-select" required>
+            <label class="form-label fw-bold">Association Type</label>
+            <select name="association_type" class="form-select @error('association_type') is-invalid @enderror" required>
+                <option value="">-- Select Association Type --</option>
+                <option value="General" @selected(old('association_type', $association->association_type ?? '') == 'General')>General</option>
+                <option value="Specific" @selected(old('association_type', $association->association_type ?? '') == 'Specific')>Specific</option>
+            </select>
+            @error('association_type')
+                <small class="text-danger">{{ $message }}</small>
+            @enderror
+        </div>
+
+        {{-- Federation --}}
+        <div class="mb-3">
+            <label class="form-label fw-bold">Federation</label>
+            <select id="federation" name="federation_id" class="form-select @error('federation_id') is-invalid @enderror" required>
                 <option value="">-- Select Federation --</option>
                 @foreach($federations as $f)
-                    <option value="{{ $f->id }}" @selected(isset($association) && $association->federation_id==$f->id)>{{ $f->name }}</option>
+                    <option value="{{ $f->id }}" 
+                        @selected(old('federation_id', $association->federation_id ?? '') == $f->id)>
+                        {{ $f->name }}
+                    </option>
                 @endforeach
             </select>
+            @error('federation_id')
+                <small class="text-danger">{{ $message }}</small>
+            @enderror
         </div>
 
+        {{-- Union --}}
         <div class="mb-3">
-            <label>Union</label>
-            <select id="union" name="union_id" class="form-select" required>
+            <label class="form-label fw-bold">Union</label>
+            <select id="union" name="union_id" class="form-select @error('union_id') is-invalid @enderror" required>
                 <option value="">-- Select Union --</option>
-                @if(isset($association))
-                    <option value="{{ $association->union_id }}" selected>{{ $association->union->name ?? '' }}</option>
+                @if(isset($association) && $association->union)
+                    <option value="{{ $association->union_id }}" selected>
+                        {{ $association->union->name }}
+                    </option>
                 @endif
             </select>
+            @error('union_id')
+                <small class="text-danger">{{ $message }}</small>
+            @enderror
         </div>
 
-        <div class="mb-3">
-            <label>Zone</label>
-            <select id="zone" name="zone_id" class="form-select" required>
-                <option value="">-- Select Zone --</option>
-                @foreach($zones as $z)
-                    <option value="{{ $z->id }}" @selected(isset($association) && $association->zone_id==$z->id)>{{ $z->name }}</option>
-                @endforeach
-            </select>
-        </div>
+        
+ 
 
-        <div class="mb-3">
-            <label>Woreda</label>
-            <select id="woreda" name="woreda_id" class="form-select" required>
-                <option value="">-- Select Woreda --</option>
-                @if(isset($association))
-                    <option value="{{ $association->woreda_id }}" selected>{{ $association->woreda->name ?? '' }}</option>
-                @endif
-            </select>
+        {{-- Buttons --}}
+        <div class="mt-4">
+            <button class="btn btn-success">
+                {{ isset($association) ? 'Update' : 'Save' }}
+            </button>
+            <a href="{{ route('associations.index') }}" class="btn btn-secondary">
+                Cancel
+            </a>
         </div>
-
-        <div class="mb-3">
-            <label>Kebele</label>
-            <select id="kebele" name="kebele_id" class="form-select" required>
-                <option value="">-- Select Kebele --</option>
-                @if(isset($association))
-                    <option value="{{ $association->kebele_id }}" selected>{{ $association->kebele->name ?? '' }}</option>
-                @endif
-            </select>
-        </div>
-
-        <button class="btn btn-success">{{ isset($association) ? 'Update' : 'Save' }}</button>
-        <a href="{{ route('associations.index') }}" class="btn btn-secondary">Cancel</a>
     </form>
 </div>
 
+{{-- AJAX Script for Federation → Union --}}
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
-$(document).ready(function(){
+$(function() {
+    $('#federation').on('change', function() {
+        const federationId = $(this).val();
+        const unionSelect = $('#union');
+        unionSelect.html('<option value="">Loading...</option>');
 
-    $('#federation').change(function(){
-        var id = $(this).val();
-        $('#union').html('<option>Loading...</option>');
-        $.get('/associations/get-unions/'+id,function(data){
-            var options = '<option value="">-- Select Union --</option>';
-            $.each(data,function(i,u){ options+='<option value="'+u.id+'">'+u.name+'</option>'; });
+        if (!federationId) {
+            unionSelect.html('<option value="">-- Select Federation First --</option>');
+            return;
+        }
+
+        $.ajax({
+            url: `/kebele/associations/get-unions/${federationId}`,
+            method: 'GET',
+            success: function(data) {
+                let options = '<option value="">-- Select Union --</option>';
+                data.forEach(function(u) {
+                    options += `<option value="${u.id}">${u.name}</option>`;
+                });
+                unionSelect.html(options);
+            },
+            error: function() {
+                unionSelect.html('<option value="">Error loading unions</option>');
+            }
+        });
+    });
+
+    // Auto-load unions when editing
+    const existingFederation = $('#federation').val();
+    const existingUnion = "{{ $association->union_id ?? '' }}";
+    if (existingFederation && !$('#union').children('option').length > 1) {
+        $.get(`/associations/get-unions/${existingFederation}`, function(data) {
+            let options = '<option value="">-- Select Union --</option>';
+            data.forEach(function(u) {
+                const selected = u.id == existingUnion ? 'selected' : '';
+                options += `<option value="${u.id}" ${selected}>${u.name}</option>`;
+            });
             $('#union').html(options);
         });
-    });
-
-    $('#zone').change(function(){
-        var id = $(this).val();
-        $('#woreda').html('<option>Loading...</option>');
-        $.get('/associations/get-woredas/'+id,function(data){
-            var options = '<option value="">-- Select Woreda --</option>';
-            $.each(data,function(i,w){ options+='<option value="'+w.id+'">'+w.name+'</option>'; });
-            $('#woreda').html(options);
-        });
-    });
-
-    $('#woreda').change(function(){
-        var id = $(this).val();
-        $('#kebele').html('<option>Loading...</option>');
-        $.get('/associations/get-kebeles/'+id,function(data){
-            var options = '<option value="">-- Select Kebele --</option>';
-            $.each(data,function(i,k){ options+='<option value="'+k.id+'">'+k.name+'</option>'; });
-            $('#kebele').html(options);
-        });
-    });
-
+    }
 });
 </script>
 </x-layout>

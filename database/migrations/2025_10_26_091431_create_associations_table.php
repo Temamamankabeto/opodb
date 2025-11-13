@@ -11,6 +11,9 @@ return new class extends Migration
         Schema::create('associations', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->string('association_type');
+            $table->json('service_data'); // Stores data(exetension service etc .....)
+
 
             $table->foreignId('federation_id')->constrained()->onDelete('cascade');
             $table->foreignId('union_id')->constrained()->onDelete('cascade');
