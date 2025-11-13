@@ -74,12 +74,15 @@ use App\Http\Controllers\SocialDevelopementController;
 use App\Http\Controllers\CooperativeActivityController;
 use App\Http\Controllers\CropPlanAchievementController;
 use App\Http\Controllers\LivestockProductionController;
+use App\Http\Controllers\NaturalResourcePlanController;
 use App\Http\Controllers\NewConstructionPlanController;
 use App\Http\Controllers\RurarGovermentAssetController;
 use App\Http\Controllers\SeedlingPreparationController;
+use App\Http\Controllers\EnvironmentalActivityController;
 use App\Http\Controllers\InstitutionImprovementController;
 use App\Http\Controllers\ConstructionMaintenanceController;
 use App\Http\Controllers\UpgradingConstructionPlanController;
+use App\Http\Controllers\EnvironmentalProtectionPlanController;
 
 
 Route::middleware([SecurityHeaders::class])->group(function () {
@@ -182,7 +185,12 @@ Route::middleware([SecurityHeaders::class])->group(function () {
             Route::post('/naturals/update/{id}', [NaturalResourceController  ::class, 'update'])->name('natural.update');
             Route::get('/naturals/delete/{id}', [NaturalResourceController  ::class, 'destroy'])->name('naturals.delete');
 
-
+    Route::get('/enviromental-activity', [EnvironmentalActivityController  ::class, 'index'])->name('enviromental-activity.index');
+            Route::get('/enviromental-activity/create', [EnvironmentalActivityController  ::class, 'create'])->name('enviromental-activity.create');
+            Route::post('/enviromental-activity/store', [EnvironmentalActivityController  ::class, 'store'])->name('enviromental-activity.store');
+            Route::get('/enviromental-activity/edit/{id}', [EnvironmentalActivityController  ::class, 'edit'])->name('enviromental-activity.edit');
+            Route::post('/enviromental-activity/update/{id}', [EnvironmentalActivityController  ::class, 'update'])->name('enviromental-activity.update');
+            Route::get('/enviromental-activity/delete/{id}', [EnvironmentalActivityController  ::class, 'destroy'])->name('enviromental-activity.delete');
             
         });
 
@@ -409,7 +417,22 @@ Route::get('/seedling-preparations/group-details/{year}/{typeId}', [SeedlingPrep
     Route::delete('/livestock-plans/{id}/delete', [LivestockPlanController::class, 'destroy'])->name('livestock_plans.destroy');
     Route::get('/livestock-plans/{id}', [LivestockPlanController::class, 'show'])->name('livestock_plans.show');
  
+    Route::get('/natural-plans', [NaturalResourcePlanController::class, 'index'])->name('natural-plans.index');
+    Route::get('/natural-plans/create', [NaturalResourcePlanController::class, 'create'])->name('natural-plans.create');
+    Route::post('/natural-plans/store', [NaturalResourcePlanController::class, 'store'])->name('natural-plans.store');
+    Route::get('/natural-plans/{id}/edit', [NaturalResourcePlanController::class, 'edit'])->name('natural-plans.edit');
+    Route::get('/natural-plans/{id}/product', [NaturalResourcePlanController::class, 'editproduct'])->name('natural-plans.editproduct');
+    Route::put('/natural-plans/{id}/update', [NaturalResourcePlanController::class, 'update'])->name('natural-plans.update');
+    Route::delete('/natural-plans/{id}/delete', [NaturalResourcePlanController::class, 'destroy'])->name('natural-plans.destroy');
 
+
+    // Environmental Protection Plans
+Route::get('/environmental-plans', [EnvironmentalProtectionPlanController::class, 'index'])->name('environmental-plans.index');
+Route::get('/environmental-plans/create', [EnvironmentalProtectionPlanController::class, 'create'])->name('environmental-plans.create');
+Route::post('/environmental-plans', [EnvironmentalProtectionPlanController::class, 'store'])->name('environmental-plans.store');
+Route::get('/environmental-plans/{id}/edit', [EnvironmentalProtectionPlanController::class, 'edit'])->name('environmental-plans.edit');
+Route::put('/environmental-plans/{id}', [EnvironmentalProtectionPlanController::class, 'update'])->name('environmental-plans.update');
+Route::delete('/environmental-plans/{id}', [EnvironmentalProtectionPlanController::class, 'destroy'])->name('environmental-plans.destroy');
 
 
 

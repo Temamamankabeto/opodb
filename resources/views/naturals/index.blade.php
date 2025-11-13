@@ -1,12 +1,12 @@
 <x-layout>
     <div class="container py-4">
-        <h2 class="mb-4 text-success fw-bold">Livestock Supplies</h2>
+        <h2 class="mb-4 text-success fw-bold">Natural Resource</h2>
 
         @if (session('success'))
             <div class="alert alert-success">{{ session('success') }}</div>
         @endif
 
-        <a href="{{ route('naturals.create') }}" class="btn btn-success mb-3">+ Add New Supply</a>
+        <a href="{{ route('naturals.create') }}" class="btn btn-success mb-3">+ Add New Natural Resource</a>
 
         <table class="table table-bordered table-striped">
             <thead class="table-success">

@@ -184,6 +184,14 @@
                                 href=" {{ url('admin/livestock-supplies') }}">Dhiyeessii Beeylada</a></li>
                         <li><i class="fa-regular fa-file file-icon"></i><a
                                 href=" {{ url('admin/livestock_product') }}">Bu'aa Beeylada</a></li>
+                                       <li><i class="fa-regular fa-file file-icon"></i><a
+                                href=" {{ url('admin/naturals') }}">Qabeenya Uumamaa</a></li>
+
+                                 <li><i class="fa-regular fa-file file-icon"></i><a
+                                href=" {{ url('admin/enviromental-activity') }}">Enviromental Activity</a></li>
+
+                               
+                                
 
 
                     </ul>
