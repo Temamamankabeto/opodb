@@ -80,7 +80,7 @@ class UserController extends Controller
                 case 4:
                     return redirect()->route('kebele.dashboard');
                 case 5:
-                    return redirect('sector/dashboard/sector');
+                    return redirect('sector/dashboard');
                 case 6:
                     return redirect()->route('da.dashboard');
                 default:

@@ -2,22 +2,21 @@
 
 namespace App\Models;
 
-use App\Models\Seedling;
-use App\Models\SeedlingType;
 use Illuminate\Database\Eloquent\Model;
 
 class SeedlingPreparation extends Model
 {
-
     protected $table = 'seedling_preparations';
+    
     protected $fillable = [
         'year',
-        'seedlingtype_id',
-        
-        'seedling_id',   
-        'nama_hirmaate',
-        'baayina_guyyaa',
-        'hanga',
+        'preparation_data',
+        'planting_data',
+        'baayyina_nersery',
+        'ballina_nersery',
+        'nerserif_nama_hirmaate',
+        'nerserif_baayina_guyyaa',
+        'sector_id',
         'kebele_id',
         'woreda_id',
         'zone_id',
@@ -26,17 +25,20 @@ class SeedlingPreparation extends Model
         'phone',
     ];
 
+    protected $casts = [
+        'preparation_data' => 'array',
+        'planting_data' => 'array',
+        'baayyina_nersery' => 'decimal:2',
+        'ballina_nersery' => 'decimal:2',
+        'nerserif_nama_hirmaate' => 'decimal:2',
+        'nerserif_baayina_guyyaa' => 'decimal:2',
+    ];
+
     // Relationships
-    public function seedlingType()
+    public function sector()
     {
-        return $this->belongsTo(SeedlingType::class, 'seedlingtype_id');
+        return $this->belongsTo(KebeleSectors::class, 'sector_id');
     }
-    
-    public function seedling()
-    {
-        return $this->belongsTo(Seedling::class, 'seedling_id');
-    }
-    
 
     public function kebele()
     {
@@ -61,5 +63,27 @@ class SeedlingPreparation extends Model
     public function creator()
     {
         return $this->belongsTo(User::class, 'created_by');
+    }
+
+    // Accessors for preparation data
+    public function getPreparationSeedlingTypeAttribute()
+    {
+        return $this->preparation_data['seedling_type']['name'] ?? null;
+    }
+
+    public function getPreparationSeedlingsAttribute()
+    {
+        return $this->preparation_data['selected_seedlings'] ?? [];
+    }
+
+    // Accessors for planting data
+    public function getPlantingSeedlingTypeAttribute()
+    {
+        return $this->planting_data['seedling_type']['name'] ?? null;
+    }
+
+    public function getPlantingSeedlingsAttribute()
+    {
+        return $this->planting_data['selected_seedlings'] ?? [];
     }
 }

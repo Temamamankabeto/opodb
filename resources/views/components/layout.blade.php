@@ -65,6 +65,7 @@
                 </div>
             </div>
         </div>
+        
         <!-- partial:partials/_navbar.html -->
         <nav class="navbar default-layout col-lg-12 col-12 p-0 fixed-top d-flex align-items-top flex-row"
             style="background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); box-shadow: 0 4px 20px rgba(0,0,0,0.1);">

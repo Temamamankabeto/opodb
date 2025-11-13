@@ -89,4 +89,5 @@ class InputPlanningExport implements FromCollection, WithHeadings, WithMapping, 
     {
         return is_numeric($quantity) ? round($quantity, 2) : 0;
     }
+
 }

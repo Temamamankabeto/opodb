@@ -24,6 +24,7 @@ class GabbinaBiyyee extends Model
         'individual',
         'total',
         'land_area',
+        'sector_id',
     ];
 
     // Relationships
@@ -31,6 +32,10 @@ class GabbinaBiyyee extends Model
     public function user()
     {
         return $this->belongsTo(User::class, 'created_by');
+    }
+  public function sector()
+    {
+        return $this->belongsTo(KebeleSectors::class, 'sector_id');
     }
 
     public function kebele()

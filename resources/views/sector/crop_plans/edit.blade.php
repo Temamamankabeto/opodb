@@ -84,10 +84,11 @@
                             <label class="form-label fw-semibold">🌞 Season</label>
                             <select name="season" id="season" class="form-select form-select-lg" required>
                                 <option value="">-- Select Season --</option>
-                                <option value="Belg" {{ $plan->season == 'Belg' ? 'selected' : '' }}>Belg</option>
-                                <option value="Meher" {{ $plan->season == 'Meher' ? 'selected' : '' }}>Meher</option>
-                                <option value="Kiremt" {{ $plan->season == 'Kiremt' ? 'selected' : '' }}>Kiremt
+                                <option value="Ganna" {{ $plan->season == 'Ganna' ? 'selected' : '' }}>Ganna</option>
+                                <option value="Bona" {{ $plan->season == 'Bona' ? 'selected' : '' }}>Bona</option>
+                                <option value="Arfaasaa" {{ $plan->season == 'Arfaasaa' ? 'selected' : '' }}>Arfaasaa
                                 </option>
+ 
                             </select>
                         </div>
 

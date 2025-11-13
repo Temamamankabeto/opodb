@@ -14,103 +14,18 @@ use Illuminate\Support\Facades\DB;
 class GabbinaBiyyeeController extends Controller
 {
 
-    public function index(Request $request)
+   public function index()
     {
-        $kebeleId = Auth::user()->kebele_id;
-        $compostTypes = CompostType::all();
+        $user = Auth::user();
         
-        // Get all available years with data for this kebele
-        $availableYears = GabbinaBiyyee::where('kebele_id', $kebeleId)
-            ->distinct()
-            ->pluck('year')
-            ->sort()
-            ->values()
-            ->toArray();
-            
-        $selectedYear = $request->input('year', end($availableYears) ?: null);
-        $baselineYear = $this->getBaselineYear($availableYears, $selectedYear);
-        
-        // Initialize empty arrays to prevent undefined variable errors
-        $yearsData = [];
-        $chartLabels = [];
-        $chartData = [];
-    
-        if ($selectedYear) {
-            $yearsToShow = array_unique([$baselineYear, $selectedYear]);
-            sort($yearsToShow);
-            
-            foreach ($yearsToShow as $year) {
-                if ($year) {
-                    $yearData = GabbinaBiyyee::where('kebele_id', $kebeleId)
-                        ->where('year', $year)
-                        ->get()
-                        ->keyBy(function($item) {
-                            return $item->compost_type; // Make sure this matches your relationship/column name
-                        });
-                    
-                    // Initialize empty entries for all compost types
-                    foreach ($compostTypes as $type) {
-                        if (!isset($yearData[$type->name])) {
-                            $yearData[$type->name] = (object)[
-                                'common' => 0,
-                                'individual' => 0,
-                                'land_area' => 0
-                            ];
-                        }
-                    }
-                    
-                    $yearsData[$year] = $yearData;
-                }
-            }
-    
-            $chartLabels = array_keys($yearsData);
-    
-            foreach ($compostTypes as $type) {
-                $typeName = $type->name;
-                $chartData[$typeName] = [
-                    'common' => [],
-                    'individual' => [],
-                    'total' => [],
-                    'land' => [],
-                    'change' => null,
-                ];
-    
-                foreach ($chartLabels as $year) {
-                    $data = $yearsData[$year][$typeName] ?? (object)[
-                        'common' => 0,
-                        'individual' => 0,
-                        'land_area' => 0
-                    ];
-    
-                    $common = $data->common ?? 0;
-                    $individual = $data->individual ?? 0;
-                    $total = $common + $individual;
-                    $land = $data->land_area ?? 0;
-    
-                    $chartData[$typeName]['common'][] = $common;
-                    $chartData[$typeName]['individual'][] = $individual;
-                    $chartData[$typeName]['total'][] = $total;
-                    $chartData[$typeName]['land'][] = $land;
-                }
-    
-                // Calculate % change from baseline to selected year
-                if (count($chartLabels) == 2) {
-                    $baselineValue = $chartData[$typeName]['total'][0] ?? 0;
-                    $currentValue = $chartData[$typeName]['total'][1] ?? 0;
-                    $chartData[$typeName]['change'] = $this->calculateChange($currentValue, $baselineValue);
-                }
-            }
-        }
-    
-        return view('reports.kebele-report.gabbina-biyo.kebele_report', compact(
-            'compostTypes',
-            'availableYears',
-            'selectedYear',
-            'baselineYear',
-            'yearsData',
-            'chartLabels',
-            'chartData'
-        ));
+        $gabbinaBiyyee = GabbinaBiyyee::with(['kebele', 'woreda', 'zone', 'region'])
+            ->where('sector_id', $user->sector_id)
+            ->orderBy('year', 'desc')
+            ->orderBy('compost_type')
+            ->get()
+            ->groupBy('year');
+
+        return view('crop-plan.gabbina_biyyee_index', compact('gabbinaBiyyee'));
     }
     
     protected function getBaselineYear($availableYears, $selectedYear)
@@ -260,38 +175,17 @@ class GabbinaBiyyeeController extends Controller
     }
     
 
-protected function getBaselineYear2($availableYears, $selectedYear)
-    {
-        if (!$selectedYear || count($availableYears) < 2) {
-            return null;
-        }
-        
-        $selectedIndex = array_search($selectedYear, $availableYears);
-        
-        return ($selectedIndex !== false && $selectedIndex > 0) 
-            ? $availableYears[$selectedIndex - 1] 
-            : null;
-    }
-
-    protected function calculateChange2($current, $baseline)
-    {
-        if ($baseline == 0) {
-            return $current == 0 ? 0 : 100;
-        }
-        
-        return (($current - $baseline) / $baseline) * 100;
-    }
+ 
     public function create()
     {
         $compostTypes = CompostType::all();
-        
         return view('crop-plan.gabbina_biyyee', compact('compostTypes'));
     }
 
     /**
      * Store the submitted data into database.
      */
-    public function store(Request $request)
+   public function store(Request $request)
     {
         $request->validate([
             'year' => 'required|string',
@@ -302,34 +196,36 @@ protected function getBaselineYear2($availableYears, $selectedYear)
             'entries.*.total' => 'nullable|numeric|min:0',
             'entries.*.land_area' => 'nullable|numeric|min:0',
         ]);
-    
+
         $kebeleId = Auth::user()->kebele_id;
         $year = $request->year;
-    
+
         foreach ($request->entries as $entry) {
             $compostType = $entry['compost_type'];
-    
+
             // Check if entry for same kebele, year, and compost type already exists
             $exists = GabbinaBiyyee::where('kebele_id', $kebeleId)
                         ->where('year', $year)
                         ->where('compost_type', $compostType)
                         ->exists();
-    
+
             if ($exists) {
                 return redirect()->back()->withErrors([
                     'entries' => "A compost plan for '{$compostType}' already exists for year {$year} in your kebele."
                 ])->withInput();
             }
         }
-    
+
         foreach ($request->entries as $entry) {
             $common = $entry['common'] ?? 0;
             $individual = $entry['individual'] ?? 0;
             $total = $common + $individual;
-    
+
             GabbinaBiyyee::create([
                 'created_by'   => Auth::id(),
                 'kebele_id'    => $kebeleId,
+                'region_id'    => Auth::user()->region_id,
+                'sector_id'    => Auth::user()->sector_id,
                 'woreda_id'    => Auth::user()->woreda_id,
                 'zone_id'      => Auth::user()->zone_id,
                 'phone'        => Auth::user()->phone,
@@ -341,7 +237,90 @@ protected function getBaselineYear2($availableYears, $selectedYear)
                 'land_area'    => $entry['compost_type'] === 'Nooraa Hojiirra oole' ? ($entry['land_area'] ?? null) : null,
             ]);
         }
-        return redirect()->back()->with('success', 'Agricultural production data successfully saved!');
+
+        return redirect()->route('sector.gabbina_biyyee.index')->with('success', 'Agricultural production data successfully saved!');
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit($id)
+    {
+        $gabbinaBiyyee = GabbinaBiyyee::findOrFail($id);
+        $compostTypes = CompostType::all();
+        
+        // Check if user owns this record
+        if ($gabbinaBiyyee->sector_id !== Auth::user()->sector_id) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        return view('crop-plan.gabbina_biyyee_edit', compact('gabbinaBiyyee', 'compostTypes'));
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(Request $request, $id)
+    {
+        $gabbinaBiyyee = GabbinaBiyyee::findOrFail($id);
+
+        // Check if user owns this record
+        if ($gabbinaBiyyee->sector_id !== Auth::user()->sector_id) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        $request->validate([
+            'year' => 'required|string',
+            'compost_type' => 'required|string',
+            'common' => 'nullable|numeric|min:0',
+            'individual' => 'nullable|numeric|min:0',
+            'land_area' => 'nullable|numeric|min:0',
+        ]);
+
+        // Check for duplicate entry (excluding current record)
+        $exists = GabbinaBiyyee::where('kebele_id', $gabbinaBiyyee->kebele_id)
+                    ->where('year', $request->year)
+                    ->where('compost_type', $request->compost_type)
+                    ->where('id', '!=', $id)
+                    ->exists();
+
+        if ($exists) {
+            return redirect()->back()->withErrors([
+                'compost_type' => "A compost plan for '{$request->compost_type}' already exists for year {$request->year} in your kebele."
+            ])->withInput();
+        }
+
+        $common = $request->common ?? 0;
+        $individual = $request->individual ?? 0;
+        $total = $common + $individual;
+
+        $gabbinaBiyyee->update([
+            'year' => $request->year,
+            'compost_type' => $request->compost_type,
+            'common' => $common,
+            'individual' => $individual,
+            'total' => $total,
+            'land_area' => $request->compost_type === 'Nooraa Hojiirra oole' ? ($request->land_area ?? null) : null,
+        ]);
+
+        return redirect()->route('sector.gabbina_biyyee.index')->with('success', 'Compost plan updated successfully!');
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy($id)
+    {
+        $gabbinaBiyyee = GabbinaBiyyee::findOrFail($id);
+
+        // Check if user owns this record
+        if ($gabbinaBiyyee->sector_id !== Auth::user()->sector_id) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        $gabbinaBiyyee->delete();
+
+        return redirect()->route('gabbina_biyyee.index')->with('success', 'Compost plan deleted successfully!');
     }
 
 

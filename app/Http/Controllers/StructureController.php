@@ -162,6 +162,7 @@ class StructureController extends Controller
 
         return view('setting.sector.edit', compact('sector'));
     }
+    
 
     public function updateSector(Request $request, $id)
     {

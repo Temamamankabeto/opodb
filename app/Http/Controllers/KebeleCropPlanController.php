@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Crop;
 use App\Models\CropType;
 use Illuminate\Http\Request;
+use App\Models\FertilizerType;
+use App\Models\Fertilizer;
 use App\Models\KebeleCropPlan;
 use App\Models\CropConfiguration;
 use Illuminate\Support\Facades\Auth;
@@ -16,16 +18,32 @@ use App\Exports\KebeleCropPlanTemplateExport;
 
 class KebeleCropPlanController extends Controller
 {
-    public function index()
-    {
-        $user = Auth::user();
+  public function index()
+{
+    $user = Auth::user();
 
-        $cropPlans = KebeleCropPlan::with(['cropType', 'crop'])
-            ->where('sector_id', auth()->user()->sector_id)
-            ->paginate(10);
+    $cropPlans = KebeleCropPlan::with(['cropType', 'crop'])
+        ->where('sector_id', $user->sector_id)
+        ->where('kebele_id', $user->kebele_id)
+        ->orderBy('year')
+        ->orderBy('season')
+        ->orderBy('croptype_id')
+        ->get();
 
-        return view('sector.crop_plans.index', compact('cropPlans'));
+    // Calculate yearly totals
+    $yearlyTotals = [];
+    foreach ($cropPlans->groupBy('year') as $year => $plansByYear) {
+        $yearlyTotals[$year] = [
+            'total_area' => $plansByYear->sum('area_to_plant'),
+            'total_yield' => $plansByYear->sum('expected_yield'),
+        ];
     }
+
+    return view('sector.crop_plans.index', compact('cropPlans', 'yearlyTotals'));
+}
+
+
+
 
 
 
@@ -67,93 +85,109 @@ public function getCropsByYearAndType($year, $croptypeId)
     return response()->json($crops);
 }
 
-  public function create()
-    {
-        $user = Auth::user();
-        $kebeleId = $user->kebele_id;
+ public function create()
+{
+    $user = Auth::user();
+    $kebeleId = $user->kebele_id;
 
-        // ✅ Get distinct years, crop types, and crops available for the user's kebele
-        $years = CropConfiguration::where('kebele_id', $kebeleId)
-            ->select('year')
-            ->distinct()
-            ->pluck('year')
-            ->sortDesc();
+    $fertilizerTypes = FertilizerType::all();
 
-        $cropTypes = CropConfiguration::where('kebele_id', $kebeleId)
-            ->with('cropType')
-            ->select('croptype_id')
-            ->distinct()
-            ->get()
-            ->pluck('cropType')
-            ->filter();
+    // ✅ Get distinct years, crop types, and crops available for the user's kebele
+    $years = CropConfiguration::where('kebele_id', $kebeleId)
+        ->select('year')
+        ->distinct()
+        ->pluck('year')
+        ->sortDesc();
 
-        return view('sector.crop_plans.create', compact('years', 'cropTypes'));
-    }
+    $cropTypes = CropConfiguration::where('kebele_id', $kebeleId)
+        ->with('cropType')
+        ->select('croptype_id')
+        ->distinct()
+        ->get()
+        ->pluck('cropType')
+        ->filter();
 
-    public function store(Request $request)
-    {
-        $user = Auth::user();
+    return view('sector.crop_plans.create', compact('years', 'cropTypes', 'fertilizerTypes'));
+}
 
-        $validated = $request->validate([
-            'croptype_id' => 'required|exists:crop_types,id',
-            'crop_id' => 'required|exists:crops,id',
-            'area_to_plant' => 'required|numeric|min:0',
-            'productivity' => 'required|numeric|min:0',
-            'year' => 'required|integer|min:1',
-            'season' => 'required|string|max:255',
-            'responsible_staff' => 'nullable|string|max:255',
-        ]);
+public function store(Request $request)
+{
+    $user = Auth::user();
 
-        // ✅ Prevent duplicates
-        $existingPlan = KebeleCropPlan::where('kebele_id', $user->kebele_id)
-            ->where('sector_id', $user->sector_id)
-            ->where('year', $validated['year'])
-            ->where('season', $validated['season'])
-            ->where('croptype_id', $validated['croptype_id'])
-            ->where('crop_id', $validated['crop_id'])
-            ->first();
+    $validated = $request->validate([
+        'croptype_id' => 'required|exists:crop_types,id',
+        'crop_id' => 'required|exists:crops,id',
+        'area_to_plant' => 'required|numeric|min:0',
+        'productivity' => 'required|numeric|min:0',
+        'year' => 'required|integer|min:1',
+        'season' => 'required|string|max:255',
+    ]);
 
-        if ($existingPlan) {
-            return back()->withErrors([
-                'duplicate' => 'A crop plan for this year, crop type, crop, and season already exists.'
-            ])->withInput();
+    // Collect all fertilizer data
+    $fertilizerDetails = $this->collectFertilizerDetails($request);
+    $fertilizerTypeIds = $request->input('fertilizer_types', []);
+
+    $area = $validated['area_to_plant'];
+    $productivity = $validated['productivity'];
+    $expectedYield = $area * $productivity;
+
+    KebeleCropPlan::create([
+        'kebele_id' => $user->kebele_id,
+        'sector_id' => $user->sector_id,
+        'croptype_id' => $validated['croptype_id'],
+        'crop_id' => $validated['crop_id'],
+        'area_to_plant' => $area,
+        'expected_yield' => $expectedYield,
+        'year' => $validated['year'],
+        'season' => $validated['season'],
+        'seed_required' => $request->seed_required,
+        'fertilizer_type_id' => $fertilizerTypeIds,   // ✅ now stores multiple type IDs
+        'fertilizer_details' => $fertilizerDetails,   // ✅ full fertilizer info array
+        'responsible_staff' => $request->responsible_staff,
+        'notes' => $request->notes,
+        'productivity' => $productivity,
+        'created_by' => $user->id,
+    ]);
+
+    return redirect()->route('sector.crop-plans.index')
+        ->with('success', '✅ Kebele Crop Plan added successfully!');
+}
+
+
+private function collectFertilizerDetails(Request $request)
+{
+    $details = [];
+
+    if ($request->has('fertilizer_types')) {
+        foreach ($request->fertilizer_types as $typeId) {
+            if ($request->has("fertilizers.$typeId")) {
+                $fertilizers = $request->input("fertilizers.$typeId", []);
+                $amounts = $request->input("amount.$typeId", []);
+                $units = $request->input("unit.$typeId", []);
+
+                foreach ($fertilizers as $index => $fertilizerId) {
+                    $details[] = [
+                        'fertilizer_type_id' => $typeId,
+                        'fertilizer_id' => $fertilizerId,
+                        'amount' => $amounts[$index] ?? 0,
+                        'unit' => $units[$index] ?? 'kg',
+                    ];
+                }
+            }
         }
-
-        $area = $validated['area_to_plant'];
-        $productivity = $validated['productivity'];
-        $expectedYield = $area * $productivity;
-
-        // ✅ Fetch CropConfiguration for selected year, crop, and type
-        $config = CropConfiguration::where('year', $validated['year'])
-            ->where('crop_id', $validated['crop_id'])
-            ->where('croptype_id', $validated['croptype_id'])
-            ->where('kebele_id', $user->kebele_id)
-            ->first();
-
-        $seedType = $config?->crop?->name ?? 'Seeds';
-        $seedsPerHa = $config?->seed_rate_kg_per_ha ?? 20;
-        $totalSeeds = $area * $seedsPerHa;
-
-        
-
-        KebeleCropPlan::create([
-            'kebele_id' => $user->kebele_id,
-            'sector_id' => $user->sector_id,
-            'croptype_id' => $validated['croptype_id'],
-            'crop_id' => $validated['crop_id'],
-            'area_to_plant' => $area,
-            'productivity' => $productivity,
-            'expected_yield' => $expectedYield,
-        
-            'year' => $validated['year'],
-            'season' => $validated['season'],
-            'responsible_staff' => $validated['responsible_staff'] ?? null,
-            'notes' => $validated['notes'] ?? null,
-            'created_by' => $user->id,
-        ]);
-
-        return redirect()->route('sector.crop-plans.index')->with('success', '✅ Kebele Crop Plan added successfully!');
     }
+
+    return $details;
+}
+
+
+
+
+public function getFertilizers($typeId)
+{
+    return response()->json(Fertilizer::where('fertilizer_type_id', $typeId)->get());
+}
+
 
 
 
@@ -213,6 +247,56 @@ public function getCropsByYearAndType($year, $croptypeId)
         return redirect()->route('sector.crop-plans.index')
             ->with('success', 'Crop plan updated successfully!');
     }
+
+
+  public function editfertilizer($id)
+{
+    $cropPlan = KebeleCropPlan::findOrFail($id);
+    $fertilizerTypes = \App\Models\FertilizerType::all();
+    $fertilizers = \App\Models\Fertilizer::all();
+
+    return view('sector.crop_plans.edit_fertilizer', compact('cropPlan', 'fertilizerTypes', 'fertilizers'));
+}
+
+public function updatefertilizer(Request $request, $id)
+{
+    $cropPlan = KebeleCropPlan::findOrFail($id);
+
+    $validated = $request->validate([
+        'fertilizer_types' => 'nullable|array',
+        'fertilizer_types.*' => 'exists:fertilizer_types,id',
+        'fertilizer_details' => 'nullable|array',
+    ]);
+
+    // Clean up fertilizer_details - remove empty entries
+    $fertilizerDetails = [];
+    if (!empty($validated['fertilizer_details'])) {
+        foreach ($validated['fertilizer_details'] as $typeId => $fertilizers) {
+            foreach ($fertilizers as $fertId => $detail) {
+                // Only include if amount is provided
+                if (!empty($detail['amount']) && !empty($detail['unit'])) {
+                    $fertilizerDetails[] = [
+                        'fertilizer_type_id' => $typeId,
+                        'fertilizer_id' => $fertId,
+                        'amount' => $detail['amount'],
+                        'unit' => $detail['unit']
+                    ];
+                }
+            }
+        }
+    }
+
+    $cropPlan->fertilizer_type_id = $validated['fertilizer_types'] ?? [];
+    $cropPlan->fertilizer_details = $fertilizerDetails;
+
+    $cropPlan->save();
+
+    return redirect()->route('sector.crop-plans.index')
+        ->with('success', 'Fertilizer details updated successfully.');
+}
+
+
+
 
 
     public function destroy($id)

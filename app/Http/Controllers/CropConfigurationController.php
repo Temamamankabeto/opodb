@@ -15,13 +15,17 @@ use App\Models\CropType; // Add this import
 class CropConfigurationController extends Controller
 {
     public function index()
-    {
-        $configs = CropConfiguration::with(['croptype', 'crop', 'kebele', 'soilType'])
-            ->latest()
-            ->paginate(100);
+{
+    $userKebeleId = Auth::user()->kebele_id;
 
-        return view('crop_configurations.index', compact('configs'));
-    }
+    $configs = CropConfiguration::with(['croptype', 'crop', 'kebele', 'soilType'])
+        ->where('kebele_id', $userKebeleId)
+        ->latest()
+        ->paginate(100);
+
+    return view('crop_configurations.index', compact('configs'));
+}
+
 
     public function create()
     {

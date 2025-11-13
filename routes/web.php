@@ -21,6 +21,7 @@ use App\Http\Controllers\FacilityController;
 use App\Http\Controllers\KunuunsaController;
 use App\Http\Controllers\SoilTypeController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\InputPlanController;
 use App\Http\Controllers\LiveStockController;
 use App\Http\Controllers\StructureController;
 use App\Http\Controllers\CreditDataController;
@@ -33,13 +34,15 @@ use App\Http\Controllers\JobCreationController;
 use App\Http\Controllers\KebeleAdminController;
 use App\Http\Controllers\MonthlyPlanController;
 use App\Http\Controllers\NurserySiteController;
+
+
 use App\Http\Controllers\ConstructionController;
-
-
 use App\Http\Controllers\QabenyaUmamaController;
 use App\Http\Controllers\SeedlingTypeController;
 use App\Http\Controllers\GabbinaBiyyeeController;
+use App\Http\Controllers\LivestockPlanController;
 use App\Http\Controllers\MaterialSuplyController;
+use App\Http\Controllers\MechanizationController;
 use App\Http\Controllers\MisomaBeyladaController;
 use App\Http\Controllers\ZonalDevisionController;
 use App\Http\Controllers\EggumsaNaannooController;
@@ -51,15 +54,17 @@ use App\Http\Controllers\WeeklyLandPlanController;
 use App\Http\Controllers\WeeklyTrackingController;
 use App\Http\Controllers\YearlyCropPlanController;
 use App\Http\Controllers\LivestockSupplyController;
+use App\Http\Controllers\NaturalResourceController;
 use App\Http\Controllers\NurserySeedlingController;
 use App\Http\Controllers\VillageResourceController;
+
+
+
 use App\Http\Controllers\ForestManagementController;
+use App\Http\Controllers\LivestockProductController;
 use App\Http\Controllers\AgriculturalInputController;
 use App\Http\Controllers\CivilRegistrationController;
 use App\Http\Controllers\CropConfigurationController;
-
-
-
 use App\Http\Controllers\CulturalRewalArtDevelopment;
 use App\Http\Controllers\OrchardProductionController;
 use App\Http\Controllers\WatershedResourceController;
@@ -97,6 +102,7 @@ Route::middleware([SecurityHeaders::class])->group(function () {
             Route::get('sectors/create', [StructureController::class, 'sectorcreate'])->name('sectors.create');
             Route::get('sectors', [StructureController::class, 'sektorsIndex'])->name('sectors.index');
             Route::get('sectors/{id}/edit', [StructureController::class, 'editSector'])->name('sectors.edit');
+            Route::get('sectors/{id}/product', [StructureController::class, 'editSector'])->name('sectors.edit');
             Route::put('sectors/{id}', [StructureController::class, 'updateSector'])->name('sectors.update');
             Route::delete('sectors/{id}', [StructureController::class, 'destroySector'])->name('sectors.destroy');
 
@@ -152,6 +158,32 @@ Route::middleware([SecurityHeaders::class])->group(function () {
             Route::get('/profile/{uuid}', [UserController::class, 'profile'])->name('admin.users.profile');
             Route::get('/profile/security/{uuid}', [UserController::class, 'changePasswordForm'])->name('admin.users.password');
             Route::post('/change-password', [UserController::class, 'changePassword'])->name('password.change');
+
+
+            Route::get('/livestock-supplies', [LivestockSupplyController::class, 'index'])->name('livestock_supplies.index');
+            Route::get('/livestock-supplies/create', [LivestockSupplyController::class, 'create'])->name('livestock_supplies.create');
+            Route::post('/livestock-supplies/store', [LivestockSupplyController::class, 'store'])->name('livestock_supplies.store');
+            Route::get('/livestock-supplies/edit/{id}', [LivestockSupplyController::class, 'edit'])->name('livestock_supplies.edit');
+            Route::post('/livestock-supplies/update/{id}', [LivestockSupplyController::class, 'update'])->name('livestock_supplies.update');
+            Route::get('/livestock-supplies/delete/{id}', [LivestockSupplyController::class, 'destroy'])->name('livestock_supplies.delete');
+
+
+              Route::get('/livestock_product', [LivestockProductController  ::class, 'index'])->name('livestock_product.index');
+            Route::get('/livestock_product/create', [LivestockProductController  ::class, 'create'])->name('livestock_product.create');
+            Route::post('/livestock_product/store', [LivestockProductController  ::class, 'store'])->name('livestock_product.store');
+            Route::get('/livestock_product/edit/{id}', [LivestockProductController  ::class, 'edit'])->name('livestock_product.edit');
+            Route::post('/livestock_product/update/{id}', [LivestockProductController  ::class, 'update'])->name('livestock_product.update');
+            Route::get('/livestock_product/delete/{id}', [LivestockProductController  ::class, 'destroy'])->name('livestock_product.delete');
+
+             Route::get('/naturals', [NaturalResourceController  ::class, 'index'])->name('naturals.index');
+            Route::get('/naturals/create', [NaturalResourceController  ::class, 'create'])->name('naturals.create');
+            Route::post('/naturals/store', [NaturalResourceController  ::class, 'store'])->name('naturals.store');
+            Route::get('/naturals/edit/{id}', [NaturalResourceController  ::class, 'edit'])->name('naturals.edit');
+            Route::post('/naturals/update/{id}', [NaturalResourceController  ::class, 'update'])->name('natural.update');
+            Route::get('/naturals/delete/{id}', [NaturalResourceController  ::class, 'destroy'])->name('naturals.delete');
+
+
+            
         });
 
         // Zone Admin only
@@ -305,17 +337,28 @@ Route::middleware([SecurityHeaders::class])->group(function () {
 
 
    Route::middleware(['auth', 'role:5'])->prefix('sector')->name('sector.')->group(function () {
+            Route::get('/dashboard', [DashboardController::class, 'sectorDashboard'])->name('sector.dashboard');
+
     Route::get('crop-plans', [KebeleCropPlanController::class, 'index'])->name('crop-plans.index');
     Route::get('crop-plans/create', [KebeleCropPlanController::class, 'create'])->name('crop-plans.create');
     Route::post('crop-plans/store', [KebeleCropPlanController::class, 'store'])->name('crop-plans.store');
         Route::get('crop-plans/{id}/edit', [KebeleCropPlanController::class, 'edit'])->name('crop-plans.edit');
+        Route::get('crop-plans/{id}/edit/fertilizer', [KebeleCropPlanController::class, 'editfertilizer'])->name('crop-plans.editfertilizer');
     Route::put('crop-plans/{id}', [KebeleCropPlanController::class, 'update'])->name('crop-plans.update');
     Route::delete('crop-plans/{id}', [KebeleCropPlanController::class, 'destroy'])->name('crop-plans.destroy');
 
     
     // Cascading AJAX routes
     Route::get('crops-by-year/{year}', [KebeleCropPlanController::class, 'getCropTypesByYear'])->name('crops.byYear');
+
+
     Route::get('crops-by-year-type/{year}/{croptype}', [KebeleCropPlanController::class, 'getCropsByYearAndType'])->name('crops.byYearAndType');
+   Route::get('crop-plans/{id}/edit/fertilizer', [KebeleCropPlanController::class, 'editfertilizer'])
+    ->name('crop-plans.editfertilizer');
+
+Route::put('crop-plans/{id}/update/fertilizer', [KebeleCropPlanController::class, 'updatefertilizer'])
+    ->name('crop-plans.updatefertilizer');
+
 
     Route::post('crop-plans/import', [KebeleCropPlanController::class, 'importExcel'])
     ->name('crop-plans.import');
@@ -325,6 +368,68 @@ Route::middleware([SecurityHeaders::class])->group(function () {
 
     Route::get('crop-plans/import', [KebeleCropPlanController::class, 'showImportForm'])->name('crop-plans.import.form');
 Route::post('crop-plans/import', [KebeleCropPlanController::class, 'import'])->name('crop-plans.import');
+
+   Route::get('/gabbina-biyyee/create', [GabbinaBiyyeeController::class, 'create'])->name('gabbina_biyyee.create');
+        Route::post('/gabbina-biyyee/store', [GabbinaBiyyeeController::class, 'store'])->name('gabbina_biyyee.store');
+
+        // Add these to your web.php routes
+Route::get('/gabbina-biyyee', [GabbinaBiyyeeController::class, 'index'])->name('gabbina_biyyee.index');
+Route::get('/gabbina-biyyee/{id}/edit', [GabbinaBiyyeeController::class, 'edit'])->name('gabbina_biyyee.edit');
+Route::put('/gabbina-biyyee/{id}', [GabbinaBiyyeeController::class, 'update'])->name('gabbina_biyyee.update');
+Route::delete('/gabbina-biyyee/{id}', [GabbinaBiyyeeController::class, 'destroy'])->name('gabbina_biyyee.destroy');
+
+// Seedling Preparation Routes
+ 
+    Route::get('/seedling-preparations', [SeedlingPreparationController::class, 'index'])->name('seedling-preparations.index');
+    Route::get('/seedling-preparations/create', [SeedlingPreparationController::class, 'create'])->name('seedling-preparations.create');
+    Route::post('/seedling-preparations', [SeedlingPreparationController::class, 'store'])->name('seedling-preparations.store');
+    Route::get('/seedling-preparations/{id}/edit', [SeedlingPreparationController::class, 'edit'])->name('seedling-preparations.edit');
+    
+    Route::put('/seedling-preparations/{id}', [SeedlingPreparationController::class, 'update'])->name('seedling-preparations.update');
+
+    Route::get('/seedling-preparations/{id}/editpreparation', [SeedlingPreparationController::class, 'editpreparation'])->name('seedling-preparations.editpreparation');
+
+Route::put('/seedling-preparations/update/{id}', [SeedlingPreparationController::class, 'updatePreparation'])
+     ->name('seedling-preparations.updatepreparation');
+
+    Route::delete('/seedling-preparations/{id}', [SeedlingPreparationController::class, 'destroy'])->name('seedling-preparations.destroy');
+    
+    // AJAX route for getting seedlings by type
+    Route::get('/seedling-preparations/seedlings-by-type/{typeId}', [SeedlingPreparationController::class, 'getSeedlingsByType']);
+    // AJAX route for getting group details
+Route::get('/seedling-preparations/group-details/{year}/{typeId}', [SeedlingPreparationController::class, 'getGroupDetails'])->name('seedling-preparations.group-details');
+ 
+ 
+    Route::get('/livestock-plans', [LivestockPlanController::class, 'index'])->name('livestock_plans.index');
+    Route::get('/livestock-plans/create', [LivestockPlanController::class, 'create'])->name('livestock_plans.create');
+    Route::post('/livestock-plans/store', [LivestockPlanController::class, 'store'])->name('livestock_plans.store');
+    Route::get('/livestock-plans/{id}/edit', [LivestockPlanController::class, 'edit'])->name('livestock_plans.edit');
+    Route::get('/livestock-plans/{id}/product', [LivestockPlanController::class, 'editproduct'])->name('livestock_plans.editproduct');
+    Route::put('/livestock-plans/{id}/update', [LivestockPlanController::class, 'update'])->name('livestock_plans.update');
+    Route::delete('/livestock-plans/{id}/delete', [LivestockPlanController::class, 'destroy'])->name('livestock_plans.destroy');
+    Route::get('/livestock-plans/{id}', [LivestockPlanController::class, 'show'])->name('livestock_plans.show');
+ 
+
+
+
+
+        Route::get('/compost-report', [GabbinaBiyyeeController::class, 'index'])->name('compost.report');
+        Route::get('/woreda/compost-report', [GabbinaBiyyeeController::class, 'woreda'])->name('compost.report.woreda');
+   Route::prefix('mechanizations')->group(function () {
+    Route::get('/', [MechanizationController::class, 'index'])->name('mechanizations.index');
+    Route::get('/create', [MechanizationController::class, 'create'])->name('mechanizations.create');
+    Route::post('/store', [MechanizationController::class, 'store'])->name('mechanizations.store');
+    Route::get('/{id}/edit', [MechanizationController::class, 'edit'])->name('mechanizations.edit');
+    Route::put('/{id}/update', [MechanizationController::class, 'update'])->name('mechanizations.update');
+    Route::get('/{id}', [MechanizationController::class, 'show'])->name('mechanizations.show');
+    Route::delete('/{id}', [MechanizationController::class, 'destroy'])->name('mechanizations.destroy');
+   
+
+
+      
+});
+
+
 
     
 

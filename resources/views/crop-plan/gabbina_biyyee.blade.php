@@ -5,17 +5,17 @@
                 <h4 class="mb-0">🌿 Hojii Gabbina Biyyoo</h4>
             </div>
             <div class="card-body">
-                @if($errors->any())
+                @if ($errors->any())
                     <div class="alert alert-danger">
                         <strong>maaloo!</strong> Rakkoo Armaan Gadii Fyraa:
                         <ul class="mb-0">
-                            @foreach($errors->all() as $error)
+                            @foreach ($errors->all() as $error)
                                 <li>{{ $error }}</li>
                             @endforeach
                         </ul>
                     </div>
                 @endif
-                <form action="{{ route('gabbina_biyyee.store') }}" method="POST">
+                <form action="{{ route('sector.gabbina_biyyee.store') }}" method="POST">
                     @csrf
                     @auth
                         <input type="hidden" name="created_by" value="{{ Auth::id() }}">
@@ -27,12 +27,20 @@
 
                     <div class="mb-3">
                         <label for="year" class="form-label fw-bold">📅 Bara</label>
-                        <select name="year" id="year" class="form-select" required>
-                        <option value="">-- Select Year --</option>
-    @for ($y = 2011; $y <= date('Y'); $y++)
-        <option value="{{ $y }}">{{ $y }}</option>
-    @endfor
-</select>                    </div>
+                        <select name="year" class="form-select border-start-0 ps-0" required>
+                            <option value="">-- Select Year --</option>
+                            @php
+                                $currentEthiopianYear = \App\Helpers\EthiopianYear::now();
+                                $years = range($currentEthiopianYear - 2, $currentEthiopianYear + 3);
+                            @endphp
+                            @foreach ($years as $year)
+                                <option value="{{ $year }}"
+                                    {{ old('year', $mechanization->year ?? $currentEthiopianYear) == $year ? 'selected' : '' }}>
+                                    {{ $year }} EC
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
 
                     <div class="table-responsive">
                         <table class="table table-bordered align-middle text-center" id="entry-table">
@@ -49,20 +57,28 @@
                             <tbody id="entry-body">
                                 <tr>
                                     <td>
-                                        <select name="entries[0][compost_type]" class="form-select compost-type" required>
+                                        <select name="entries[0][compost_type]" class="form-select compost-type"
+                                            required>
                                             <option value="" disabled>-- Gosa Filadhu --</option>
-                                            @foreach($compostTypes as $type)
+                                            @foreach ($compostTypes as $type)
                                                 <option value="{{ $type->name }}">{{ $type->name }}</option>
                                             @endforeach
                                         </select>
                                     </td>
-                                    <td><input type="number" name="entries[0][common]" class="form-control common" step="0.01"></td>
-                                    <td><input type="number" name="entries[0][individual]" class="form-control individual" step="0.01"></td>
-                                    <td><input type="number" name="entries[0][total]" class="form-control total" step="0.01" readonly></td>
-                                    <td><input type="number" name="entries[0][land_area]" class="form-control land-area" step="0.01" style="display:none;" placeholder="Only for 'Nooraa Hojiirra oole'"></td>
+                                    <td><input type="number" name="entries[0][common]" class="form-control common"
+                                            step="0.01"></td>
+                                    <td><input type="number" name="entries[0][individual]"
+                                            class="form-control individual" step="0.01"></td>
+                                    <td><input type="number" name="entries[0][total]" class="form-control total"
+                                            step="0.01" readonly></td>
+                                    <td><input type="number" name="entries[0][land_area]"
+                                            class="form-control land-area" step="0.01" style="display:none;"
+                                            placeholder="Only for 'Nooraa Hojiirra oole'"></td>
                                     <td>
-                                        <button type="button" class="btn btn-sm btn-success add-row" title="Add Row">➕</button>
-                                        <button type="button" class="btn btn-sm btn-danger remove-row" title="Remove Row">🗑️</button>
+                                        <button type="button" class="btn btn-sm btn-success add-row"
+                                            title="Add Row">➕</button>
+                                        <button type="button" class="btn btn-sm btn-danger remove-row"
+                                            title="Remove Row">🗑️</button>
                                     </td>
                                 </tr>
                             </tbody>
@@ -80,7 +96,7 @@
     <!-- SweetAlert2 CDN -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-    @if(session('success'))
+    @if (session('success'))
         <script>
             Swal.fire({
                 icon: 'success',
@@ -113,21 +129,21 @@
             }
         }
 
-        document.getElementById('entry-body').addEventListener('input', function (e) {
+        document.getElementById('entry-body').addEventListener('input', function(e) {
             const row = e.target.closest('tr');
             if (e.target.classList.contains('common') || e.target.classList.contains('individual')) {
                 calculateTotal(row);
             }
         });
 
-        document.getElementById('entry-body').addEventListener('change', function (e) {
+        document.getElementById('entry-body').addEventListener('change', function(e) {
             if (e.target.classList.contains('compost-type')) {
                 const row = e.target.closest('tr');
                 toggleLandArea(row);
             }
         });
 
-        document.getElementById('entry-body').addEventListener('click', function (e) {
+        document.getElementById('entry-body').addEventListener('click', function(e) {
             const target = e.target;
 
             if (target.classList.contains('remove-row')) {

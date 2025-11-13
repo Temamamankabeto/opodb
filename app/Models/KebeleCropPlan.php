@@ -13,30 +13,39 @@ class KebeleCropPlan extends Model
         'kebele_id',
         'sector_id',
         'croptype_id',
-        'approved_by',
-        
         'crop_id',
         'area_to_plant',
         'expected_yield',
         'season',
         'year',
-        
-        'input_needed',
+        'seed_required',
+        'fertilizer_type_id',
+        'fertilizer_details',
         'responsible_staff',
         'notes',
         'productivity',
         'created_by',
+        'approved_by',
     ];
 
-     
-    public function sector()
-    {
-        return $this->belongsTo(KebeleSectors::class, 'sector_id');
-    }
+    protected $casts = [
+        'fertilizer_details' => 'array', // ✅ So Laravel handles JSON automatically
+        'fertilizer_type_id' => 'array',
+        'productivity' => 'float',
+        'area_to_plant' => 'float',
+        'expected_yield' => 'float',
+        'seed_required' => 'float',
+        'approved_at' => 'datetime',
+    ];
 
+    // 🔹 Relationships
     public function kebele()
     {
         return $this->belongsTo(Kebele::class);
+    }
+    public function sector()
+    {
+        return $this->belongsTo(KebeleSectors::class);
     }
 
     public function cropType()
@@ -44,17 +53,18 @@ class KebeleCropPlan extends Model
         return $this->belongsTo(CropType::class, 'croptype_id');
     }
 
-    // Relationship to Crop
     public function crop()
     {
         return $this->belongsTo(Crop::class, 'crop_id');
     }
-    
+
     public function creator()
     {
         return $this->belongsTo(User::class, 'created_by');
     }
-    protected $casts = [
-        'approved_at' => 'datetime',
-    ];
+
+    public function approver()
+    {
+        return $this->belongsTo(User::class, 'approved_by');
+    }
 }

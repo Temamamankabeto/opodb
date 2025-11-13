@@ -11,23 +11,22 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('seedling_preparations', function (Blueprint $table) {
-            $table->id();
-         
-            $table->foreignId('seedlingtype_id')->constrained('seedlingtypes')->onDelete('cascade');
-            $table->foreignId('seedling_id')->constrained('seedlings')->onDelete('cascade');
+        Schema::create('livestock_plans', function (Blueprint $table) {
+             $table->id();
 
             $table->string('year');
-            $table->decimal('nama_hirmaate', 10, 2);
-            $table->decimal('baayina_guyyaa', 10, 2);
-            $table->decimal('hanga', 10, 2);
+            
+            // Separate JSON columns for supply_data and product_data data
+          $table->json('supply_data')->nullable()->comment('Data for livestock supply');// all data from livestock_supplies table 
+            $table->json('product_data')->nullable()->comment('Data for livestock product');// all data from livestock_products table
+            // Location fields
+            $table->foreignId('sector_id')->constrained('kebele_sectors')->onDelete('cascade');    
             $table->foreignId('kebele_id')->constrained('kebeles')->onDelete('cascade');
             $table->foreignId('woreda_id')->constrained('woredas')->onDelete('cascade');
             $table->foreignId('zone_id')->constrained('zones')->onDelete('cascade');
             $table->foreignId('region_id')->nullable()->constrained('regions')->onDelete('cascade');
-        
             $table->foreignId('created_by')->constrained('users')->onDelete('cascade');
-            $table->string('phone')->nullable();
+          
             $table->timestamps();
         });
     }
@@ -37,6 +36,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('seedling_preparations');
+        Schema::dropIfExists('livestock_plans');
     }
 };

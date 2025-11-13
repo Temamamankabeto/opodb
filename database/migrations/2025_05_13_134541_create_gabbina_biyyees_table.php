@@ -18,6 +18,7 @@ return new class extends Migration
             $table->unsignedBigInteger('woreda_id')->nullable();
             $table->unsignedBigInteger('zone_id')->nullable();
             $table->unsignedBigInteger('region_id')->nullable();
+            $table->unsignedBigInteger('sector_id')->nullable();
             $table->string('phone')->nullable();
             $table->string('year');
             $table->string('compost_type');

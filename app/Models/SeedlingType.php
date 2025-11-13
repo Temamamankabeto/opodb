@@ -8,4 +8,12 @@ class SeedlingType extends Model
 {
     protected $table = 'seedling_types';
     protected $fillable = ['name'];
+
+    // Relationships
+     
+     public function seedlings()
+    {
+        return $this->hasMany(Seedling::class, 'seedlingtype_id');
+    }
 }
+
