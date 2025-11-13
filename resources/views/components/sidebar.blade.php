@@ -579,7 +579,7 @@
                                         <li><i class="fa-regular fa-file file-icon"></i><a href="/crop-plan">Hojii
                                                 Qabeenya Uumamaa </a></li>
                                         <li><i class="fa-regular fa-file file-icon"></i><a
-                                                href="/fertilizer-type">Eegumsa Naannoo fi Misooma Sululaa </a></li>
+                                                href=" {{url('sector/environmental-plans')}}">Eegumsa Naannoo fi Misooma Sululaa </a></li>
 
                                     </ul>
                                 </li>
