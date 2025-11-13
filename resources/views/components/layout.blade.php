@@ -32,8 +32,6 @@
 
 <body class="with-welcome-text">
     <div class="container-scroller">
-
-
         <!-- Navbar -->
         @include('components.navbar')
 

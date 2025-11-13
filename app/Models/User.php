@@ -79,6 +79,7 @@ class User extends Authenticatable
         return $this->belongsTo(KebeleSectors::class, 'sector_id');
     }
 
+   
 
     public function role()
     {
