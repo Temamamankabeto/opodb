@@ -418,7 +418,7 @@ class UserController extends Controller
 
     public function profile($uuid)
     {
-        $user = User::with('zone', 'woreda', 'kebele')
+        $user = User::with('zone', 'woreda', 'kebele','sector')
             ->where('uuid', $uuid)
             ->firstOrFail();
 
