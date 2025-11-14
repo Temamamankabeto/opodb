@@ -140,7 +140,8 @@
                 <li>
                     <span class="caret"><i class="fa-solid fa-folder folder-icon"></i>{{ __('User Management') }}</span>
                     <ul>
-                        <li><i class="fa-regular fa-file file-icon"></i><a href="{{ url('admin/users') }}"> {{ __('Zone Admin') }}</a></li>
+                        <li><i class="fa-regular fa-file file-icon"></i><a href="{{ url('admin/users') }}">
+                                {{ __('Zone Admin') }}</a></li>
 
 
                     </ul>
@@ -151,9 +152,11 @@
                     <span class="caret"><i class="fa-solid fa-folder folder-icon"></i>{{ __('Structure') }}</span>
                     <ul>
 
-                        <li> <i class="fa-regular fa-file file-icon"></i><a href="{{ url('admin/zones') }}">{{ __('Zones') }}</a>
+                        <li> <i class="fa-regular fa-file file-icon"></i><a
+                                href="{{ url('admin/zones') }}">{{ __('Zones') }}</a>
                         </li>
-                        <li> <i class="fa-regular fa-file file-icon"></i><a href="/karoora-jia">{{ __('Sectors') }}</a></li>
+                        <li> <i class="fa-regular fa-file file-icon"></i><a href="/karoora-jia">{{ __('Sectors') }}</a>
+                        </li>
 
                     </ul>
                 </li>
@@ -161,13 +164,18 @@
                 <li>
                     <span class="caret"><i class="fa-solid fa-folder folder-icon"></i>{{ __('Report') }}</span>
                     <ul>
-                        <li><i class="fa-regular fa-file file-icon"></i><a href="/karoora-wagga">{{ __('Crop Production') }}</a></li>
-                        <li><i class="fa-regular fa-file file-icon"></i><a href="/karoora-jia">{{ __("Production Infrastructure") }}</a></li>
-                        <li><i class="fa-regular fa-file file-icon"></i><a href="/karoora-jia">{{ __('Social Production') }}</a></li>
+                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                href="/karoora-wagga">{{ __('Crop Production') }}</a></li>
+                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                href="/karoora-jia">{{ __('Production Infrastructure') }}</a></li>
+                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                href="/karoora-jia">{{ __('Social Production') }}</a></li>
 
-                        <li><i class="fa-regular fa-file file-icon"></i><a href="/karoora-jia">{{ __('Job Creation Opportunity') }}</a>
+                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                href="/karoora-jia">{{ __('Job Creation Opportunity') }}</a>
                         </li>
-                        <li><i class="fa-regular fa-file file-icon"></i><a href="/karoora-jia">{{ __('Government Policies') }}</a></li>
+                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                href="/karoora-jia">{{ __('Government Policies') }}</a></li>
 
                         <li style="color: #007bff;"><i class="fa-regular fa-file file-icon"></i><a
                                 href="/karoora-jia">{{ __('ALL Report') }}</a></li>
@@ -181,19 +189,19 @@
                         <li><i class="fa-regular fa-file file-icon"></i><a
                                 href=" {{ url('admin/livestock-supplies') }}">{{ __('Livestock Supplies') }}</a></li>
                         <li><i class="fa-regular fa-file file-icon"></i><a
-                                href=" {{ url('admin/livestock_product') }}">{{ __("Livestock Products") }}</a></li>
-                        <li><i class="fa-regular fa-file file-icon"></i><a href=" {{ url('admin/naturals') }}">{{ __('Natural Resources') }}</a></li>
-
-                                       <li><i class="fa-regular fa-file file-icon"></i><a
+                                href=" {{ url('admin/livestock_product') }}">{{ __('Livestock Products') }}</a></li>
+                        <li><i class="fa-regular fa-file file-icon"></i><a
                                 href=" {{ url('admin/naturals') }}">{{ __('Natural Resources') }}</a></li>
 
-                                 <li><i class="fa-regular fa-file file-icon"></i><a
-                                href=" {{ url('admin/enviromental-activity') }}">{{ __('Enviromental Activity') }}</a></li>
+
+                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                href=" {{ url('admin/enviromental-activity') }}">{{ __('Enviromental Activity') }}</a>
+                        </li>
 
 
 
                         <li><i class="fa-regular fa-file file-icon"></i><a
-                                href=" {{ url('admin/enviromental-activity') }}">{{ __('Enviromental Activity') }}</a></li>
+                                href=" {{ url('admin/institutions') }}">{{ __('Institutions') }}</a></li>
 
                         <li><i class="fa-regular fa-file file-icon"></i><a
                                 href=" {{ route('languages.list') }}">{{ __('Languages') }}</a></li>
@@ -209,8 +217,10 @@
                     <li>
                         <span class="caret"><i class="fa-solid fa-folder folder-icon"></i>{{ __('Users') }}</span>
                         <ul>
-                            <li><i class="fa-regular fa-file file-icon"></i><a href="{{ url('admin/users') }}">{{ __('Woreda Users') }}</a></li>
-                            <li><i class="fa-regular fa-file file-icon"></i><a href="/fertilizer-type">{{ __('Kebele Users') }}</a>
+                            <li><i class="fa-regular fa-file file-icon"></i><a
+                                    href="{{ url('admin/users') }}">{{ __('Woreda Users') }}</a></li>
+                            <li><i class="fa-regular fa-file file-icon"></i><a
+                                    href="/fertilizer-type">{{ __('Kebele Users') }}</a>
                             </li>
 
                         </ul>
@@ -242,12 +252,14 @@
                 </li>
 
                 <li>
-                    <span class="caret"><i class="fa-solid fa-folder folder-icon"></i>{{ __('User Management') }}</span>
+                    <span class="caret"><i
+                            class="fa-solid fa-folder folder-icon"></i>{{ __('User Management') }}</span>
                     <ul>
                         <li><i class="fa-regular fa-file file-icon"></i><a
                                 href="{{ url('kebele/sector-admins') }}">{{ __('Sector Admins') }}</a></li>
 
-                        <li><i class="fa-regular fa-file file-icon"></i><a href="{{ url('kebele/da-users') }}">{{ __('DA Expert') }}</a></li>
+                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                href="{{ url('kebele/da-users') }}">{{ __('DA Expert') }}</a></li>
 
                     </ul>
                 </li>
@@ -258,6 +270,8 @@
                     <ul>
                         <li><i class="fa-regular fa-file file-icon"></i><a
                                 href="{{ url('kebele/crop-configurations') }}">{{ __('Productivity') }}</a></li>
+                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                href="{{ url('kebele/associations') }}">{{ __('Associations') }}</a></li>
 
 
                     </ul>
@@ -271,32 +285,40 @@
                     <span class="caret"><i class="fa-solid fa-folder folder-icon"></i>{{ __('Karoora') }}</span>
                     <ul>
                         <li>
-                            <span class="caret"><i class="fa-solid fa-folder folder-icon"></i>{{ __('Karrora Waggaa') }}</span>
+                            <span class="caret"><i
+                                    class="fa-solid fa-folder folder-icon"></i>{{ __('Karrora Waggaa') }}</span>
                             <ul>
                                 <li>
-                                    <span class="caret"><i class="fa-solid fa-folder folder-icon"></i>{{ __('Crop Production') }}</span>
+                                    <span class="caret"><i
+                                            class="fa-solid fa-folder folder-icon"></i>{{ __('Crop Production') }}</span>
                                     <ul>
                                         <li><i class="fa-regular fa-file file-icon"></i><a
                                                 href="{{ url('sector/crop-plans') }}">{{ __('Crop') }}</a></li>
                                         <li><i class="fa-regular fa-file file-icon"></i><a
                                                 href="/fertilizer-type">{{ __('Fertilizer Supply') }}</a></li>
-                                        <li><i class="fa-regular fa-file file-icon"></i><a href="/fertilizer-type">{{ __('Soil Management Work') }}</a></li>
                                         <li><i class="fa-regular fa-file file-icon"></i><a
-                                                href="/fertilizer-type">{{ __('Seedling Preparation and Storage') }}</a></li>
+                                                href="/fertilizer-type">{{ __('Soil Management Work') }}</a></li>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                                href="/fertilizer-type">{{ __('Seedling Preparation and Storage') }}</a>
+                                        </li>
                                         <li><i class="fa-regular fa-file file-icon"></i><a
                                                 href="/fertilizer-type">{{ __('Livestock Supplies') }}</a></li>
                                         <li><i class="fa-regular fa-file file-icon"></i><a
                                                 href="/fertilizer-type">{{ __('Livestock Products') }}</a></li>
                                         <li><i class="fa-regular fa-file file-icon"></i><a
                                                 href="/fertilizer-type">{{ __('Livestock Production') }}</a></li>
-                                        <li><i class="fa-regular fa-file file-icon"></i><a href="/fertilizer-type">{{ __('Natural Resources') }}</a></li>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                                href="/fertilizer-type">{{ __('Natural Resources') }}</a></li>
 
                                     </ul>
                                 </li>
                                 <li>
-                                    <span class="caret"><i class="fa-solid fa-folder folder-icon"></i>{{ __('Production Infrastructure') }} </span>
+                                    <span class="caret"><i
+                                            class="fa-solid fa-folder folder-icon"></i>{{ __('Production Infrastructure') }}
+                                    </span>
                                     <ul>
-                                        <li><i class="fa-regular fa-file file-icon"></i><a href="/crop-plan">{{ __('Construction Institutions') }}</a></li>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                                href="/crop-plan">{{ __('Construction Institutions') }}</a></li>
                                         <li><i class="fa-regular fa-file file-icon"></i><a
                                                 href="/fertilizer-type">{{ __('Renovation of Institutions') }}</a></li>
                                         <li><i class="fa-regular fa-file file-icon"></i><a
@@ -310,7 +332,8 @@
                                     <span class="caret"><i class="fa-solid fa-folder folder-icon"></i>Misooma
                                         Hawaasummaa </span>
                                     <ul>
-                                        <li><i class="fa-regular fa-file file-icon"></i><a href="/crop-plan">Hirmaannaa
+                                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                                href="/crop-plan">Hirmaannaa
                                                 Fi Itti Fufiinsa</a></li>
                                         <li><i class="fa-regular fa-file file-icon"></i><a
                                                 href="/fertilizer-type">Bu'aqabeessummaa Barnootaa</a></li>
@@ -448,7 +471,8 @@
                                         <li><i class="fa-regular fa-file file-icon"></i><a
                                                 href="/fertilizer-type">Oomisha Beeyladaa Beeyladaa</a></li>
                                         <li><i class="fa-regular fa-file file-icon"></i><a
-                                                href="/fertilizer-type">{{ __('Natural Resources Products') }}</a></li>
+                                                href="/fertilizer-type">{{ __('Natural Resources Products') }}</a>
+                                        </li>
                                     </ul>
                                 </li>
                                 <li>
@@ -574,10 +598,12 @@
                                     <span class="caret"><i class="fa-solid fa-folder folder-icon"></i>Qabeenya
                                         Uumamaa fi Eegumsa Naannoo</span>
                                     <ul>
-                                        <li><i class="fa-regular fa-file file-icon"></i><a href=" {{url('sector/natural-plans')}}">Hojii
+                                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                                href=" {{ url('sector/natural-plans') }}">Hojii
                                                 Qabeenya Uumamaa </a></li>
                                         <li><i class="fa-regular fa-file file-icon"></i><a
-                                                href=" {{url('sector/environmental-plans')}}">Eegumsa Naannoo fi Misooma Sululaa </a></li>
+                                                href=" {{ url('sector/environmental-plans') }}">Eegumsa Naannoo fi
+                                                Misooma Sululaa </a></li>
 
                                     </ul>
                                 </li>
@@ -585,7 +611,8 @@
                                     <span class="caret"><i class="fa-solid fa-folder folder-icon"></i>Babal’ina
                                         Waldaalee Hojii Gamtaa </span>
                                     <ul>
-                                        <li><i class="fa-regular fa-file file-icon"></i><a href="/crop-plan">Waldaalee
+                                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                                href=" {{ url('sector/association-expansion-plans') }}">Waldaalee
                                                 Hojii Gamtaa</a></li>
                                     </ul>
                                 </li>
@@ -618,7 +645,8 @@
                                         <li><i class="fa-regular fa-file file-icon"></i><a
                                                 href="/fertilizer-type">Oomisha Beeyladaa Beeyladaa</a></li>
                                         <li><i class="fa-regular fa-file file-icon"></i><a
-                                                href="/fertilizer-type">{{ __('Natural Resources Products') }}</a></li>
+                                                href="/fertilizer-type">{{ __('Natural Resources Products') }}</a>
+                                        </li>
                                     </ul>
                                 </li>
                                 <li>
@@ -695,7 +723,8 @@
                                         <li><i class="fa-regular fa-file file-icon"></i><a
                                                 href="/fertilizer-type">Oomisha Beeyladaa Beeyladaa</a></li>
                                         <li><i class="fa-regular fa-file file-icon"></i><a
-                                                href="/fertilizer-type">{{ __('Natural Resources Products') }}</a></li>
+                                                href="/fertilizer-type">{{ __('Natural Resources Products') }}</a>
+                                        </li>
                                     </ul>
                                 </li>
                                 <li>
@@ -772,6 +801,229 @@
                     </ul>
                 </li>
             @endif
+
+
+
+
+            @if (Auth::user()->role_id == 5 && Auth::user()->sector_id == 4)
+                <li>
+                    <h5><i class="fa-regular  ">
+                            <a href="{{ url('sector/dashboard/sector') }}">Dashboard</a>
+                        </i> </h5>
+                    <hr>
+                </li>
+                <li>
+                    <span class="caret"><i class="fa-solid fa-folder folder-icon"></i>Karoora</span>
+                    <ul>
+                        <li>
+                            <span class="caret"><i class="fa-solid fa-folder folder-icon"></i>Karrora Waggaa</span>
+                            <ul>
+                                <li>
+                                    <span class="caret"><i class="fa-solid fa-folder folder-icon"></i>Bu’uuralee
+                                        Misoomaa</span>
+                                    <ul>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                                href="{{ url('sector/crop-plans') }}">Ijaarsaa fi fooyya'iinsa
+                                                Dhaabbilee </a></li>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                                href="{{ url('sector/mechanizations') }}">Ijaarsaa fi fooyya'iinsa
+                                                Annissaa Bishaanii Daandii fi Riqaa </a></li>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                                href="{{ url('sector/gabbina-biyyee') }}"> Ijaarsa Faasilitiiwwan
+                                                Cee’umsa Diinagdee</a></li>
+                                    </ul>
+                                </li>
+
+
+
+
+                            </ul>
+                        </li>
+
+                        <li>
+                            <span class="caret"><i class="fa-solid fa-folder folder-icon"></i>Karrora
+                                Kurmaanaa</span>
+                            <ul>
+                                <li>
+                                    <span class="caret"><i class="fa-solid fa-folder folder-icon"></i>Misooma
+                                        Midhaanii</span>
+                                    <ul>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                                href="/crop-plan">Midhaan</a>
+                                        </li>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                                href="/fertilizer-type">Dhiyeessii LQ</a></li>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                                href="/fertilizer-type">Hojii
+                                                Gabbina Biyyoo</a></li>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                                href="/fertilizer-type">Qophii Fi Dhaabbii Biqiltuuwwanii</a></li>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                                href="/fertilizer-type">Dhiyeessii Beeyladaa</a></li>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                                href="/fertilizer-type">Oomisha fi Bu'aa Beeyladaa Beeyladaa</a></li>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                                href="/fertilizer-type">Oomisha Beeyladaa Beeyladaa</a></li>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                                href="/fertilizer-type">{{ __('Natural Resources Products') }}</a>
+                                        </li>
+                                    </ul>
+                                </li>
+                                <li>
+                                    <span class="caret"><i class="fa-solid fa-folder folder-icon"></i>Bu'uuraalee
+                                        Misooma </span>
+                                    <ul>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a href="/crop-plan">Ijaarsa
+                                                Dhaabbilee</a></li>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                                href="/fertilizer-type">Haaromsa Dhaabbilee</a></li>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                                href="/fertilizer-type">Ijaarsa Faasiliitiwwanii</a></li>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                                href="/fertilizer-type">Ijaarsa Faasiliitiwwan Cie'uumsa diinagdee</a>
+                                        </li>
+                                    </ul>
+                                </li>
+                                <li>
+                                    <span class="caret"><i class="fa-solid fa-folder folder-icon"></i>Misooma
+                                        Hawaasummaa </span>
+                                    <ul>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                                href="/crop-plan">Hirmaannaa
+                                                Fi Itti Fufiinsa</a></li>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                                href="/fertilizer-type">Bu'aqabeessummaa Barnootaa</a></li>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                                href="/fertilizer-type">Dhiyeessii Nyaata Barattootaa</a></li>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                                href="/fertilizer-type">Aadaa Fi Aartii</a></li>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                                href="/fertilizer-type">Galmeessa Sivilii</a></li>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                                href="/fertilizer-type">Fayyaa</a></li>
+                                    </ul>
+                                </li>
+                                <li>
+                                    <span class="caret"><i class="fa-solid fa-folder folder-icon"></i>Carraa Hojii
+                                        Uumuu</span>
+                                    <ul>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a href="/crop-plan">Carraa
+                                                Hojii Uumuu</a></li>
+                                    </ul>
+                                </li>
+                                <li>
+                                    <span class="caret"><i class="fa-solid fa-folder folder-icon"></i>Horataalee
+                                        Motummaa</span>
+                                    <ul>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                                href="/crop-plan">Horataalee Motummaa</a></li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </li>
+                        <li>
+                            <span class="caret"><i class="fa-solid fa-folder folder-icon"></i>Karrora Ji'aa</span>
+                            <ul>
+                                <li>
+                                    <span class="caret"><i class="fa-solid fa-folder folder-icon"></i>Misooma
+                                        Midhaanii</span>
+                                    <ul>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                                href="/crop-plan">Midhaan</a></li>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                                href="/fertilizer-type">Dhiyeessii LQ</a></li>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                                href="/fertilizer-type">Hojii Gabbina Biyyoo</a></li>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                                href="/fertilizer-type">Qophii Fi Dhaabbii Biqiltuuwwanii</a></li>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                                href="/fertilizer-type">Dhiyeessii Beeyladaa</a></li>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                                href="/fertilizer-type">Oomisha fi Bu'aa Beeyladaa Beeyladaa</a></li>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                                href="/fertilizer-type">Oomisha Beeyladaa Beeyladaa</a></li>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                                href="/fertilizer-type">{{ __('Natural Resources Products') }}</a>
+                                        </li>
+                                    </ul>
+                                </li>
+                                <li>
+                                    <span class="caret"><i class="fa-solid fa-folder folder-icon"></i>Bu'uuraalee
+                                        Misooma </span>
+                                    <ul>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a href="/crop-plan">Ijaarsa
+                                                Dhaabbilee</a></li>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                                href="/fertilizer-type">Haaromsa Dhaabbilee</a></li>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                                href="/fertilizer-type">Ijaarsa Faasiliitiwwanii</a></li>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                                href="/fertilizer-type">Ijaarsa Faasiliitiwwan Cie'uumsa diinagdee</a>
+                                        </li>
+                                    </ul>
+                                </li>
+                                <li>
+                                    <span class="caret"><i class="fa-solid fa-folder folder-icon"></i>Misooma
+                                        Hawaasummaa </span>
+                                    <ul>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                                href="/crop-plan">Hirmaannaa Fi Itti Fufiinsa</a></li>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                                href="/fertilizer-type">Bu'aqabeessummaa Barnootaa</a></li>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                                href="/fertilizer-type">Dhiyeessii Nyaata Barattootaa</a></li>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                                href="/fertilizer-type">Aadaa Fi Aartii</a></li>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                                href="/fertilizer-type">Galmeessa Sivilii</a></li>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                                href="/fertilizer-type">Fayyaa</a></li>
+                                    </ul>
+                                </li>
+                                <li>
+                                    <span class="caret"><i class="fa-solid fa-folder folder-icon"></i>Carraa Hojii
+                                        Uumuu</span>
+                                    <ul>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a href="/crop-plan">Carraa
+                                                Hojii Uumuu</a></li>
+                                    </ul>
+                                </li>
+                                <li>
+                                    <span class="caret"><i class="fa-solid fa-folder folder-icon"></i>Horataalee
+                                        Motummaa</span>
+                                    <ul>
+                                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                                href="/crop-plan">Horataalee Motummaa</a></li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+
+                </li>
+
+
+                <li>
+                    <span class="caret"><i class="fa-solid fa-folder folder-icon"></i>Gabaasaa</span>
+                    <ul>
+                        <li><i class="fa-regular fa-file file-icon"></i><a href="/karoora-wagga">Misoomaa
+                                Midhaanii</a></li>
+                        <li><i class="fa-regular fa-file file-icon"></i><a href="/karoora-jia">Bu'uuraalee
+                                Misoomaa</a></li>
+                        <li><i class="fa-regular fa-file file-icon"></i><a href="/karoora-jia">Misoomaa
+                                Hawaasummaa</a></li>
+                        <li><i class="fa-regular fa-file file-icon"></i><a href="/karoora-jia">Carraaa Hojii Uumuu</a>
+                        </li>
+                        <li><i class="fa-regular fa-file file-icon"></i><a href="/karoora-jia">Horataalee
+                                Mootummaa</a></li>
+                        <li style="color: #007bff;"><i class="fa-regular fa-file file-icon"></i><a
+                                href="/karoora-jia">Gabasa Woliigalaa</a></li>
+                    </ul>
+                </li>
+            @endif
+
+
+
 
         </ul>
     </nav>
