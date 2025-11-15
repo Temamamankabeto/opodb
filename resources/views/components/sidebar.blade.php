@@ -165,7 +165,7 @@
                     <span class="caret"><i class="fa-solid fa-folder folder-icon"></i>{{ __('Report') }}</span>
                     <ul>
                         <li><i class="fa-regular fa-file file-icon"></i><a
-                                href="/karoora-wagga">{{ __('Crop Production') }}</a></li>
+                                href=" {{url('admin/crop-plans')}}">{{ __('Crop Plan') }}</a></li>
                         <li><i class="fa-regular fa-file file-icon"></i><a
                                 href="/karoora-jia">{{ __('Production Infrastructure') }}</a></li>
                         <li><i class="fa-regular fa-file file-icon"></i><a
@@ -216,22 +216,22 @@
                         <li><i class="fa-regular fa-file file-icon"></i><a
                                 href=" {{ url('admin/health') }}">{{ __('Health') }}</a>
                         </li>
-                          <li><i class="fa-regular fa-file file-icon"></i><a
+                        <li><i class="fa-regular fa-file file-icon"></i><a
                                 href=" {{ url('admin/cultural-revival') }}">{{ __('Cultural Revival') }}</a>
                         </li>
 
-                         <li><i class="fa-regular fa-file file-icon"></i><a
+                        <li><i class="fa-regular fa-file file-icon"></i><a
                                 href=" {{ url('admin/civil-certificates') }}">{{ __(' civil certificates') }}</a>
                         </li>
-                       
-                         <li><i class="fa-regular fa-file file-icon"></i><a
+
+                        <li><i class="fa-regular fa-file file-icon"></i><a
                                 href=" {{ url('admin/government-properties') }}">{{ __('  Horataalee Mootummaa') }}</a>
                         </li>
-                         <li><i class="fa-regular fa-file file-icon"></i><a
+                        <li><i class="fa-regular fa-file file-icon"></i><a
                                 href=" {{ url('admin/job-opportunities') }}">{{ __('  Carraa Hojii') }}</a>
                         </li>
-                        
-                      
+
+
 
 
                         <li><i class="fa-regular fa-file file-icon"></i><a
@@ -253,16 +253,36 @@
                             <li><i class="fa-regular fa-file file-icon"></i><a
                                     href="/fertilizer-type">{{ __('Kebele Users') }}</a>
                             </li>
+                             <li><i class="fa-regular fa-file file-icon"></i><a
+                                    href="{{ url('zones/crop-plans') }}">{{ __('Crop Plan') }}</a>
+                            </li>
+                             
+                        </ul>
+                    </li>
+
+
+                </ul>
+                
+              
+            @endif
+            <!-- Regional admin  -->
+
+            @if (Auth::user()->role_id == 3)
+                <span class="caret"><i class="fa-solid fa-folder folder-icon"></i>{{ __('Reports') }}</span>
+                <ul>
+                    <li>
+                        <span class="caret"><i
+                                class="fa-solid fa-folder folder-icon"></i>{{ __('Crop Related Report') }}</span>
+                        <ul>
+                            <li><i class="fa-regular fa-file file-icon"></i><a
+                                    href="{{ url('woredas/woreda/crop-plans/report') }}">{{ __('Crop Plan') }}</a></li>
+
 
                         </ul>
                     </li>
 
 
                 </ul>
-            @endif
-            <!-- Regional admin  -->
-
-            @if (Auth::user()->role_id == 5)
             @endif
             <!-- zonal  admin  -->
 
@@ -867,7 +887,7 @@
                                                 Ijaarsa Faasilitiiwwan
                                                 Cee’umsa Diinagdee</a></li>
 
-                                                  <li><i class="fa-regular fa-file file-icon"></i><a
+                                        <li><i class="fa-regular fa-file file-icon"></i><a
                                                 href="{{ url('sector/employment-opportunity-plans') }}">
                                                 Carraa Hojii Uumame</a></li>
                                     </ul>

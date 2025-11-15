@@ -63,7 +63,7 @@ Route::middleware([SecurityHeaders::class])->group(function () {
         // Super Admin only
 
         Route::middleware('role:1')->prefix('admin')->group(function () {
-
+ Route::get('crop-plans', [DashboardController::class, 'indexregioncrop'])->name('crop-plans.index');
             Route::post('sectors/store', [StructureController::class, 'kebelesectorstore'])->name('sectors.store');
             Route::get('sectors/create', [StructureController::class, 'sectorcreate'])->name('sectors.create');
             Route::get('sectors', [StructureController::class, 'sektorsIndex'])->name('sectors.index');
@@ -229,7 +229,7 @@ Route::delete('/enterprise-work/{id}', [EnterpriseWorkController::class, 'destro
 
         // Zone Admin only
         Route::middleware('role:2,4')->prefix('zones')->group(function () {
-
+ Route::get('/crop-plans', [DashboardController::class, 'indexzonecrop'])->name('crop-plans.index');
             // Route::get('users', [UserController::class, 'zoneUsers'])->name('zone.users');
             Route::get('zone-list', [ZoneController::class, 'zoneOnlyList'])->name('zone.zones');
             Route::get('all-zones', [StructureController::class, 'zonelist'])->name('zones.index');
@@ -290,6 +290,7 @@ Route::delete('/enterprise-work/{id}', [EnterpriseWorkController::class, 'destro
             Route::post('/change-password', [UserController::class, 'changePassword'])->name('woreda.password.change');
 
             Route::get('structures', [StructureController::class, 'woredastructures'])->name('woreda.structure.index');
+            Route::get('woreda/crop-plans/report', [DashboardController::class, 'indexcrop'])->name('crop-plans.index');
         });
 
         // Kebele Admin only
@@ -397,7 +398,7 @@ Route::delete('/enterprise-work/{id}', [EnterpriseWorkController::class, 'destro
         Route::get('/logout', [UserController::class, 'logout'])->name('logout');
     });
 
-    Route::middleware(['auth', 'role:5'])->prefix('sector')->name('sector.')->group(function () {
+    Route::middleware(['auth', 'role:5,4'])->prefix('sector')->name('sector.')->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'sectorDashboard'])->name('sector.dashboard');
 
         // passandprofile

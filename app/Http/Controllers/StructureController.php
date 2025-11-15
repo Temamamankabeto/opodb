@@ -3,13 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Models\Crop;
-use App\Models\CropType;
-use App\Models\Kebele;
-use App\Models\KebeleSectors;
 use App\Models\User;
-use App\Models\Woreda;
 use App\Models\Zone;
+use App\Models\Kebele;
+use App\Models\Woreda;
+use App\Models\CropType;
 use Illuminate\Http\Request;
+use App\Models\KebeleSectors;
+use App\Models\KebeleCropPlan;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules\Password;
@@ -148,10 +149,6 @@ class StructureController extends Controller
 
         return redirect()->route('sectors.index')->with('success', 'Sector added successfully!');
     }
-
-
-
-     
 
     public function editSector($id)
     {
@@ -487,13 +484,6 @@ class StructureController extends Controller
     }
 
 
-
-
-
-
-
-
-
     public function indexdausers()
     {
         $user = Auth::user();
@@ -659,6 +649,8 @@ class StructureController extends Controller
         return redirect()->route('dausers.index')
             ->with('success', 'DA user deleted successfully.');
     }
+
+    
 
 
 
