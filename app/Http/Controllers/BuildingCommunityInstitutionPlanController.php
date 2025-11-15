@@ -35,25 +35,36 @@ class BuildingCommunityInstitutionPlanController extends Controller
 
         return view('sector.building-institutions.create', compact('institutions', 'years'));
     }
-
-   public function store(Request $request)
+public function store(Request $request)
 {
     // Validate basic fields and ensure JSON data is strings
     $validated = $request->validate([
         'year' => 'required|string',
         'new_building_data' => 'required|string',
-        'improvement_data' => 'required|string',
+        'improvement_data' => 'nullable|string',
     ]);
 
     // Decode JSON data
     $newBuildingData = json_decode($request->new_building_data, true);
-    $improvementData = json_decode($request->improvement_data, true);
+    $improvementData = $request->improvement_data ? json_decode($request->improvement_data, true) : [];
 
-    if (!is_array($newBuildingData) || !is_array($improvementData)) {
+    // Validate new building data format
+    if (!is_array($newBuildingData)) {
         return back()->withErrors([
-            'new_building_data' => 'Invalid data format for new building data.',
+            'new_building_data' => 'Invalid data format for new building data.'
+        ])->withInput();
+    }
+
+    // Validate improvement data format only if provided
+    if ($request->improvement_data && !is_array($improvementData)) {
+        return back()->withErrors([
             'improvement_data' => 'Invalid data format for improvement data.'
         ])->withInput();
+    }
+
+    // Ensure improvement data is an array (even if empty)
+    if (!is_array($improvementData)) {
+        $improvementData = [];
     }
 
     // Custom validation for new building data
@@ -73,7 +84,7 @@ class BuildingCommunityInstitutionPlanController extends Controller
         }
     }
 
-    // Custom validation for improvement data
+    // Custom validation for improvement data (only if provided)
     foreach ($improvementData as $index => $data) {
         if (empty($data['name'])) {
             $errors["improvement_data.{$index}.name"] = "Improvement name is required.";
@@ -146,6 +157,7 @@ class BuildingCommunityInstitutionPlanController extends Controller
         $institutionNewBuildings = array_filter($newBuildingData, function($building) use ($institutionName) {
             return $building['name'] === $institutionName;
         });
+        
         $institutionImprovements = array_filter($improvementData, function($improvement) use ($institutionName) {
             return $improvement['name'] === $institutionName;
         });
@@ -264,79 +276,90 @@ class BuildingCommunityInstitutionPlanController extends Controller
 
         return view('sector.building-institutions.edit', compact('plan', 'institutions', 'years'));
     }
+public function update(Request $request, $id)
+{
+    $plan = BuildingInstitutionPlan::findOrFail($id);
 
-    public function update(Request $request, $id)
-    {
-        $plan = BuildingInstitutionPlan::findOrFail($id);
+    // Validate basic fields
+    $validated = $request->validate([
+        'year' => 'required|string',
+        'institution_id' => 'required|exists:institutions,id',
+        'new_building_data' => 'required|string',
+        'improvement_data' => 'nullable|string', // Make it nullable
+    ]);
 
-        // Validate basic fields
-        $validated = $request->validate([
-            'year' => 'required|string',
-            'institution_id' => 'required|exists:institutions,id',
-            'new_building_data' => 'required|string',
-            'improvement_data' => 'required|string',
-        ]);
+    // Decode JSON data
+    $newBuildingData = json_decode($request->new_building_data, true);
+    $improvementData = $request->improvement_data ? json_decode($request->improvement_data, true) : [];
 
-        // Decode JSON data
-        $newBuildingData = json_decode($request->new_building_data, true);
-        $improvementData = json_decode($request->improvement_data, true);
-
-        if (!is_array($newBuildingData) || !is_array($improvementData)) {
-            return back()->withErrors([
-                'new_building_data' => 'Invalid data format for new building data.',
-                'improvement_data' => 'Invalid data format for improvement data.'
-            ])->withInput();
-        }
-
-        // Custom validation for new building data
-        $errors = [];
-        foreach ($newBuildingData as $index => $data) {
-            if (empty($data['name'])) {
-                $errors["new_building_data.{$index}.name"] = "Building name is required.";
-            }
-            if (empty($data['number']) || !is_numeric($data['number'])) {
-                $errors["new_building_data.{$index}.number"] = "Number of buildings is required and must be numeric.";
-            }
-            if (empty($data['cost']) || !is_numeric($data['cost'])) {
-                $errors["new_building_data.{$index}.cost"] = "Cost is required and must be numeric.";
-            }
-            if (empty($data['description'])) {
-                $errors["new_building_data.{$index}.description"] = "Description is required.";
-            }
-        }
-
-        // Custom validation for improvement data
-        foreach ($improvementData as $index => $data) {
-            if (empty($data['name'])) {
-                $errors["improvement_data.{$index}.name"] = "Improvement name is required.";
-            }
-            if (empty($data['number']) || !is_numeric($data['number'])) {
-                $errors["improvement_data.{$index}.number"] = "Number of improvements is required and must be numeric.";
-            }
-            if (empty($data['cost']) || !is_numeric($data['cost'])) {
-                $errors["improvement_data.{$index}.cost"] = "Cost is required and must be numeric.";
-            }
-            if (empty($data['description'])) {
-                $errors["improvement_data.{$index}.description"] = "Description is required.";
-            }
-        }
-
-        if (!empty($errors)) {
-            return back()->withErrors($errors)->withInput();
-        }
-
-        // Update plan
-        $plan->update([
-            'year' => $request->year,
-            'institution_id' => $request->institution_id,
-            'new_building_data' => $newBuildingData,
-            'improvement_data' => $improvementData,
-            'updated_by' => Auth::id(),
-        ]);
-
-        return redirect()->route('sector.building-community-institution-plans.index')
-            ->with('success', 'Building community institution plan updated successfully!');
+    // Validate new building data format
+    if (!is_array($newBuildingData)) {
+        return back()->withErrors([
+            'new_building_data' => 'Invalid data format for new building data.'
+        ])->withInput();
     }
+
+    // Validate improvement data format only if provided
+    if ($request->improvement_data && !is_array($improvementData)) {
+        return back()->withErrors([
+            'improvement_data' => 'Invalid data format for improvement data.'
+        ])->withInput();
+    }
+
+    // Ensure improvement data is an array (even if empty)
+    if (!is_array($improvementData)) {
+        $improvementData = [];
+    }
+
+    // Custom validation for new building data
+    $errors = [];
+    foreach ($newBuildingData as $index => $data) {
+        if (empty($data['name'])) {
+            $errors["new_building_data.{$index}.name"] = "Building name is required.";
+        }
+        if (empty($data['number']) || !is_numeric($data['number'])) {
+            $errors["new_building_data.{$index}.number"] = "Number of buildings is required and must be numeric.";
+        }
+        if (empty($data['cost']) || !is_numeric($data['cost'])) {
+            $errors["new_building_data.{$index}.cost"] = "Cost is required and must be numeric.";
+        }
+        if (empty($data['description'])) {
+            $errors["new_building_data.{$index}.description"] = "Description is required.";
+        }
+    }
+
+    // Custom validation for improvement data (only if provided)
+    foreach ($improvementData as $index => $data) {
+        if (empty($data['name'])) {
+            $errors["improvement_data.{$index}.name"] = "Improvement name is required.";
+        }
+        if (empty($data['number']) || !is_numeric($data['number'])) {
+            $errors["improvement_data.{$index}.number"] = "Number of improvements is required and must be numeric.";
+        }
+        if (empty($data['cost']) || !is_numeric($data['cost'])) {
+            $errors["improvement_data.{$index}.cost"] = "Cost is required and must be numeric.";
+        }
+        if (empty($data['description'])) {
+            $errors["improvement_data.{$index}.description"] = "Description is required.";
+        }
+    }
+
+    if (!empty($errors)) {
+        return back()->withErrors($errors)->withInput();
+    }
+
+    // Update plan
+    $plan->update([
+        'year' => $request->year,
+        'institution_id' => $request->institution_id,
+        'new_building_data' => $newBuildingData,
+        'improvement_data' => $improvementData,
+        'updated_by' => Auth::id(),
+    ]);
+
+    return redirect()->route('sector.building-community-institution-plans.index')
+        ->with('success', 'Building community institution plan updated successfully!');
+}
 
     public function destroy($id)
     {

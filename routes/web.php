@@ -7,6 +7,7 @@ use App\Http\Controllers\ZoneController;
 use App\Http\Middleware\SecurityHeaders;
 use App\Http\Controllers\UnionController;
 use App\Http\Controllers\FarmerController;
+use App\Http\Controllers\HealthController;
 use App\Http\Controllers\KaroorController;
 use App\Http\Controllers\SoilTypeController;
 use App\Http\Controllers\DashboardController;
@@ -21,21 +22,32 @@ use App\Http\Controllers\KebeleAdminController;
 use App\Http\Controllers\GabbinaBiyyeeController;
 use App\Http\Controllers\LivestockPlanController;
 use App\Http\Controllers\MechanizationController;
+use App\Http\Controllers\EnterpriseWorkController;
 use App\Http\Controllers\FertilizerTypeController;
+use App\Http\Controllers\JobOpportunityController;
 use App\Http\Controllers\KebeleCropPlanController;
 use App\Http\Controllers\ParcelCropPlanController;
 use App\Http\Controllers\WeeklyLandPlanController;
 use App\Http\Controllers\AssociationTypeController;
+use App\Http\Controllers\CulturalRevivalController;
 use App\Http\Controllers\LivestockSupplyController;
 use App\Http\Controllers\NaturalResourceController;
 use App\Http\Controllers\LivestockProductController;
 use App\Http\Controllers\Setting\LanguageController;
 use App\Http\Controllers\CropConfigurationController;
+use App\Http\Controllers\StudentMealSupplyController;
 use App\Http\Controllers\KebeleEconomicPlanController;
 use App\Http\Controllers\NaturalResourcePlanController;
 use App\Http\Controllers\SeedlingPreparationController;
 use App\Http\Controllers\AssociationExpansionPlanController;
+use App\Http\Controllers\EducationalEffectivenessController;
+use App\Http\Controllers\EducationalParticipationController;
+use App\Http\Controllers\KebeleGovernmentPropertyController;
+use App\Http\Controllers\EmploymentOpportunityPlanController;
 use App\Http\Controllers\EnvironmentalProtectionPlanController;
+use App\Http\Controllers\BuildingPowerInstitutionPlanController;
+use App\Http\Controllers\RegistrationOfCivilCertificateController;
+use App\Http\Controllers\BuildingEconomicInstitutionPlanController;
 use App\Http\Controllers\BuildingCommunityInstitutionPlanController;
 
 Route::middleware([SecurityHeaders::class])->group(function () {
@@ -138,6 +150,80 @@ Route::post('/institutions/store', [InstitutionController::class, 'store'])->nam
 Route::get('/institutions/edit/{id}', [InstitutionController::class, 'edit'])->name('institutions.edit');
 Route::put('/institutions/update/{id}', [InstitutionController::class, 'update'])->name('institutions.update');
 Route::delete('/institutions/delete/{id}', [InstitutionController::class, 'destroy'])->name('institutions.destroy');
+
+Route::get('/educational-participations', [EducationalParticipationController::class, 'index'])->name('educational_participations.index');
+Route::get('/educational-participations/create', [EducationalParticipationController::class, 'create'])->name('educational_participations.create');
+Route::post('/educational-participations/store', [EducationalParticipationController::class, 'store'])->name('educational_participations.store');
+Route::get('/educational-participations/edit/{id}', [EducationalParticipationController::class, 'edit'])->name('educational_participations.edit');
+Route::put('/educational-participations/update/{id}', [EducationalParticipationController::class, 'update'])->name('educational_participations.update');
+Route::delete('/educational-participations/delete/{id}', [EducationalParticipationController::class, 'destroy'])->name('educational_participations.destroy');
+
+    Route::get('/educational-effectiveness', [EducationalEffectivenessController::class, 'index'])->name('educational_effectiveness.index');
+    Route::get('/educational-effectiveness/create', [EducationalEffectivenessController::class, 'create'])->name('educational_effectiveness.create');
+    Route::post('/educational-effectiveness/store', [EducationalEffectivenessController::class, 'store'])->name('educational_effectiveness.store');
+    Route::get('/educational-effectiveness/edit/{id}', [EducationalEffectivenessController::class, 'edit'])->name('educational_effectiveness.edit');
+    Route::put('/educational-effectiveness/update/{id}', [EducationalEffectivenessController::class, 'update'])->name('educational_effectiveness.update');
+    Route::delete('/educational-effectiveness/delete/{id}', [EducationalEffectivenessController::class, 'destroy'])->name('educational_effectiveness.delete');
+
+     Route::get('/student-meal-supplies', [StudentMealSupplyController::class, 'index'])->name('student_meal_supply.index');
+    Route::get('/student-meal-supplies/create', [StudentMealSupplyController::class, 'create'])->name('student_meal_supply.create');
+    Route::post('/student-meal-supplies/store', [StudentMealSupplyController::class, 'store'])->name('student_meal_supply.store');
+    Route::get('/student-meal-supplies/edit/{id}', [StudentMealSupplyController::class, 'edit'])->name('student_meal_supply.edit');
+    Route::put('/student-meal-supplies/update/{id}', [StudentMealSupplyController::class, 'update'])->name('student_meal_supply.update');
+    Route::delete('/student-meal-supplies/delete/{id}', [StudentMealSupplyController::class, 'destroy'])->name('student_meal_supply.delete');
+
+      Route::get('/health', [HealthController::class, 'index'])->name('health.index');
+    Route::get('/health/create', [HealthController::class, 'create'])->name('health.create');
+    Route::post('/health/store', [HealthController::class, 'store'])->name('health.store');
+    Route::get('/health/edit/{id}', [HealthController::class, 'edit'])->name('health.edit');
+    Route::put('/health/update/{id}', [HealthController::class, 'update'])->name('health.update');
+    Route::put('/healthupdate/{id}', [HealthController::class, 'update'])->name('health.update');
+    Route::delete('/health/delete/{id}', [HealthController::class, 'destroy'])->name('health.delete');
+
+     Route::get('/cultural-revival', [CulturalRevivalController::class, 'index'])->name('cultural_revival.index');
+    Route::get('/cultural-revival/create', [CulturalRevivalController::class, 'create'])->name('cultural_revival.create');
+    Route::post('/cultural-revival/store', [CulturalRevivalController::class, 'store'])->name('cultural_revival.store');
+    Route::get('/cultural-revival/edit/{id}', [CulturalRevivalController::class, 'edit'])->name('cultural_revival.edit');
+    Route::put('/cultural-revival/update/{id}', [CulturalRevivalController::class, 'update'])->name('cultural_revival.update');
+    Route::delete('/cultural-revival/delete/{id}', [CulturalRevivalController::class, 'destroy'])->name('cultural_revival.delete');
+
+
+    Route::get('/civil-certificates', [RegistrationOfCivilCertificateController::class, 'index'])->name('civil.index');
+Route::get('/civil-certificates/create', [RegistrationOfCivilCertificateController::class, 'create'])->name('civil.create');
+Route::post('/civil-certificates', [RegistrationOfCivilCertificateController::class, 'store'])->name('civil.store');
+
+Route::get('/civil-certificates/{id}/edit', [RegistrationOfCivilCertificateController::class, 'edit'])->name('civil.edit');
+Route::post('/civil-certificates/{id}', [RegistrationOfCivilCertificateController::class, 'update'])->name('civil.update');
+
+Route::delete('/civil-certificates/{id}', [RegistrationOfCivilCertificateController::class, 'destroy'])->name('civil.destroy');
+
+Route::get('/government-properties', [KebeleGovernmentPropertyController::class, 'index'])->name('govprop.index');
+Route::get('/government-properties/create', [KebeleGovernmentPropertyController::class, 'create'])->name('govprop.create');
+Route::post('/government-properties', [KebeleGovernmentPropertyController::class, 'store'])->name('govprop.store');
+
+Route::get('/government-properties/{id}/edit', [KebeleGovernmentPropertyController::class, 'edit'])->name('govprop.edit');
+Route::post('/government-properties/{id}', [KebeleGovernmentPropertyController::class, 'update'])->name('govprop.update');
+
+Route::delete('/government-properties/{id}', [KebeleGovernmentPropertyController::class, 'destroy'])->name('govprop.destroy');
+
+Route::get('/job-opportunities', [JobOpportunityController::class, 'index'])->name('job.index');
+Route::get('/job-opportunities/create', [JobOpportunityController::class, 'create'])->name('job.create');
+Route::post('/job-opportunities', [JobOpportunityController::class, 'store'])->name('job.store');
+
+Route::get('/job-opportunities/{id}/edit', [JobOpportunityController::class, 'edit'])->name('job.edit');
+Route::post('/job-opportunities/{id}', [JobOpportunityController::class, 'update'])->name('job.update');
+
+Route::delete('/job-opportunities/{id}', [JobOpportunityController::class, 'destroy'])->name('job.destroy');
+
+
+Route::get('/enterprise-work', [EnterpriseWorkController::class, 'index'])->name('enterprise.index');
+Route::get('/enterprise-work/create', [EnterpriseWorkController::class, 'create'])->name('enterprise.create');
+Route::post('/enterprise-work', [EnterpriseWorkController::class, 'store'])->name('enterprise.store');
+
+Route::get('/enterprise-work/{id}/edit', [EnterpriseWorkController::class, 'edit'])->name('enterprise.edit');
+Route::post('/enterprise-work/{id}', [EnterpriseWorkController::class, 'update'])->name('enterprise.update');
+
+Route::delete('/enterprise-work/{id}', [EnterpriseWorkController::class, 'destroy'])->name('enterprise.destroy');
 
         });
 
@@ -296,7 +382,11 @@ Route::delete('/institutions/delete/{id}', [InstitutionController::class, 'destr
             Route::get('/associations/get-kebeles/{woreda_id}', [AssociationController::class, 'getKebeles'])->name('associations.get-kebeles');
             Route::get('/associations/get-services', [AssociationController::class, 'getServices'])->name('associations.get-services');
 
+            Route::get('/employment-opportunity-plans', [EmploymentOpportunityPlanController::class, 'indexkebele'])->name('employment-opportunity-plans.indexkebele');
+            Route::put('/employment-opportunity-plans/{id}/approve', [EmploymentOpportunityPlanController::class, 'approve'])->name('employment-opportunity-plans.approve');
 
+
+    
              
 
 
@@ -322,6 +412,10 @@ Route::delete('/institutions/delete/{id}', [InstitutionController::class, 'destr
         Route::put('crop-plans/{id}', [KebeleCropPlanController::class, 'update'])->name('crop-plans.update');
         Route::delete('crop-plans/{id}', [KebeleCropPlanController::class, 'destroy'])->name('crop-plans.destroy');
 
+        
+
+        Route::get('/get-fertilizers/{typrId}',[KebeleCropPlanController::class,'getFertilizers']);
+
         // Cascading AJAX routes
         Route::get('crops-by-year/{year}', [KebeleCropPlanController::class, 'getCropTypesByYear'])->name('crops.byYear');
 
@@ -340,6 +434,7 @@ Route::delete('/institutions/delete/{id}', [InstitutionController::class, 'destr
 
         Route::get('crop-plans/import', [KebeleCropPlanController::class, 'showImportForm'])->name('crop-plans.import.form');
         Route::post('crop-plans/import', [KebeleCropPlanController::class, 'import'])->name('crop-plans.import');
+
 
         Route::get('/gabbina-biyyee/create', [GabbinaBiyyeeController::class, 'create'])->name('gabbina_biyyee.create');
         Route::post('/gabbina-biyyee/store', [GabbinaBiyyeeController::class, 'store'])->name('gabbina_biyyee.store');
@@ -448,6 +543,89 @@ Route::delete('/association-types/delete/{id}', [AssociationTypeController::clas
     Route::delete('/building-community-institution-plans/{id}/destroy', [BuildingCommunityInstitutionPlanController::class, 'destroy'])
         ->name('building-community-institution-plans.destroy');
         Route::get('/building-community-institution-plans/check-existing', [BuildingCommunityInstitutionPlanController::class, 'checkExisting'])->name('building-community-institution-plans.check-existing');
+ 
+
+
+// Building Powers Institution Plan Routes
+ 
+    Route::get('/building-power-institution-plans', [BuildingPowerInstitutionPlanController::class, 'index'])
+        ->name('building-power-institution-plans.index');
+    
+    Route::get('/building-power-institution-plans/create', [BuildingPowerInstitutionPlanController::class, 'create'])
+        ->name('building-power-institution-plans.create');
+    
+    Route::post('/building-power-institution-plans/store', [BuildingPowerInstitutionPlanController::class, 'store'])
+        ->name('building-power-institution-plans.store');
+    
+    Route::get('/building-power-institution-plans/{id}/edit', [BuildingPowerInstitutionPlanController::class, 'edit'])
+        ->name('building-power-institution-plans.edit');
+    
+    Route::put('/building-power-institution-plans/{id}/update', [BuildingPowerInstitutionPlanController::class, 'update'])
+        ->name('building-power-institution-plans.update');
+    
+    Route::delete('/building-power-institution-plans/{id}/destroy', [BuildingPowerInstitutionPlanController::class, 'destroy'])
+        ->name('building-power-institution-plans.destroy');
+        Route::get('/building-power-institution-plans/check-existing', [BuildingPowerInstitutionPlanController::class, 'checkExisting'])->name('building-community-institution-plans.check-existing');
+ 
+
+
+
+        
+// Building deenagdee Institution Plan Routes
+ 
+    Route::get('/building-power-institution-plans', [BuildingPowerInstitutionPlanController::class, 'index'])
+        ->name('building-power-institution-plans.index');
+    
+    Route::get('/building-power-institution-plans/create', [BuildingPowerInstitutionPlanController::class, 'create'])
+        ->name('building-power-institution-plans.create');
+    
+    Route::post('/building-power-institution-plans/store', [BuildingPowerInstitutionPlanController::class, 'store'])
+        ->name('building-power-institution-plans.store');
+    
+    Route::get('/building-power-institution-plans/{id}/edit', [BuildingPowerInstitutionPlanController::class, 'edit'])
+        ->name('building-power-institution-plans.edit');
+    
+    Route::put('/building-power-institution-plans/{id}/update', [BuildingPowerInstitutionPlanController::class, 'update'])
+        ->name('building-power-institution-plans.update');
+    
+    Route::delete('/building-power-institution-plans/{id}/destroy', [BuildingPowerInstitutionPlanController::class, 'destroy'])
+        ->name('building-power-institution-plans.destroy');
+        Route::get('/building-power-institution-plans/check-existing', [BuildingPowerInstitutionPlanController::class, 'checkExisting'])->name('building-community-institution-plans.check-existing');
+ 
+
+
+        // Building economic Institution Plan Routes
+ 
+    Route::get('/building-economic-institution-plans', [BuildingEconomicInstitutionPlanController::class, 'index'])
+        ->name('building-economic-institution-plans.index');
+    
+    Route::get('/building-economic-institution-plans/create', [BuildingEconomicInstitutionPlanController::class, 'create'])
+        ->name('building-economic-institution-plans.create');
+    
+    Route::post('/building-economic-institution-plans/store', [BuildingEconomicInstitutionPlanController::class, 'store'])
+        ->name('building-economic-institution-plans.store');
+    
+    Route::get('/building-economic-institution-plans/{id}/edit', [BuildingEconomicInstitutionPlanController::class, 'edit'])
+        ->name('building-economic-institution-plans.edit');
+    
+    Route::put('/building-economic-institution-plans/{id}/update', [BuildingEconomicInstitutionPlanController::class, 'update'])
+        ->name('building-economic-institution-plans.update');
+    
+    Route::delete('/building-economic-institution-plans/{id}/destroy', [BuildingEconomicInstitutionPlanController::class, 'destroy'])
+        ->name('building-economic-institution-plans.destroy');
+        Route::get('/building-economic-institution-plans/check-existing', [BuildingEconomicInstitutionPlanController::class, 'checkExisting'])->name('building-community-institution-plans.check-existing');
+
+
+    // Employment Opportunity Plans
+    Route::get('/employment-opportunity-plans', [EmploymentOpportunityPlanController::class, 'index'])->name('employment-opportunity-plans.index');
+    Route::get('/employment-opportunity-plans/create', [EmploymentOpportunityPlanController::class, 'create'])->name('employment-opportunity-plans.create');
+    Route::post('/employment-opportunity-plans', [EmploymentOpportunityPlanController::class, 'store'])->name('employment-opportunity-plans.store');
+    Route::get('/employment-opportunity-plans/{id}/edit', [EmploymentOpportunityPlanController::class, 'edit'])->name('employment-opportunity-plans.edit');
+    Route::put('/employment-opportunity-plans/{id}', [EmploymentOpportunityPlanController::class, 'update'])->name('employment-opportunity-plans.update');
+    Route::delete('/employment-opportunity-plans/{id}', [EmploymentOpportunityPlanController::class, 'destroy'])->name('employment-opportunity-plans.destroy');
+    Route::get('/employment-opportunity-plans/check-existing', [EmploymentOpportunityPlanController::class, 'checkExisting'])->name('employment-opportunity-plans.check-existing');
+
+   
  
 
     });

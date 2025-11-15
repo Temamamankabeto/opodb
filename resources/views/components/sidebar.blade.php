@@ -202,6 +202,37 @@
 
                         <li><i class="fa-regular fa-file file-icon"></i><a
                                 href=" {{ url('admin/institutions') }}">{{ __('Institutions') }}</a></li>
+                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                href=" {{ url('admin/educational-participations') }}">{{ __('Education Participation') }}</a>
+                        </li>
+
+                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                href=" {{ url('admin/educational-effectiveness') }}">{{ __('Education Effectiveness') }}</a>
+                        </li>
+
+                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                href=" {{ url('admin/student-meal-supplies') }}">{{ __('Student Meal Supplies') }}</a>
+                        </li>
+                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                href=" {{ url('admin/health') }}">{{ __('Health') }}</a>
+                        </li>
+                          <li><i class="fa-regular fa-file file-icon"></i><a
+                                href=" {{ url('admin/cultural-revival') }}">{{ __('Cultural Revival') }}</a>
+                        </li>
+
+                         <li><i class="fa-regular fa-file file-icon"></i><a
+                                href=" {{ url('admin/civil-certificates') }}">{{ __(' civil certificates') }}</a>
+                        </li>
+                       
+                         <li><i class="fa-regular fa-file file-icon"></i><a
+                                href=" {{ url('admin/government-properties') }}">{{ __('  Horataalee Mootummaa') }}</a>
+                        </li>
+                         <li><i class="fa-regular fa-file file-icon"></i><a
+                                href=" {{ url('admin/job-opportunities') }}">{{ __('  Carraa Hojii') }}</a>
+                        </li>
+                        
+                      
+
 
                         <li><i class="fa-regular fa-file file-icon"></i><a
                                 href=" {{ route('languages.list') }}">{{ __('Languages') }}</a></li>
@@ -320,7 +351,8 @@
                                         <li><i class="fa-regular fa-file file-icon"></i><a
                                                 href="/crop-plan">{{ __('Construction Institutions') }}</a></li>
                                         <li><i class="fa-regular fa-file file-icon"></i><a
-                                                href="/fertilizer-type">{{ __('Renovation of Institutions') }}</a></li>
+                                                href="/fertilizer-type">{{ __('Renovation of Institutions') }}</a>
+                                        </li>
                                         <li><i class="fa-regular fa-file file-icon"></i><a
                                                 href="/fertilizer-type">{{ __('Facility Construction') }}</a></li>
                                         <li><i class="fa-regular fa-file file-icon"></i><a
@@ -823,14 +855,21 @@
                                         Misoomaa</span>
                                     <ul>
                                         <li><i class="fa-regular fa-file file-icon"></i><a
-                                                href="{{ url('sector/crop-plans') }}">Ijaarsaa fi fooyya'iinsa
+                                                href="{{ url('sector/building-community-institution-plans') }}">Ijaarsaa
+                                                fi fooyya'iinsa
                                                 Dhaabbilee </a></li>
                                         <li><i class="fa-regular fa-file file-icon"></i><a
-                                                href="{{ url('sector/mechanizations') }}">Ijaarsaa fi fooyya'iinsa
+                                                href="{{ url('sector/building-power-institution-plans') }}">Ijaarsaa
+                                                fi fooyya'iinsa
                                                 Annissaa Bishaanii Daandii fi Riqaa </a></li>
                                         <li><i class="fa-regular fa-file file-icon"></i><a
-                                                href="{{ url('sector/gabbina-biyyee') }}"> Ijaarsa Faasilitiiwwan
+                                                href="{{ url('sector/building-economic-institution-plans') }}">
+                                                Ijaarsa Faasilitiiwwan
                                                 Cee’umsa Diinagdee</a></li>
+
+                                                  <li><i class="fa-regular fa-file file-icon"></i><a
+                                                href="{{ url('sector/employment-opportunity-plans') }}">
+                                                Carraa Hojii Uumame</a></li>
                                     </ul>
                                 </li>
 
