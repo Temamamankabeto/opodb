@@ -25,9 +25,10 @@ class FertilizerController extends Controller
         $request->validate([
             'fertilizer_type_id' => 'required|exists:fertilizer_types,id',
             'name' => 'required|string|max:255',
+            'unit' => 'required|string|max:255',
         ]);
 
-        Fertilizer::create($request->only('fertilizer_type_id', 'name'));
+        Fertilizer::create($request->only('fertilizer_type_id', 'name','unit'));
 
         return redirect()->route('fertilizer.index')->with('success', 'Fertilizer added successfully.');
     }
@@ -46,9 +47,11 @@ class FertilizerController extends Controller
         $request->validate([
             'fertilizer_type_id' => 'required|exists:fertilizer_types,id',
             'name' => 'required|string|max:255',
+            'unit' => 'required|string|max:255',
+
         ]);
 
-        $fertilizer->update($request->only('fertilizer_type_id', 'name'));
+        $fertilizer->update($request->only('fertilizer_type_id', 'name','unit'));
 
         return redirect()->route('fertilizer.index')->with('success', 'Fertilizer updated successfully.');
     }

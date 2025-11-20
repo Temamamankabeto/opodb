@@ -9,7 +9,7 @@ class Fertilizer extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['fertilizer_type_id', 'name'];
+    protected $fillable = ['fertilizer_type_id', 'name','unit'];
 
     public function fertilizerType()
     {

@@ -22,6 +22,12 @@
             @error('name') <small class="text-danger">{{ $message }}</small> @enderror
         </div>
 
+        <div class="mb-3">
+            <label class="form-label">Unit</label>
+            <input type="text" name="unit" class="form-control" required>
+            @error('unit') <small class="text-danger">{{ $message }}</small> @enderror
+        </div>
+
         <button class="btn btn-success">Save</button>
         <a href="{{ route('fertilizer.index') }}" class="btn btn-secondary">Back</a>
     </form>

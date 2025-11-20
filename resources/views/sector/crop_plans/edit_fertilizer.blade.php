@@ -151,21 +151,15 @@
                                                                         {{ !$isFertSelected ? 'disabled' : '' }}>
                                                                 </div>
                                                                 <div class="col-6">
-                                                                    @php
-                                                                        $units = ['kg', 'quintal', 'litre', 'ton', 'gram'];
-                                                                        $selectedUnit = $detail['unit'] ?? '';
-                                                                    @endphp
-                                                                    <select
-                                                                        class="form-select form-select-sm fertilizer-unit"
-                                                                        name="fertilizer_details[{{ $type->id }}][{{ $fert->id }}][unit]"
-                                                                        {{ !$isFertSelected ? 'disabled' : '' }}>
-                                                                        <option value="">Unit</option>
-                                                                        @foreach ($units as $unit)
-                                                                            <option value="{{ $unit }}" {{ $selectedUnit == $unit ? 'selected' : '' }}>
-                                                                                {{ ucfirst($unit) }}
-                                                                            </option>
-                                                                        @endforeach
-                                                                    </select>
+                                                                    <input type="text"
+                                                                           class="form-control form-control-sm fertilizer-unit"
+                                                                           value="{{ $fert->unit }}"
+                                                                           disabled="{{ !$isFertSelected }}">
+
+                                                                    <!-- Hidden value submitted with the form -->
+                                                                    <input type="hidden"
+                                                                           name="fertilizer_details[{{ $type->id }}][{{ $fert->id }}][unit]"
+                                                                           value="{{ $fert->unit }}">
                                                                 </div>
                                                             </div>
                                                             <!-- Hidden fields -->
@@ -248,7 +242,7 @@ document.addEventListener('DOMContentLoaded', function() {
         cb.addEventListener('change', function() {
             const container = document.getElementById('fertilizers-type' + this.value);
             const card = this.closest('.fertilizer-type-card');
-            
+
             if (this.checked) {
                 container.style.display = '';
                 card.classList.add('border-success');
@@ -276,7 +270,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const parent = this.closest('.fertilizer-item');
             const amountInput = parent.querySelector('.fertilizer-amount');
             const unitSelect = parent.querySelector('.fertilizer-unit');
-            
+
             if (this.checked) {
                 amountInput.disabled = false;
                 unitSelect.disabled = false;
@@ -330,7 +324,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Update summary content
         const summaryContent = document.getElementById('summaryContent');
-        
+
         if (selectedFertilizers.length === 0) {
             summaryContent.innerHTML = `
                 <div class="text-center text-muted py-4">
@@ -359,12 +353,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
         Object.entries(groupedByType).forEach(([typeId, ferts]) => {
             const typeName = document.querySelector(`#type${typeId}`)?.nextElementSibling?.textContent || 'Unknown Type';
-            
+
             summaryHTML += `
                 <div class="list-group-item border-0 px-0 py-2">
                     <div class="fw-semibold text-primary mb-1">${typeName}</div>
             `;
-            
+
             ferts.forEach(fert => {
                 summaryHTML += `
                     <div class="d-flex justify-content-between align-items-center py-1">
@@ -373,7 +367,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     </div>
                 `;
             });
-            
+
             summaryHTML += `</div>`;
         });
 
@@ -470,11 +464,11 @@ document.addEventListener('DOMContentLoaded', function() {
     .container-fluid {
         padding: 1rem;
     }
-    
+
     .card-body {
         padding: 1rem;
     }
-    
+
     .btn-lg {
         padding: 0.75rem 1.5rem;
         font-size: 1rem;
