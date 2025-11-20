@@ -227,67 +227,8 @@
                                 </div>
                             </div>
 
-                            <!-- Fertilizer Information Section -->
-                            <div class="section-header mt-5 mb-4">
-                                <h5 class="section-title">
-                                    <i class="mdi mdi-chemical-weapon me-2 text-info"></i>
-                                    Fertilizer Requirements
-                                </h5>
-                                <div class="section-divider"></div>
-                            </div>
-
-                            <div class="fertilizer-section">
-                                <div class="alert alert-info border-0 mb-4">
-                                    <div class="d-flex align-items-center">
-                                        <i class="mdi mdi-information-outline me-2 fs-5"></i>
-                                        <div>
-                                            <strong>Fertilizer Information:</strong> Fertilizer requirements are automatically loaded based on the selected crop.
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div id="fertilizer_list" class="fertilizer-display">
-                                    <div class="text-center py-4">
-                                        <i class="mdi mdi-sprout text-muted display-6 mb-3"></i>
-                                        <p class="text-muted">Select a crop to view fertilizer requirements...</p>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Additional Information -->
-                            <div class="section-header mt-5 mb-4">
-                                <h5 class="section-title">
-                                    <i class="mdi mdi-note-text-outline me-2 text-secondary"></i>
-                                    Additional Information
-                                </h5>
-                                <div class="section-divider"></div>
-                            </div>
-
-                            <div class="row g-4">
-                                {{-- Responsible Staff --}}
-                                <div class="col-md-6">
-                                    <div class="form-floating">
-                                        <input type="text" name="responsible_staff" class="form-control form-control-lg"
-                                            value="{{ $plan->responsible_staff }}" placeholder="Staff name">
-                                        <label for="responsible_staff" class="form-label">
-                                            <i class="mdi mdi-account-tie me-1 text-muted"></i>
-                                            Responsible Staff
-                                        </label>
-                                    </div>
-                                </div>
-
-                                {{-- Notes --}}
-                                <div class="col-12">
-                                    <div class="form-floating">
-                                        <textarea name="notes" rows="4" class="form-control form-control-lg" 
-                                            placeholder="Additional notes">{{ $plan->notes }}</textarea>
-                                        <label for="notes" class="form-label">
-                                            <i class="mdi mdi-note-text me-1 text-muted"></i>
-                                            Plan Notes & Remarks
-                                        </label>
-                                    </div>
-                                </div>
-                            </div>
+                            
+ 
 
                             <!-- Form Actions -->
                             <div class="form-actions mt-5 pt-4 border-top">

@@ -406,12 +406,24 @@ Route::delete('/enterprise-work/{id}', [EnterpriseWorkController::class, 'destro
         Route::get('/profile/security/{uuid}', [UserController::class, 'changePasswordForm'])->name('users.password');
 
         Route::get('crop-plans', [KebeleCropPlanController::class, 'index'])->name('crop-plans.index');
+        Route::get('crop-fertilizer', [KebeleCropPlanController::class, 'kebelefertlizer'])->name('fertlizer-plans.index');
         Route::get('crop-plans/create', [KebeleCropPlanController::class, 'create'])->name('crop-plans.create');
         Route::post('crop-plans/store', [KebeleCropPlanController::class, 'store'])->name('crop-plans.store');
-        Route::get('crop-plans/{id}/edit', [KebeleCropPlanController::class, 'edit'])->name('crop-plans.edit');
-        Route::get('crop-plans/{id}/edit/fertilizer', [KebeleCropPlanController::class, 'editfertilizer'])->name('crop-plans.editfertilizer');
+        Route::get('crop-plans/{id}/edit', [KebeleCropPlanController::class, 'edit'])->name('crop-plans.editcrop');
         Route::put('crop-plans/{id}', [KebeleCropPlanController::class, 'update'])->name('crop-plans.update');
+        Route::get('activityplan-plans/{id}', [KebeleCropPlanController::class, 'activityplan'])->name('crop-plans.activityplan');
+        Route::get('crop-plans/{id}/edit/fertilizer', [KebeleCropPlanController::class, 'editfertilizer'])->name('crop-plans.editfertilizer');
         Route::delete('crop-plans/{id}', [KebeleCropPlanController::class, 'destroy'])->name('crop-plans.destroy');
+
+
+        Route::get('activityplan-plans', [KebeleCropPlanController::class, 'plantime'])->name('crop-plans.plantime');
+          Route::get('/crop-plans/export/excel', [KebeleCropPlanController::class, 'exportExcel'])->name('crop-plans.export');
+    // OR if you want CSV
+    Route::get('/crop-plans/export/csv', [KebeleCropPlanController::class, 'exportCsv'])->name('crop-plans.export.csv');
+
+
+         
+        
 
         
 

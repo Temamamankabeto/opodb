@@ -25,6 +25,7 @@ return new class extends Migration
             $table->json('fertilizer_type_id')->nullable();
 
             $table->json('fertilizer_details')->nullable();
+            $table->json('plandivision_details')->nullable();
             $table->string('responsible_staff')->nullable();
             $table->string('notes')->nullable();
             $table->float('productivity')->nullable(); // new field
