@@ -420,18 +420,18 @@
                     <ul>
                         <li>
                             <span class="caret"><i
-                                    class="fa-solid fa-folder folder-icon"></i><span class="sidebar-text">{{ __('Karrora Waggaa') }}</span></span>
+                                    class="fa-solid fa-folder folder-icon"></i><span class="sidebar-text">{{ __('Raawwii Waggaa') }}</span></span>
                             <ul>
                                 <li>
                                     <span class="caret"><i
-                                            class="fa-solid fa-folder folder-icon"></i><span class="sidebar-text">{{ __('Crop Production') }}</span></span>
+                                            class="fa-solid fa-folder folder-icon"></i><span class="sidebar-text">{{ __('sagantaa Yeroo raawwii Qonnaa') }}</span></span>
                                     <ul>
                                         <li><i class="fa-regular fa-file file-icon"></i><a
-                                                href="{{ url('sector/crop-plans') }}"><span class="sidebar-text">{{ __('Crop') }}</span></a></li>
+                                                href="{{ url('sector/activityplan-plans') }}"><span class="sidebar-text">{{ __('Qonna') }}</span></a></li>
                                         <li><i class="fa-regular fa-file file-icon"></i><a
-                                                href="/fertilizer-type"><span class="sidebar-text">{{ __('Fertilizer Supply') }}</span></a></li>
+                                                href="{{url('sector/productiontime-plans')}}"><span class="sidebar-text">{{ __('oomisha') }}</span></a></li>
                                         <li><i class="fa-regular fa-file file-icon"></i><a
-                                                href="/fertilizer-type"><span class="sidebar-text">{{ __('Soil Management Work') }}</span></a></li>
+                                                href=" {{url('sector/fertilizer-plans')}}"><span class="sidebar-text">{{ __('fertilizer') }}</span></a></li>
                                         <li><i class="fa-regular fa-file file-icon"></i><a
                                                 href="/fertilizer-type"><span class="sidebar-text">{{ __('Seedling Preparation and Storage') }}</span></a>
                                         </li>

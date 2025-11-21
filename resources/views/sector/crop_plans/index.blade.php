@@ -4,7 +4,7 @@
         <div class="d-flex justify-content-between align-items-center mb-4">
             <div class="page-header">
                 <h2 class="mb-0"><i class="mdi mdi-sprout text-success me-2"></i> Kebele Crop Plans Summary</h2>
-                <p class="text-muted mb-0 mt-1">Track and manage agricultural production plans</p>
+                <p class="text-muted mb-0 mt-1">Track and manage agricultural production plans with productivity trends</p>
             </div>
             <a href="{{ route('sector.crop-plans.create') }}" class="btn btn-success btn-add-plan">
                 <i class="mdi mdi-plus-circle-outline me-2"></i> Add New Crop Plan
@@ -48,16 +48,60 @@
                 $currentYear = max($cropPlans->pluck('year')->toArray());
                 $previousYear = $currentYear - 1;
                 
+                // Prepare productivity comparison data
                 $currentYearData = $cropPlans->where('year', $currentYear)->groupBy('crop_id');
                 $previousYearData = $cropPlans->where('year', $previousYear)->groupBy('crop_id');
+                
+                $productivityData = [];
+                foreach($currentYearData as $cropId => $plans) {
+                    $crop = $plans->first()->crop;
+                    if ($crop) {
+                        $productivityData[$cropId] = [
+                            'current_avg' => $plans->avg('productivity'),
+                            'previous_avg' => 0
+                        ];
+                    }
+                }
+                foreach($previousYearData as $cropId => $plans) {
+                    $crop = $plans->first()->crop;
+                    if ($crop) {
+                        if (!isset($productivityData[$cropId])) {
+                            $productivityData[$cropId] = [
+                                'current_avg' => 0,
+                                'previous_avg' => $plans->avg('productivity')
+                            ];
+                        } else {
+                            $productivityData[$cropId]['previous_avg'] = $plans->avg('productivity');
+                        }
+                    }
+                }
+
+                // Group data properly for hierarchical display
+                $groupedData = [];
+                foreach ($cropPlans->groupBy('year') as $year => $plansByYear) {
+                    foreach ($plansByYear->groupBy('croptype_id') as $typeId => $plansByType) {
+                        $cropType = $plansByType->first()->cropType;
+                        foreach ($plansByType->groupBy('season') as $season => $plansBySeason) {
+                            foreach ($plansBySeason as $plan) {
+                                $groupedData[] = [
+                                    'year' => $year,
+                                    'type_id' => $typeId,
+                                    'crop_type' => $cropType,
+                                    'season' => $season,
+                                    'plan' => $plan
+                                ];
+                            }
+                        }
+                    }
+                }
             @endphp
 
-            <!-- Data Table -->
+            <!-- Data Table with Integrated Productivity Comparison -->
             <div class="card border-0 shadow-sm mb-4">
                 <div class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center">
                     <h5 class="mb-0 text-dark">
                         <i class="mdi mdi-table me-2 text-primary"></i>
-                        Crop Plans Overview
+                        Crop Plans Overview with Productivity Trends
                     </h5>
                     <div class="table-controls">
                         <small class="text-muted me-3">{{ $cropPlans->count() }} plans found</small>
@@ -71,135 +115,271 @@
                         <table class="table table-hover align-middle mb-0" id="cropPlansTable">
                             <thead class="table-light sticky-header">
                                 <tr>
-                                    <th class="ps-4">Year</th>
-                                    <th>Crop Type</th>
-                                    <th>Season</th>
-                                    <th>Crop</th>
-                                    <th class="text-end">Area (ha)</th>
-                                    <th class="text-center">Productivity</th>
-                                    <th class="text-end">Expected Yield (qt)</th>
-                                    <th class="text-center">Actions</th>
+                                    <th class="ps-4" style="width: 10%">Year</th>
+                                    <th style="width: 12%">Crop Type</th>
+                                    <th style="width: 8%">Season</th>
+                                    <th style="width: 15%">Crop</th>
+                                    <th class="text-end" style="width: 8%">Area (ha)</th>
+                                    <th class="text-center" style="width: 10%">Productivity</th>
+                                    <th class="text-end" style="width: 12%">Expected Yield (qt)</th>
+                                    <!-- Productivity Comparison Columns -->
+                                    <th class="text-center" style="width: 10%">Prev Year</th>
+                                    <th class="text-center" style="width: 8%">Change</th>
+                                    <th class="text-center" style="width: 5%">Trend</th>
+                                    <th class="text-center" style="width: 2%">Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @php
-                                    $grandTotalArea = 0;
-                                    $grandTotalYield = 0;
+                                    $currentYearIndex = null;
+                                    $currentTypeIndex = null;
+                                    $currentSeasonIndex = null;
+                                    $yearRowspan = 0;
+                                    $typeRowspan = 0;
+                                    $seasonRowspan = 0;
+                                    $yearCounter = 0;
+                                    $typeCounter = 0;
+                                    $seasonCounter = 0;
                                 @endphp
-                                
-                                @foreach ($cropPlans->groupBy('year') as $year => $plansByYear)
+
+                                @foreach($groupedData as $index => $data)
                                     @php
-                                        $yearTotalArea = 0;
-                                        $yearTotalYield = 0;
-                                        $yearDataRows = $plansByYear->count();
-                                        $yearDisplayed = false;
+                                        $year = $data['year'];
+                                        $typeId = $data['type_id'];
+                                        $cropType = $data['crop_type'];
+                                        $season = $data['season'];
+                                        $plan = $data['plan'];
+                                        
+                                        $cropId = $plan->crop_id;
+                                        $currentProductivity = $plan->productivity ?? 0;
+                                        $previousProductivity = $productivityData[$cropId]['previous_avg'] ?? 0;
+                                        $hasPreviousYear = $previousProductivity > 0;
+                                        $change = $hasPreviousYear ? (($currentProductivity - $previousProductivity) / $previousProductivity) * 100 : 0;
+
+                                        // Calculate rowspans dynamically
+                                        if ($currentYearIndex !== $year) {
+                                            $currentYearIndex = $year;
+                                            $yearRowspan = array_reduce($groupedData, function($count, $item) use ($year) {
+                                                return $item['year'] == $year ? $count + 1 : $count;
+                                            }, 0);
+                                            $yearCounter = 0;
+                                        }
+
+                                        if ($currentTypeIndex !== $year . '_' . $typeId) {
+                                            $currentTypeIndex = $year . '_' . $typeId;
+                                            $typeRowspan = array_reduce($groupedData, function($count, $item) use ($year, $typeId) {
+                                                return $item['year'] == $year && $item['type_id'] == $typeId ? $count + 1 : $count;
+                                            }, 0);
+                                            $typeCounter = 0;
+                                        }
+
+                                        if ($currentSeasonIndex !== $year . '_' . $typeId . '_' . $season) {
+                                            $currentSeasonIndex = $year . '_' . $typeId . '_' . $season;
+                                            $seasonRowspan = array_reduce($groupedData, function($count, $item) use ($year, $typeId, $season) {
+                                                return $item['year'] == $year && $item['type_id'] == $typeId && $item['season'] == $season ? $count + 1 : $count;
+                                            }, 0);
+                                            $seasonCounter = 0;
+                                        }
+
+                                        $yearCounter++;
+                                        $typeCounter++;
+                                        $seasonCounter++;
                                     @endphp
-
-                                    @foreach ($plansByYear->groupBy('croptype_id') as $typeId => $plansByType)
-                                        @php
-                                            $cropType = $plansByType->first()->cropType;
-                                            $cropTypeTotalArea = 0;
-                                            $cropTypeTotalYield = 0;
-                                            $cropTypeDataRows = $plansByType->count();
-                                            $cropTypeDisplayed = false;
-                                        @endphp
-
-                                        @foreach ($plansByType->groupBy('season') as $season => $plansBySeason)
-                                            @php
-                                                $seasonTotalArea = 0;
-                                                $seasonTotalYield = 0;
-                                                $seasonFirstRow = true;
-                                            @endphp
-
-                                            @foreach ($plansBySeason as $index => $plan)
-                                                <tr class="data-row {{ $index % 2 == 0 ? 'table-row-light' : '' }}" data-plan-id="{{ $plan->id }}">
-                                                    {{-- Year Column --}}
-                                                    @if (!$yearDisplayed)
-                                                        <td rowspan="{{ $yearDataRows }}" class="fw-bold text-center year-cell ps-4">
-                                                            <div class="year-badge">{{ $year }}</div>
-                                                        </td>
-                                                        @php $yearDisplayed = true; @endphp
+                                    
+                                    <tr class="data-row hover-row" 
+                                        data-year="{{ $year }}"
+                                        data-type="{{ $cropType->name ?? '' }}"
+                                        data-season="{{ $season }}"
+                                        data-crop="{{ $plan->crop->name ?? '' }}">
+                                        
+                                        <!-- Year Column -->
+                                        @if ($yearCounter === 1)
+                                            <td class="year-cell align-middle text-center fw-bold" 
+                                                rowspan="{{ $yearRowspan }}"
+                                                style="background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);">
+                                                <div class="year-content">
+                                                    <div class="year-value fs-5 text-primary mb-1">
+                                                        {{ $year }}
+                                                    </div>
+                                                    @if($year == date('Y'))
+                                                        <span class="badge bg-success bg-opacity-20 text-success border border-success">
+                                                            Current
+                                                        </span>
                                                     @endif
+                                                    <div class="year-total mt-2">
+                                                        <small class="text-muted d-block">Year Total:</small>
+                                                        <div class="fw-bold text-success">
+                                                            {{ number_format($cropPlans->where('year', $year)->sum('area_to_plant'), 2) }} ha
+                                                        </div>
+                                                        <div class="fw-bold text-primary">
+                                                            {{ number_format($cropPlans->where('year', $year)->sum('expected_yield'), 2) }} qt
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        @endif
 
-                                                    {{-- Crop Type Column --}}
-                                                    @if (!$cropTypeDisplayed && $seasonFirstRow)
-                                                        <td rowspan="{{ $cropTypeDataRows }}" class="fw-bold crop-type-cell">
-                                                            <div class="crop-type-indicator"></div>
-                                                            {{ $cropType->name ?? '-' }}
-                                                        </td>
-                                                        @php $cropTypeDisplayed = true; @endphp
-                                                    @endif
+                                        <!-- Crop Type Column -->
+                                        @if ($typeCounter === 1)
+                                            <td class="crop-type-cell align-middle" 
+                                                rowspan="{{ $typeRowspan }}"
+                                                style="background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);">
+                                                <div class="crop-type-content">
+                                                    <div class="crop-type-name fw-bold text-dark mb-2">
+                                                        {{ $cropType->name ?? '-' }}
+                                                    </div>
+                                                    <div class="crop-type-total">
+                                                        <small class="text-muted d-block">Type Total:</small>
+                                                        <div class="fw-bold text-success">
+                                                            {{ number_format($cropPlans->where('year', $year)->where('croptype_id', $typeId)->sum('area_to_plant'), 2) }} ha
+                                                        </div>
+                                                        <div class="fw-bold text-primary">
+                                                            {{ number_format($cropPlans->where('year', $year)->where('croptype_id', $typeId)->sum('expected_yield'), 2) }} qt
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        @endif
 
-                                                    {{-- Season Column --}}
-                                                    @if ($seasonFirstRow)
-                                                        <td>
-                                                            <span class="season-badge season-{{ strtolower($season) }}">
-                                                                <i class="mdi mdi-weather-sunny me-1"></i>
-                                                                {{ ucfirst($season) }}
-                                                            </span>
-                                                        </td>
-                                                        @php $seasonFirstRow = false; @endphp
-                                                    @else
-                                                        <td></td>
-                                                    @endif
+                                        <!-- Season Column -->
+                                        @if ($seasonCounter === 1)
+                                            <td class="season-cell align-middle text-center"
+                                                rowspan="{{ $seasonRowspan }}"
+                                                style="background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);">
+                                                <div class="season-content">
+                                                    <span class="season-badge fw-semibold text-dark">
+                                                        <i class="mdi mdi-weather-sunny me-1 text-warning"></i>
+                                                        {{ ucfirst($season) }}
+                                                    </span>
+                                                    <div class="season-total mt-1">
+                                                        <small class="text-muted d-block">Season Total:</small>
+                                                        <div class="fw-bold text-success">
+                                                            {{ number_format($cropPlans->where('year', $year)->where('croptype_id', $typeId)->where('season', $season)->sum('area_to_plant'), 2) }} ha
+                                                        </div>
+                                                        <div class="fw-bold text-primary">
+                                                            {{ number_format($cropPlans->where('year', $year)->where('croptype_id', $typeId)->where('season', $season)->sum('expected_yield'), 2) }} qt
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        @endif
 
-                                                    {{-- Crop Details --}}
-                                                    <td class="crop-name">
-                                                        <div class="d-flex align-items-center">
-                                                            <div class="crop-icon me-2">
-                                                                <i class="mdi mdi-sprout text-success"></i>
+                                        <!-- Crop Details -->
+                                        <td class="crop-details-cell">
+                                            <div class="crop-details">
+                                                <div class="d-flex align-items-center">
+                                                    <div class="crop-icon me-2">
+                                                        <i class="mdi mdi-sprout text-success"></i>
+                                                    </div>
+                                                    <div>
+                                                        <span class="fw-semibold text-dark">{{ $plan->crop->name ?? '-' }}</span>
+                                                        @if($year == $currentYear && $hasPreviousYear)
+                                                            <div class="trend-indicator-small">
+                                                                <small class="{{ $change >= 0 ? 'text-success' : 'text-danger' }}">
+                                                                    {{ $change >= 0 ? '↗' : '↘' }}
+                                                                    {{ number_format(abs($change), 1) }}%
+                                                                </small>
                                                             </div>
-                                                            <span>{{ $plan->crop->name ?? '-' }}</span>
-                                                        </div>
-                                                    </td>
-                                                    <td class="text-end fw-semibold">{{ number_format($plan->area_to_plant, 2) }}</td>
-                                                    <td class="text-center">
-                                                        <span class="productivity-badge">{{ $plan->productivity ?? '-' }}</span>
-                                                    </td>
-                                                    <td class="text-end fw-semibold text-success">{{ number_format($plan->expected_yield, 2) }}</td>
-                                                    <td class="text-center">
-                                                        <div class="action-buttons">
-                                                            <a href="{{ route('sector.crop-plans.editcrop', $plan->id) }}" 
-                                                               class="btn btn-sm btn-warning action-btn edit-btn"
-                                                               title="Edit Crop Plan"
-                                                               data-plan-id="{{ $plan->id }}">
-                                                                <i class="mdi mdi-pencil"></i>
-                                                            </a>
-                                                            <a href="{{ route('sector.crop-plans.editfertilizer', $plan->id) }}" 
-                                                               class="btn btn-sm btn-info action-btn fertilizer-btn"
-                                                               title="Manage Fertilizer"
-                                                               data-plan-id="{{ $plan->id }}">
-                                                                <i class="mdi mdi-chemical-weapon"></i>
-                                                            </a>
-                                                            <form action="{{ route('sector.crop-plans.destroy', $plan->id) }}" 
-                                                                  method="POST" 
-                                                                  class="d-inline"
-                                                                  onsubmit="return confirm('Are you sure you want to delete this crop plan?');">
-                                                                @csrf
-                                                                @method('DELETE')
-                                                                <button type="submit" 
-                                                                        class="btn btn-sm btn-danger action-btn delete-btn"
-                                                                        title="Delete Crop Plan">
-                                                                    <i class="mdi mdi-delete"></i>
-                                                                </button>
-                                                            </form>
-                                                        </div>
-                                                    </td>
-                                                </tr>
+                                                        @endif
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        
+                                        <td class="text-end fw-semibold text-primary">
+                                            {{ number_format($plan->area_to_plant, 2) }}
+                                        </td>
+                                        
+                                        <td class="text-center">
+                                            <span class="productivity-badge fw-bold {{ $year == $currentYear ? 'text-primary' : 'text-dark' }}">
+                                                {{ $currentProductivity ? number_format($currentProductivity, 2) . ' qt/ha' : '-' }}
+                                            </span>
+                                        </td>
+                                        
+                                        <td class="text-end fw-semibold text-success">
+                                            {{ number_format($plan->expected_yield, 2) }}
+                                        </td>
 
-                                                @php
-                                                    $seasonTotalArea += $plan->area_to_plant;
-                                                    $seasonTotalYield += $plan->expected_yield;
-                                                    $cropTypeTotalArea += $plan->area_to_plant;
-                                                    $cropTypeTotalYield += $plan->expected_yield;
-                                                    $yearTotalArea += $plan->area_to_plant;
-                                                    $yearTotalYield += $plan->expected_yield;
-                                                    $grandTotalArea += $plan->area_to_plant;
-                                                    $grandTotalYield += $plan->expected_yield;
-                                                @endphp
-                                            @endforeach
-                                        @endforeach
-                                    @endforeach
+                                        <!-- Productivity Comparison Columns -->
+                                        <td class="text-center">
+                                            @if($hasPreviousYear && $year == $currentYear)
+                                                <span class="previous-productivity text-muted">
+                                                    {{ number_format($previousProductivity, 2) }} qt/ha
+                                                </span>
+                                            @elseif($year == $previousYear)
+                                                <span class="previous-productivity text-dark">
+                                                    {{ number_format($currentProductivity, 2) }} qt/ha
+                                                </span>
+                                            @else
+                                                <span class="text-muted">-</span>
+                                            @endif
+                                        </td>
+
+                                        <td class="text-center">
+                                            @if($hasPreviousYear && $year == $currentYear)
+                                                <span class="badge {{ $change >= 0 ? 'bg-success' : 'bg-danger' }} change-badge">
+                                                    {{ $change >= 0 ? '+' : '' }}{{ number_format($change, 1) }}%
+                                                </span>
+                                            @else
+                                                <span class="text-muted">-</span>
+                                            @endif
+                                        </td>
+
+                                        <td class="text-center">
+                                            @if($hasPreviousYear && $year == $currentYear)
+                                                @if($change > 10)
+                                                    <i class="mdi mdi-trending-up text-success fs-6" title="Excellent Growth"></i>
+                                                @elseif($change > 5)
+                                                    <i class="mdi mdi-trending-up text-success fs-6" title="Strong Growth"></i>
+                                                @elseif($change > 0)
+                                                    <i class="mdi mdi-trending-up text-success fs-6" title="Moderate Growth"></i>
+                                                @elseif($change < -10)
+                                                    <i class="mdi mdi-trending-down text-danger fs-6" title="Severe Decline"></i>
+                                                @elseif($change < -5)
+                                                    <i class="mdi mdi-trending-down text-danger fs-6" title="Significant Decline"></i>
+                                                @elseif($change < 0)
+                                                    <i class="mdi mdi-trending-down text-warning fs-6" title="Slight Decline"></i>
+                                                @else
+                                                    <i class="mdi mdi-trending-neutral text-secondary fs-6" title="Stable"></i>
+                                                @endif
+                                            @elseif($year == $currentYear && !$hasPreviousYear)
+                                                <i class="mdi mdi-star text-warning fs-6" title="New Crop"></i>
+                                            @else
+                                                <span class="text-muted">-</span>
+                                            @endif
+                                        </td>
+                                        
+                                        <td class="actions-cell text-center align-middle">
+                                            <div class="action-buttons">
+                                                <a href="{{ route('sector.crop-plans.editcrop', $plan->id) }}" 
+                                                   class="btn btn-warning btn-sm action-btn mb-1"
+                                                   title="Edit Crop Plan"
+                                                   data-plan-id="{{ $plan->id }}">
+                                                    <i class="mdi mdi-pencil"></i>
+                                                </a>
+                                                <a href="{{ route('sector.crop-plans.activityplan', $plan->id ) }}" 
+                                                   class="btn btn-info btn-sm action-btn"
+                                                   title="Manage implementation schedule"
+                                                   data-plan-id="{{ $plan->id }}">
+                                                    <i class="mdi mdi-chemical-weapon"></i>
+                                                </a>
+                                                 <a href="{{ route('sector.crop-plans.productionactivityplan', $plan->id ) }}" 
+                                                   class="btn btn-info btn-sm action-btn"
+                                                   title="Manage production schedule"
+                                                   data-plan-id="{{ $plan->id }}">
+                                                    <i class="mdi mdi-chemical-weapon"></i>
+                                                </a>
+                                               
+                                                 <a href="{{ route('sector.fertilizer-plans.edit', $plan->id ) }}" 
+                                                   class="btn btn-info btn-sm action-btn"
+                                                   title="Manage fertilizer schedule"
+                                                   data-plan-id="{{ $plan->id }}">
+                                                    <i class="mdi mdi-chemical-weapon"></i>
+                                                </a>
+                                               
+                                            </div>
+                                        </td>
+                                    </tr>
                                 @endforeach
                             </tbody>
                         </table>
@@ -207,259 +387,29 @@
                 </div>
             </div>
 
-            <!-- Grand Total Section -->
-            <div class="row mb-4">
-                <div class="col-12">
-                    <div class="card grand-total-card border-0 shadow-sm">
-                        <div class="card-body py-3">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div>
-                                    <h5 class="mb-0 text-white">
-                                        <i class="mdi mdi-chart-bar me-2"></i>
-                                        Grand Totals
-                                    </h5>
-                                </div>
-                                <div class="d-flex gap-4">
-                                    <div class="text-center">
-                                        <div class="text-white-50 small">Total Area</div>
-                                        <div class="h4 mb-0 text-white">{{ number_format($grandTotalArea, 2) }} ha</div>
-                                    </div>
-                                    <div class="text-center">
-                                        <div class="text-white-50 small">Total Expected Yield</div>
-                                        <div class="h4 mb-0 text-white">{{ number_format($grandTotalYield, 2) }} qt</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <!-- Productivity Summary Statistics -->
+            @php
+                $cropsWithGrowth = 0;
+                $cropsWithDecline = 0;
+                $cropsStable = 0;
+                $newCrops = 0;
+                
+                foreach($productivityData as $cropData) {
+                    $currentAvg = $cropData['current_avg'] ?? 0;
+                    $previousAvg = $cropData['previous_avg'] ?? 0;
+                    
+                    if ($currentAvg > 0 && $previousAvg > 0) {
+                        $change = (($currentAvg - $previousAvg) / $previousAvg) * 100;
+                        if ($change > 0) $cropsWithGrowth++;
+                        elseif ($change < 0) $cropsWithDecline++;
+                        else $cropsStable++;
+                    } elseif ($currentAvg > 0) {
+                        $newCrops++;
+                    }
+                }
+            @endphp
 
-            <!-- Productivity Comparison Section -->
-            <div class="row mb-4">
-                <div class="col-12">
-                    <div class="card border-0 shadow-sm">
-                        <div class="card-header bg-gradient-info text-white py-3 d-flex justify-content-between align-items-center">
-                            <h5 class="mb-0">
-                                <i class="mdi mdi-trending-up me-2"></i>
-                                Productivity Comparison - Current Year vs Previous Year (Per Crop)
-                            </h5>
-                            <div class="table-controls">
-                                <button class="btn btn-sm btn-light" onclick="scrollToTop('productivityTable')">
-                                    <i class="mdi mdi-arrow-up"></i> Top
-                                </button>
-                            </div>
-                        </div>
-                        <div class="card-body p-0">
-                            <div class="table-container">
-                                <table class="table table-hover align-middle mb-0" id="productivityTable">
-                                    <thead class="table-light sticky-header">
-                                        <tr>
-                                            <th class="ps-4">Crop</th>
-                                            <th class="text-center">Crop Type</th>
-                                            <th class="text-center">Current Year ({{ $currentYear }})</th>
-                                            <th class="text-center">Previous Year ({{ $previousYear }})</th>
-                                            <th class="text-center">Change</th>
-                                            <th class="text-center">Trend</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @php
-                                            // Get unique crops from current year data
-                                            $cropsToDisplay = [];
-                                            
-                                            // Process current year crops
-                                            foreach($currentYearData as $cropId => $plans) {
-                                                $crop = $plans->first()->crop;
-                                                if ($crop) {
-                                                    $cropsToDisplay[$cropId] = [
-                                                        'crop' => $crop,
-                                                        'crop_type' => $plans->first()->cropType,
-                                                        'current_avg' => $plans->avg('productivity'),
-                                                        'current_area' => $plans->sum('area_to_plant'),
-                                                        'current_yield' => $plans->sum('expected_yield')
-                                                    ];
-                                                }
-                                            }
-                                            
-                                            // Process previous year crops and add to display
-                                            foreach($previousYearData as $cropId => $plans) {
-                                                $crop = $plans->first()->crop;
-                                                if ($crop && !isset($cropsToDisplay[$cropId])) {
-                                                    $cropsToDisplay[$cropId] = [
-                                                        'crop' => $crop,
-                                                        'crop_type' => $plans->first()->cropType,
-                                                        'current_avg' => 0,
-                                                        'current_area' => 0,
-                                                        'current_yield' => 0,
-                                                        'previous_avg' => $plans->avg('productivity'),
-                                                        'previous_area' => $plans->sum('area_to_plant'),
-                                                        'previous_yield' => $plans->sum('expected_yield')
-                                                    ];
-                                                } elseif (isset($cropsToDisplay[$cropId])) {
-                                                    $cropsToDisplay[$cropId]['previous_avg'] = $plans->avg('productivity');
-                                                    $cropsToDisplay[$cropId]['previous_area'] = $plans->sum('area_to_plant');
-                                                    $cropsToDisplay[$cropId]['previous_yield'] = $plans->sum('expected_yield');
-                                                }
-                                            }
-                                        @endphp
-                                        
-                                        @forelse($cropsToDisplay as $cropData)
-                                            @php
-                                                $crop = $cropData['crop'];
-                                                $cropType = $cropData['crop_type'];
-                                                $currentAvg = $cropData['current_avg'] ?? 0;
-                                                $previousAvg = $cropData['previous_avg'] ?? 0;
-                                                $currentArea = $cropData['current_area'] ?? 0;
-                                                $previousArea = $cropData['previous_area'] ?? 0;
-                                                
-                                                $change = $previousAvg > 0 ? (($currentAvg - $previousAvg) / $previousAvg) * 100 : 0;
-                                                $hasPreviousYear = $previousAvg > 0;
-                                                $hasCurrentYear = $currentAvg > 0;
-                                            @endphp
-                                            <tr>
-                                                <td class="ps-4 fw-semibold">
-                                                    <div class="d-flex align-items-center">
-                                                        <div class="crop-icon me-2">
-                                                            <i class="mdi mdi-sprout text-success"></i>
-                                                        </div>
-                                                        <div>
-                                                            <div class="fw-bold">{{ $crop->name ?? 'Unknown Crop' }}</div>
-                                                            @if($hasCurrentYear && $hasPreviousYear)
-                                                                <small class="text-muted">
-                                                                    Area: {{ number_format($currentArea, 1) }}ha 
-                                                                    ({{ $currentArea > $previousArea ? '↑' : '↓' }}
-                                                                    {{ number_format(abs($currentArea - $previousArea), 1) }}ha)
-                                                                </small>
-                                                            @elseif($hasCurrentYear)
-                                                                <small class="text-muted">Area: {{ number_format($currentArea, 1) }}ha (New)</small>
-                                                            @elseif($hasPreviousYear)
-                                                                <small class="text-muted">Area: {{ number_format($previousArea, 1) }}ha (Not planted)</small>
-                                                            @endif
-                                                        </div>
-                                                    </div>
-                                                </td>
-                                                <td class="text-center">
-                                                    <span class="badge bg-light text-dark">
-                                                        {{ $cropType->name ?? 'Unknown Type' }}
-                                                    </span>
-                                                </td>
-                                                <td class="text-center fw-bold {{ $hasCurrentYear ? 'text-primary' : 'text-muted' }}">
-                                                    {{ $hasCurrentYear ? number_format($currentAvg, 2) . ' qt/ha' : 'N/A' }}
-                                                </td>
-                                                <td class="text-center {{ $hasPreviousYear ? 'text-dark' : 'text-muted' }}">
-                                                    {{ $hasPreviousYear ? number_format($previousAvg, 2) . ' qt/ha' : 'N/A' }}
-                                                </td>
-                                                <td class="text-center">
-                                                    @if($hasPreviousYear && $hasCurrentYear)
-                                                        <span class="badge {{ $change >= 0 ? 'bg-success' : 'bg-danger' }} fs-6">
-                                                            {{ $change >= 0 ? '+' : '' }}{{ number_format($change, 1) }}%
-                                                        </span>
-                                                    @elseif($hasCurrentYear)
-                                                        <span class="badge bg-warning fs-6">New Crop</span>
-                                                    @else
-                                                        <span class="badge bg-secondary fs-6">No Data</span>
-                                                    @endif
-                                                </td>
-                                                <td class="text-center">
-                                                    @if($hasPreviousYear && $hasCurrentYear)
-                                                        @if($change > 10)
-                                                            <i class="mdi mdi-trending-up text-success fs-5" title="Excellent Growth"></i>
-                                                        @elseif($change > 5)
-                                                            <i class="mdi mdi-trending-up text-success fs-5" title="Strong Growth"></i>
-                                                        @elseif($change > 0)
-                                                            <i class="mdi mdi-trending-up text-success fs-5" title="Moderate Growth"></i>
-                                                        @elseif($change < -10)
-                                                            <i class="mdi mdi-trending-down text-danger fs-5" title="Severe Decline"></i>
-                                                        @elseif($change < -5)
-                                                            <i class="mdi mdi-trending-down text-danger fs-5" title="Significant Decline"></i>
-                                                        @elseif($change < 0)
-                                                            <i class="mdi mdi-trending-down text-warning fs-5" title="Slight Decline"></i>
-                                                        @else
-                                                            <i class="mdi mdi-trending-neutral text-secondary fs-5" title="Stable"></i>
-                                                        @endif
-                                                    @elseif($hasCurrentYear)
-                                                        <i class="mdi mdi-star text-warning fs-5" title="New Crop This Year"></i>
-                                                    @elseif($hasPreviousYear)
-                                                        <i class="mdi mdi-alert-circle text-muted fs-5" title="Not Planted This Year"></i>
-                                                    @else
-                                                        <i class="mdi mdi-help-circle text-muted fs-5" title="No Data"></i>
-                                                    @endif
-                                                </td>
-                                            </tr>
-                                        @empty
-                                            <tr>
-                                                <td colspan="6" class="text-center py-4">
-                                                    <i class="mdi mdi-information-outline text-muted display-6 mb-3"></i>
-                                                    <p class="text-muted">No crop data available for comparison.</p>
-                                                </td>
-                                            </tr>
-                                        @endforelse
-                                    </tbody>
-                                </table>
-                            </div>
-                            
-                            <!-- Summary Statistics -->
-                            @if(count($cropsToDisplay) > 0)
-                            <div class="card-footer bg-light">
-                                <div class="row text-center">
-                                    @php
-                                        $cropsWithGrowth = 0;
-                                        $cropsWithDecline = 0;
-                                        $cropsStable = 0;
-                                        $newCrops = 0;
-                                        
-                                        foreach($cropsToDisplay as $cropData) {
-                                            $currentAvg = $cropData['current_avg'] ?? 0;
-                                            $previousAvg = $cropData['previous_avg'] ?? 0;
-                                            
-                                            if ($currentAvg > 0 && $previousAvg > 0) {
-                                                $change = (($currentAvg - $previousAvg) / $previousAvg) * 100;
-                                                if ($change > 0) $cropsWithGrowth++;
-                                                elseif ($change < 0) $cropsWithDecline++;
-                                                else $cropsStable++;
-                                            } elseif ($currentAvg > 0) {
-                                                $newCrops++;
-                                            }
-                                        }
-                                        
-                                        $totalComparable = $cropsWithGrowth + $cropsWithDecline + $cropsStable;
-                                    @endphp
-                                    <div class="col-md-3">
-                                        <div class="text-success">
-                                            <i class="mdi mdi-trending-up fs-2"></i>
-                                            <div class="fw-bold fs-5">{{ $cropsWithGrowth }}</div>
-                                            <small>Growing</small>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-3">
-                                        <div class="text-danger">
-                                            <i class="mdi mdi-trending-down fs-2"></i>
-                                            <div class="fw-bold fs-5">{{ $cropsWithDecline }}</div>
-                                            <small>Declining</small>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-3">
-                                        <div class="text-warning">
-                                            <i class="mdi mdi-star fs-2"></i>
-                                            <div class="fw-bold fs-5">{{ $newCrops }}</div>
-                                            <small>New Crops</small>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-3">
-                                        <div class="text-info">
-                                            <i class="mdi mdi-chart-bar fs-2"></i>
-                                            <div class="fw-bold fs-5">{{ count($cropsToDisplay) }}</div>
-                                            <small>Total Crops</small>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            @endif
-                        </div>
-                    </div>
-                </div>
-            </div>
+           
         @endif
     </div>
 
@@ -473,10 +423,10 @@
                     const rows = document.querySelectorAll('#cropPlansTable tbody tr.data-row');
                     
                     rows.forEach(function(row) {
-                        const cropName = row.querySelector('.crop-name').textContent.toLowerCase();
-                        const cropType = row.querySelector('.crop-type-cell')?.textContent.toLowerCase() || '';
-                        const season = row.querySelector('.season-badge')?.textContent.toLowerCase() || '';
-                        const year = row.querySelector('.year-badge')?.textContent.toLowerCase() || '';
+                        const cropName = row.querySelector('.crop-details-cell').textContent.toLowerCase();
+                        const cropType = row.getAttribute('data-type').toLowerCase();
+                        const season = row.getAttribute('data-season').toLowerCase();
+                        const year = row.getAttribute('data-year').toLowerCase();
                         
                         const show = cropName.includes(value) || cropType.includes(value) || season.includes(value) || year.includes(value);
                         row.style.display = show ? '' : 'none';
@@ -485,16 +435,15 @@
             }
 
             // Add hover effects to table rows
-            document.querySelectorAll('.data-row').forEach(row => {
+            document.querySelectorAll('.hover-row').forEach(row => {
                 row.addEventListener('mouseenter', function() {
-                    this.style.transform = 'translateY(-2px)';
-                    this.style.boxShadow = '0 4px 8px rgba(0,0,0,0.1)';
-                    this.style.transition = 'all 0.3s ease';
+                    this.style.background = 'linear-gradient(135deg, #f0f8ff 0%, #e7f3ff 100%)';
+                    this.style.borderLeft = '3px solid #007bff';
                 });
                 
                 row.addEventListener('mouseleave', function() {
-                    this.style.transform = 'translateY(0)';
-                    this.style.boxShadow = 'none';
+                    this.style.background = '';
+                    this.style.borderLeft = '';
                 });
             });
 
@@ -505,22 +454,12 @@
                     this.innerHTML = '<i class="mdi mdi-loading mdi-spin"></i>';
                     this.disabled = true;
                     
-                    // Revert after 2 seconds if still on same page (fallback)
                     setTimeout(() => {
                         if (this.disabled) {
                             this.innerHTML = originalHtml;
                             this.disabled = false;
                         }
                     }, 2000);
-                });
-            });
-
-            // Delete confirmation enhancement
-            document.querySelectorAll('.delete-btn').forEach(button => {
-                button.addEventListener('click', function(e) {
-                    if (!confirm('Are you sure you want to delete this crop plan? This action cannot be undone.')) {
-                        e.preventDefault();
-                    }
                 });
             });
 
@@ -538,12 +477,7 @@
             
             tableContainers.forEach(container => {
                 container.addEventListener('scroll', function() {
-                    const scrollTop = this.scrollTop;
-                    const scrollHeight = this.scrollHeight;
-                    const clientHeight = this.clientHeight;
-                    
-                    // You can add scroll indicators here if needed
-                    if (scrollTop > 100) {
+                    if (this.scrollTop > 100) {
                         this.classList.add('scrolled');
                     } else {
                         this.classList.remove('scrolled');
@@ -554,12 +488,19 @@
     </script>
 
     <style>
-        /* Scrollable Table Styles */
+        .crop-plans-container {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            min-height: 100vh;
+        }
+
+        /* Table Styles */
         .table-container {
             position: relative;
-            max-height: 60vh;
+            max-height: 70vh;
             overflow: auto;
-            border: 1px solid #dee2e6;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
         }
 
         .sticky-header {
@@ -570,114 +511,176 @@
         }
 
         .sticky-header th {
-            background: #f8f9fa;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
             border-bottom: 2px solid #dee2e6;
-            position: relative;
+            font-weight: 600;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #495057;
+            vertical-align: middle;
+            white-space: nowrap;
         }
 
-        .sticky-header th::after {
-            content: '';
-            position: absolute;
-            bottom: -2px;
-            left: 0;
-            right: 0;
-            height: 2px;
-            background: #dee2e6;
+        /* Cell Styles */
+        .year-cell, .season-cell, .crop-type-cell {
+            border-right: 2px solid #dee2e6;
+            vertical-align: middle !important;
         }
 
-        /* Table Controls */
-        .table-controls {
+        .year-content, .crop-type-content, .season-content {
+            padding: 0.5rem;
+        }
+
+        .season-badge {
+            font-size: 0.8rem;
+        }
+
+        .crop-icon {
+            width: 24px;
+            height: 24px;
+            background: linear-gradient(135deg, #e8f5e8 0%, #c8e6c9 100%);
+            border-radius: 6px;
             display: flex;
             align-items: center;
-            gap: 10px;
+            justify-content: center;
         }
 
-        /* Custom scrollbar for table containers */
+        /* Total sections within cells */
+        .year-total, .crop-type-total, .season-total {
+            margin-top: 0.5rem;
+            padding-top: 0.5rem;
+            border-top: 1px dashed #dee2e6;
+        }
+
+        .year-total small, .crop-type-total small, .season-total small {
+            font-size: 0.7rem;
+        }
+
+        /* Table row styling */
+        .table td {
+            padding: 0.6rem;
+            border-bottom: 1px solid #e9ecef;
+            font-size: 0.85rem;
+        }
+
+        /* Trend indicators */
+        .trend-indicator-small {
+            margin-top: 2px;
+        }
+
+        .change-badge {
+            font-size: 0.7rem;
+            padding: 0.2rem 0.4rem;
+        }
+
+        /* Performance Cards */
+        .performance-card {
+            padding: 1.5rem;
+            border-radius: 10px;
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .performance-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .performance-growth {
+            background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+            border: 1px solid #c3e6cb;
+        }
+
+        .performance-decline {
+            background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+            border: 1px solid #f5c6cb;
+        }
+
+        .performance-new {
+            background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+            border: 1px solid #ffeaa7;
+        }
+
+        .performance-total {
+            background: linear-gradient(135deg, #cce7ff 0%, #b3d9ff 100%);
+            border: 1px solid #b3d9ff;
+        }
+
+        .performance-value {
+            margin: 0.5rem 0;
+        }
+
+        .performance-label {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        /* Action buttons */
+        .action-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 0.2rem;
+        }
+
+        .action-btn {
+            font-size: 0.7rem;
+            padding: 0.3rem;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+            width: 100%;
+            min-width: 30px;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        /* Scrollbar */
         .table-container::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
+            width: 6px;
+            height: 6px;
         }
 
         .table-container::-webkit-scrollbar-track {
             background: #f1f1f1;
-            border-radius: 4px;
+            border-radius: 3px;
         }
 
         .table-container::-webkit-scrollbar-thumb {
             background: #c1c1c1;
-            border-radius: 4px;
+            border-radius: 3px;
         }
 
         .table-container::-webkit-scrollbar-thumb:hover {
             background: #a8a8a8;
         }
 
-        /* Action Buttons Styles */
-        .action-buttons {
-            display: flex;
-            gap: 6px;
-            justify-content: center;
-            align-items: center;
-            flex-wrap: nowrap;
+        /* Responsive */
+        @media (max-width: 768px) {
+            .table-container {
+                font-size: 0.75rem;
+            }
+            
+            .action-btn {
+                font-size: 0.65rem;
+                padding: 0.25rem;
+            }
+            
+            .year-value {
+                font-size: 0.9rem !important;
+            }
+            
+            .performance-card {
+                padding: 1rem;
+            }
+            
+            .performance-value {
+                font-size: 1.5rem !important;
+            }
         }
 
-        .action-btn {
-            width: 36px;
-            height: 36px;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s ease;
-            border: none;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-
-        .action-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-        }
-
-        .action-btn:active {
-            transform: translateY(0);
-        }
-
-        .edit-btn {
-            background: linear-gradient(135deg, #ffc107 0%, #ff8c00 100%);
-            color: white;
-        }
-
-        .edit-btn:hover {
-            background: linear-gradient(135deg, #ff8c00 0%, #ff5722 100%);
-        }
-
-        .fertilizer-btn {
-            background: linear-gradient(135deg, #17a2b8 0%, #20c997 100%);
-            color: white;
-        }
-
-        .fertilizer-btn:hover {
-            background: linear-gradient(135deg, #138496 0%, #1e7e34 100%);
-        }
-
-        .delete-btn {
-            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
-            color: white;
-        }
-
-        .delete-btn:hover {
-            background: linear-gradient(135deg, #c82333 0%, #a71e2a 100%);
-        }
-
-        /* Ensure proper spacing for action column */
-        .table th:last-child,
-        .table td:last-child {
-            width: 150px;
-            min-width: 150px;
-            text-align: center;
-        }
-
-        /* Loading animation */
+        /* Animations */
         .mdi-loading {
             animation: spin 1s linear infinite;
         }
@@ -687,98 +690,47 @@
             to { transform: rotate(360deg); }
         }
 
-        /* Responsive adjustments */
-        @media (max-width: 768px) {
-            .table-container {
-                max-height: 50vh;
-                font-size: 0.85rem;
-            }
-
-            .action-buttons {
-                gap: 4px;
-            }
-
-            .action-btn {
-                width: 32px;
-                height: 32px;
-                font-size: 0.8rem;
-            }
-
-            .table th:last-child,
-            .table td:last-child {
-                width: 120px;
-                min-width: 120px;
-            }
-
-            .table-controls {
-                flex-direction: column;
-                gap: 5px;
-            }
+        /* Hover effects */
+        .hover-row {
+            transition: all 0.3s ease;
         }
 
-        @media (max-width: 576px) {
-            .table-container {
-                max-height: 40vh;
-            }
-
-            .action-buttons {
-                flex-direction: column;
-                gap: 3px;
-            }
-
-            .action-btn {
-                width: 28px;
-                height: 28px;
-                font-size: 0.7rem;
-            }
-
-            .table th:last-child,
-            .table td:last-child {
-                width: 80px;
-                min-width: 80px;
-            }
+        /* Table Controls */
+        .table-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
-        /* Tooltip styles for buttons */
-        .action-btn {
-            position: relative;
-        }
-
-        .action-btn:hover::after {
-            content: attr(title);
-            position: absolute;
-            bottom: -30px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: #333;
+        /* Button styles */
+        .btn-warning {
+            background: linear-gradient(135deg, #ffc107 0%, #ff8c00 100%);
             color: white;
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 0.75rem;
-            white-space: nowrap;
-            z-index: 1000;
+            border: none;
         }
 
-        .action-btn:hover::before {
-            content: '';
-            position: absolute;
-            bottom: -10px;
-            left: 50%;
-            transform: translateX(-50%);
-            border: 5px solid transparent;
-            border-bottom-color: #333;
+        .btn-info {
+            background: linear-gradient(135deg, #17a2b8 0%, #20c997 100%);
+            color: white;
+            border: none;
         }
 
-        /* Scroll indicator */
-        .table-container.scrolled::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 3px;
-            background: linear-gradient(90deg, #007bff, #6c757d);
-            z-index: 11;
+        .btn-warning:hover {
+            background: linear-gradient(135deg, #ff8c00 0%, #ff5722 100%);
+        }
+
+        .btn-info:hover {
+            background: linear-gradient(135deg, #138496 0%, #1e7e34 100%);
+        }
+
+        /* Ensure proper vertical alignment for rowspan cells */
+        .year-cell, .season-cell, .crop-type-cell {
+            vertical-align: middle !important;
+        }
+
+        /* Fix for rowspan borders */
+        .table > tbody > tr > td {
+            border: 1px solid #dee2e6;
         }
     </style>
 </x-layout>

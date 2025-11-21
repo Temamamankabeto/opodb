@@ -21,7 +21,10 @@ class KebeleCropPlan extends Model
         'seed_required',
         'fertilizer_type_id',
         'fertilizer_details',
-        'plandivision_details',        
+        'plandivision_details', 
+        'productionplan_details',    
+        'fertilizer_distribution_details',    
+                    
         'responsible_staff',
         'notes',
         'productivity',
@@ -33,6 +36,10 @@ class KebeleCropPlan extends Model
         'fertilizer_details' => 'array',  
         'fertilizer_type_id' => 'array',
         'plandivision_details' => 'array',
+        'productionplan_details' => 'array',
+        'fertilizer_distribution_details' => 'array',
+        
+        
         
         'productivity' => 'float',
         'area_to_plant' => 'float',

@@ -80,63 +80,87 @@ public function kebelefertlizer()
     $cropPlans = KebeleCropPlan::with(['cropType', 'crop'])
         ->where('kebele_id', $user->kebele_id)
         ->orderBy('year', 'desc')
+        ->orderBy('season')
         ->orderBy('croptype_id')
         ->orderBy('crop_id')
         ->get();
 
-    // Group data by Year -> Crop Type -> Crop and calculate fertilizer totals
+    // Group data by Year -> Season -> Crop Type
     $groupedData = [];
-    $totalFertilizer = 0;
+    $totalFertilizerByUnit = []; // Track totals by unit
     $totalArea = 0;
-    $fertilizerTypes = [];
-    $fertilizers = [];
 
-    // Pre-fetch fertilizer names if possible (adjust based on your actual models)
+    // Calculate year totals first
+    $yearTotals = [];
+    $yearFertilizerByUnit = []; // Track year totals by unit
+    
+    foreach ($cropPlans as $plan) {
+        $year = $plan->year;
+        $area = floatval($plan->area_to_plant);
+        
+        if (!isset($yearTotals[$year])) {
+            $yearTotals[$year] = [
+                'total_area' => 0,
+                'fertilizer_by_unit' => []
+            ];
+        }
+        $yearTotals[$year]['total_area'] += $area;
+    }
+
+    // Fetch fertilizer names from database
     try {
         $fertilizerTypes = \App\Models\FertilizerType::pluck('name', 'id')->toArray();
         $fertilizers = \App\Models\Fertilizer::pluck('name', 'id')->toArray();
     } catch (\Exception $e) {
-        // If models don't exist, use fallback names
+        // Fallback if models don't exist
         $fertilizerTypes = [];
         $fertilizers = [];
     }
 
     foreach ($cropPlans as $plan) {
         $year = $plan->year;
+        $season = $plan->season;
         $cropType = $plan->cropType->name ?? 'Unknown Type';
         $crop = $plan->crop->name ?? 'Unknown Crop';
 
-        // Initialize year if not exists
-        if (!isset($groupedData[$year])) {
-            $groupedData[$year] = [
-                'total_fertilizer' => 0,
+        // Create unique key for year and season combination
+        $yearSeasonKey = $year . ' - ' . $season;
+
+        // Initialize year-season if not exists
+        if (!isset($groupedData[$yearSeasonKey])) {
+            $groupedData[$yearSeasonKey] = [
+                'year' => $year,
+                'season' => $season,
                 'total_area' => 0,
+                'fertilizer_by_unit' => [], // Track fertilizer by unit
                 'crop_types' => []
             ];
         }
 
         // Initialize crop type if not exists
-        if (!isset($groupedData[$year]['crop_types'][$cropType])) {
-            $groupedData[$year]['crop_types'][$cropType] = [
-                'total_fertilizer' => 0,
+        if (!isset($groupedData[$yearSeasonKey]['crop_types'][$cropType])) {
+            $groupedData[$yearSeasonKey]['crop_types'][$cropType] = [
                 'total_area' => 0,
-                'crops' => []
+                'fertilizer_by_unit' => [], // Track fertilizer by unit
+                'crops' => [],
+                'fertilizers' => []
             ];
         }
 
-        // Initialize crop if not exists
-        if (!isset($groupedData[$year]['crop_types'][$cropType]['crops'][$crop])) {
-            $groupedData[$year]['crop_types'][$cropType]['crops'][$crop] = [
-                'total_fertilizer' => 0,
-                'total_area' => 0,
-                'fertilizers' => [],
-                'plans' => []
-            ];
-        }
+        // Add individual crop to the crop type
+        $cropKey = $crop . ' (Plan: ' . $plan->id . ')';
+        
+        $groupedData[$yearSeasonKey]['crop_types'][$cropType]['crops'][$cropKey] = [
+            'crop_name' => $crop,
+            'plan_id' => $plan->id,
+            'area' => floatval($plan->area_to_plant),
+            'fertilizers' => [],
+            'fertilizer_by_unit' => [] // Track fertilizer by unit for each crop
+        ];
 
         // Calculate fertilizer details for this plan
         $fertilizerDetails = $plan->fertilizer_details ?? [];
-        $planTotalFertilizer = 0;
+        $planFertilizerByUnit = []; // Track fertilizer by unit for this plan
 
         if (is_array($fertilizerDetails)) {
             foreach ($fertilizerDetails as $fert) {
@@ -145,16 +169,16 @@ public function kebelefertlizer()
                 $amount = floatval($fert['amount'] ?? 0);
                 $unit = $fert['unit'] ?? 'kg';
 
-                // Get fertilizer names
-                $fertTypeName = $fertilizerTypes[$fertilizerTypeId] ?? "Type {$fertilizerTypeId}";
-                $fertName = $fertilizers[$fertilizerId] ?? "Fertilizer {$fertilizerId}";
+                // Get actual fertilizer names
+                $fertTypeName = $fertilizerTypes[$fertilizerTypeId] ?? "Type #{$fertilizerTypeId}";
+                $fertName = $fertilizers[$fertilizerId] ?? "Fertilizer #{$fertilizerId}";
 
                 // Create a unique key for this fertilizer combination
                 $fertKey = $fertilizerTypeId . '_' . $fertilizerId . '_' . $unit;
 
                 // Add to crop's fertilizer summary
-                if (!isset($groupedData[$year]['crop_types'][$cropType]['crops'][$crop]['fertilizers'][$fertKey])) {
-                    $groupedData[$year]['crop_types'][$cropType]['crops'][$crop]['fertilizers'][$fertKey] = [
+                if (!isset($groupedData[$yearSeasonKey]['crop_types'][$cropType]['crops'][$cropKey]['fertilizers'][$fertKey])) {
+                    $groupedData[$yearSeasonKey]['crop_types'][$cropType]['crops'][$cropKey]['fertilizers'][$fertKey] = [
                         'fertilizer_type_id' => $fertilizerTypeId,
                         'fertilizer_id' => $fertilizerId,
                         'amount' => 0,
@@ -164,41 +188,91 @@ public function kebelefertlizer()
                     ];
                 }
 
-                $groupedData[$year]['crop_types'][$cropType]['crops'][$crop]['fertilizers'][$fertKey]['amount'] += $amount;
+                $groupedData[$yearSeasonKey]['crop_types'][$cropType]['crops'][$cropKey]['fertilizers'][$fertKey]['amount'] += $amount;
 
-                // Only add to total fertilizer if unit is 'kg'
-                if ($unit === 'kg') {
-                    $planTotalFertilizer += $amount;
+                // Add to crop's fertilizer by unit
+                if (!isset($groupedData[$yearSeasonKey]['crop_types'][$cropType]['crops'][$cropKey]['fertilizer_by_unit'][$unit])) {
+                    $groupedData[$yearSeasonKey]['crop_types'][$cropType]['crops'][$cropKey]['fertilizer_by_unit'][$unit] = 0;
                 }
+                $groupedData[$yearSeasonKey]['crop_types'][$cropType]['crops'][$cropKey]['fertilizer_by_unit'][$unit] += $amount;
+
+                // Add to crop type's fertilizer summary
+                if (!isset($groupedData[$yearSeasonKey]['crop_types'][$cropType]['fertilizers'][$fertKey])) {
+                    $groupedData[$yearSeasonKey]['crop_types'][$cropType]['fertilizers'][$fertKey] = [
+                        'fertilizer_type_id' => $fertilizerTypeId,
+                        'fertilizer_id' => $fertilizerId,
+                        'amount' => 0,
+                        'unit' => $unit,
+                        'fertilizer_name' => $fertName,
+                        'fertilizer_type_name' => $fertTypeName
+                    ];
+                }
+
+                $groupedData[$yearSeasonKey]['crop_types'][$cropType]['fertilizers'][$fertKey]['amount'] += $amount;
+
+                // Add to crop type's fertilizer by unit
+                if (!isset($groupedData[$yearSeasonKey]['crop_types'][$cropType]['fertilizer_by_unit'][$unit])) {
+                    $groupedData[$yearSeasonKey]['crop_types'][$cropType]['fertilizer_by_unit'][$unit] = 0;
+                }
+                $groupedData[$yearSeasonKey]['crop_types'][$cropType]['fertilizer_by_unit'][$unit] += $amount;
+
+                // Add to year-season's fertilizer by unit
+                if (!isset($groupedData[$yearSeasonKey]['fertilizer_by_unit'][$unit])) {
+                    $groupedData[$yearSeasonKey]['fertilizer_by_unit'][$unit] = 0;
+                }
+                $groupedData[$yearSeasonKey]['fertilizer_by_unit'][$unit] += $amount;
+
+                // Add to year's fertilizer by unit
+                if (!isset($yearTotals[$year]['fertilizer_by_unit'][$unit])) {
+                    $yearTotals[$year]['fertilizer_by_unit'][$unit] = 0;
+                }
+                $yearTotals[$year]['fertilizer_by_unit'][$unit] += $amount;
+
+                // Add to grand total by unit
+                if (!isset($totalFertilizerByUnit[$unit])) {
+                    $totalFertilizerByUnit[$unit] = 0;
+                }
+                $totalFertilizerByUnit[$unit] += $amount;
+
+                // Track for this plan
+                if (!isset($planFertilizerByUnit[$unit])) {
+                    $planFertilizerByUnit[$unit] = 0;
+                }
+                $planFertilizerByUnit[$unit] += $amount;
             }
         }
 
         // Update totals
         $area = floatval($plan->area_to_plant);
 
-        $groupedData[$year]['crop_types'][$cropType]['crops'][$crop]['total_fertilizer'] += $planTotalFertilizer;
-        $groupedData[$year]['crop_types'][$cropType]['crops'][$crop]['total_area'] += $area;
-        $groupedData[$year]['crop_types'][$cropType]['crops'][$crop]['plans'][] = $plan->id;
+        // Update crop type totals
+        $groupedData[$yearSeasonKey]['crop_types'][$cropType]['total_area'] += $area;
 
-        $groupedData[$year]['crop_types'][$cropType]['total_fertilizer'] += $planTotalFertilizer;
-        $groupedData[$year]['crop_types'][$cropType]['total_area'] += $area;
+        // Update year-season totals
+        $groupedData[$yearSeasonKey]['total_area'] += $area;
 
-        $groupedData[$year]['total_fertilizer'] += $planTotalFertilizer;
-        $groupedData[$year]['total_area'] += $area;
-
-        $totalFertilizer += $planTotalFertilizer;
+        // Update grand totals
         $totalArea += $area;
     }
 
-    // Calculate averages
-    $avgPerHectare = $totalArea > 0 ? $totalFertilizer / $totalArea : 0;
+    // Add year totals to grouped data for display
+    foreach ($groupedData as $yearSeasonKey => $yearSeasonData) {
+        $year = $yearSeasonData['year'];
+        $groupedData[$yearSeasonKey]['year_total_area'] = $yearTotals[$year]['total_area'] ?? 0;
+        $groupedData[$yearSeasonKey]['year_fertilizer_by_unit'] = $yearTotals[$year]['fertilizer_by_unit'] ?? [];
+    }
+
+    // Calculate averages (using kg for consistency, or you can calculate per unit)
+    $totalKg = $totalFertilizerByUnit['kg'] ?? 0;
+    $avgPerHectare = $totalArea > 0 ? $totalKg / $totalArea : 0;
 
     return view('sector.fertilizers.index', compact(
         'groupedData',
-        'totalFertilizer',
+        'totalFertilizerByUnit',
         'totalArea',
         'avgPerHectare',
-        'cropPlans'
+        'cropPlans',
+        'yearTotals'
     ));
 }
 
@@ -402,19 +476,109 @@ public function getFertilizers($typeId)
         return view('sector.crop_plans.edit', compact('plan', 'cropTypes'));
     }
 
-     public function activityplan($id)
-    {
-        $user = Auth::user();
+   public function activityplan($id)
+{
+    $user = Auth::user();
 
-        // Retrieve the plan; ensure user can only edit plans in their sector
-        $plan = KebeleCropPlan::where('id', $id)
-            ->where('kebele_id', $user->kebele_id)
-            ->firstOrFail();
+    // Retrieve the plan; ensure user can only edit plans in their sector
+    $plan = KebeleCropPlan::where('id', $id)
+        ->where('kebele_id', $user->kebele_id)
+        ->firstOrFail();
 
-        $cropTypes = CropType::with('crops')->get(); // load crop types and their crops
+    $cropTypes = CropType::with('crops')->get();
 
-        return view('sector.crop_plans.activityplan', compact('plan', 'cropTypes'));
+    // Transform the single plan data for the table structure
+    $transformedPlans = $this->transformPlanDataForTable($plan);
+
+    return view('sector.crop_plans.activityplan', compact('plan', 'cropTypes', 'transformedPlans'));
+}
+
+
+private function transformPlanDataForTable($plan)
+{
+    // Extract timeline data from plan division details
+    $planDivisionDetails = $plan->plandivision_details ?? [];
+    
+    // Initialize timeline data structure
+    $timelineData = [
+        'quarters' => [],
+        'months' => [],
+        'weeks' => [],
+        'total_distributed_area' => 0,
+        'preparation_year' => $plan->year - 1 // Assuming preparation year is previous year
+    ];
+
+    // Define Ethiopian months by quarter
+    $ethiopianMonths = [
+        'Q1' => ['Meskerem', 'Tikimt', 'Hidar'],
+        'Q2' => ['Tahsas', 'Tir', 'Yekatit'],
+        'Q3' => ['Megabit', 'Miyazia', 'Ginbot'],
+        'Q4' => ['Sene', 'Hamle', 'Nehase', 'Pagumen']
+    ];
+
+    // Process plan division details to extract timeline data
+    if (!empty($planDivisionDetails) && is_array($planDivisionDetails)) {
+        // Handle both array and object formats
+        $weeklyDistributions = [];
+        
+        if (isset($planDivisionDetails['weekly_distribution']) && is_array($planDivisionDetails['weekly_distribution'])) {
+            $weeklyDistributions = $planDivisionDetails['weekly_distribution'];
+        } elseif (is_array($planDivisionDetails) && !isset($planDivisionDetails['weekly_distribution'])) {
+            $weeklyDistributions = $planDivisionDetails;
+        }
+
+        foreach ($weeklyDistributions as $distribution) {
+            if (isset($distribution['area']) && $distribution['area'] > 0) {
+                $area = floatval($distribution['area']);
+                $quarter = $distribution['quarter'] ?? '';
+                $month = $distribution['month'] ?? '';
+                $week = $distribution['week'] ?? '';
+
+                // Add to total distributed area
+                $timelineData['total_distributed_area'] += $area;
+
+                // Add to quarter totals
+                if ($quarter && isset($ethiopianMonths[$quarter])) {
+                    if (!isset($timelineData['quarters'][$quarter])) {
+                        $timelineData['quarters'][$quarter] = ['area' => 0];
+                    }
+                    $timelineData['quarters'][$quarter]['area'] += $area;
+                }
+
+                // Add to month totals
+                if ($month) {
+                    if (!isset($timelineData['months'][$month])) {
+                        $timelineData['months'][$month] = ['area' => 0];
+                    }
+                    $timelineData['months'][$month]['area'] += $area;
+                }
+
+                // Add to week totals
+                if ($week && $month) {
+                    $weekKey = $month . ' ' . $week;
+                    if (!isset($timelineData['weeks'][$weekKey])) {
+                        $timelineData['weeks'][$weekKey] = ['area' => 0];
+                    }
+                    $timelineData['weeks'][$weekKey]['area'] += $area;
+                }
+            }
+        }
     }
+
+    // Create the transformed plan structure
+    return [
+        [
+            'year' => $plan->year,
+            'crop_type' => $plan->cropType->name ?? 'Unknown',
+            'crop_name' => $plan->crop->name ?? 'Unknown',
+            'unit' => 'ha',
+            'area_to_plant' => floatval($plan->area_to_plant),
+            'season' => $plan->season,
+            'timeline_data' => $timelineData
+        ]
+    ];
+}
+
 
 
 
@@ -432,6 +596,8 @@ public function getFertilizers($typeId)
         'season' => 'required|string|max:255',
         'seed_required' => 'required|numeric|min:0',
         'plandivision_details' => 'sometimes|json',
+        'productionplan_details' => 'sometimes|json',
+        
 
     ]);
 
@@ -465,7 +631,9 @@ public function getFertilizers($typeId)
 
     // Parse planning division details
     $planDivisionDetails = json_decode($request->plandivision_details, true) ?? [];
+    $productionplanDetails = json_decode($request->productionplan_details, true) ?? [];
     $yieldTimelineDetails = json_decode($request->yield_timeline_details, true) ?? [];
+    
 
     $cropPlan->update([
         'croptype_id' => $validated['croptype_id'],
@@ -478,6 +646,8 @@ public function getFertilizers($typeId)
         'fertilizer_type_id' => $fertilizerTypeIds,
         'fertilizer_details' => $fertilizerDetails,
         'plandivision_details' => $planDivisionDetails,
+        'productionplan_details' => $productionplanDetails,
+        
         'responsible_staff' => $request->responsible_staff,
         'notes' => $request->notes,
         'productivity' => $productivity,
@@ -487,6 +657,114 @@ public function getFertilizers($typeId)
     return redirect()->route('sector.crop-plans.index')
         ->with('success', '✅ Kebele Crop Plan updated successfully!');
 }
+
+
+
+// production division 
+
+public function productionactivityplan($id)
+{
+    $user = Auth::user();
+
+    // Retrieve the plan; ensure user can only edit plans in their sector
+    $plan = KebeleCropPlan::where('id', $id)
+        ->where('kebele_id', $user->kebele_id)
+        ->firstOrFail();
+
+    $cropTypes = CropType::with('crops')->get();
+
+    // Transform the single plan data for production planning table structure
+    $transformedPlans = $this->transformPlanDataForProductionTable($plan);
+
+    return view('sector.crop_plans.production_activityplan', compact('plan', 'cropTypes', 'transformedPlans'));
+}
+
+private function transformPlanDataForProductionTable($plan)
+{
+    // Extract production timeline data from plan details
+    $productionDetails = $plan->productionplan_details ?? [];
+    
+    // Initialize production timeline data structure
+    $productionData = [
+        'quarters' => [],
+        'months' => [],
+        'weeks' => [],
+        'total_distributed_yield' => 0,
+        'production_year' => $plan->year // Production happens in the SAME year
+    ];
+
+    // Define Ethiopian months by quarter
+    $ethiopianMonths = [
+        'Q1' => ['Meskerem', 'Tikimt', 'Hidar'],
+        'Q2' => ['Tahsas', 'Tir', 'Yekatit'],
+        'Q3' => ['Megabit', 'Miyazia', 'Ginbot'],
+        'Q4' => ['Sene', 'Hamle', 'Nehase', 'Pagumen']
+    ];
+
+    // Process production details to extract timeline data
+    if (!empty($productionDetails) && is_array($productionDetails)) {
+        // Handle both array and object formats
+        $weeklyProductions = [];
+        
+        if (isset($productionDetails['weekly_production']) && is_array($productionDetails['weekly_production'])) {
+            $weeklyProductions = $productionDetails['weekly_production'];
+        } elseif (is_array($productionDetails) && !isset($productionDetails['weekly_production'])) {
+            $weeklyProductions = $productionDetails;
+        }
+
+        foreach ($weeklyProductions as $production) {
+            if (isset($production['yield']) && $production['yield'] > 0) {
+                $yield = floatval($production['yield']);
+                $quarter = $production['quarter'] ?? '';
+                $month = $production['month'] ?? '';
+                $week = $production['week'] ?? '';
+
+                // Add to total distributed yield
+                $productionData['total_distributed_yield'] += $yield;
+
+                // Add to quarter totals
+                if ($quarter && isset($ethiopianMonths[$quarter])) {
+                    if (!isset($productionData['quarters'][$quarter])) {
+                        $productionData['quarters'][$quarter] = ['yield' => 0];
+                    }
+                    $productionData['quarters'][$quarter]['yield'] += $yield;
+                }
+
+                // Add to month totals
+                if ($month) {
+                    if (!isset($productionData['months'][$month])) {
+                        $productionData['months'][$month] = ['yield' => 0];
+                    }
+                    $productionData['months'][$month]['yield'] += $yield;
+                }
+
+                // Add to week totals
+                if ($week && $month) {
+                    $weekKey = $month . ' ' . $week;
+                    if (!isset($productionData['weeks'][$weekKey])) {
+                        $productionData['weeks'][$weekKey] = ['yield' => 0];
+                    }
+                    $productionData['weeks'][$weekKey]['yield'] += $yield;
+                }
+            }
+        }
+    }
+
+    // Create the transformed plan structure
+    return [
+        [
+            'year' => $plan->year,
+            'crop_type' => $plan->cropType->name ?? 'Unknown',
+            'crop_name' => $plan->crop->name ?? 'Unknown',
+            'unit' => 'qt',
+            'expected_yield' => floatval($plan->expected_yield),
+            'season' => $plan->season,
+            'production_data' => $productionData
+        ]
+    ];
+}
+
+// production division end 
 
 
     public function plantime(Request $request)
@@ -777,6 +1055,225 @@ public function getFertilizers($typeId)
         return response()->stream($callback, 200, $headers);
     }
 
+    // end of plan time 
+
+    // production time 
+    public function productiontime(Request $request)
+{
+    $user = Auth::user();
+
+    // Get crop plans for the user's kebele
+    $cropPlans = KebeleCropPlan::where('kebele_id', $user->kebele_id)
+        ->with(['cropType', 'crop'])
+        ->orderBy('year', 'desc')
+        ->orderBy('season')
+        ->get();
+
+    // Transform data for the Excel-like display
+    $transformedPlans = $cropPlans->map(function ($plan) {
+        $productionplanDetails = $plan->productionplan_details ?? [];
+
+        // Extract production timeline data from productionplan_details
+        $productionData = $this->extractProductionTimelineData($productionplanDetails, $plan->year);
+
+        return [
+            'id' => $plan->id,
+            'crop_type' => $plan->cropType->name ?? 'N/A',
+            'crop_name' => $plan->crop->name ?? 'N/A',
+            'unit' => 'Quintal',
+            'previous_year' => $this->getPreviousYearData($plan),
+            'productionplan_details' => $productionplanDetails,
+            'production_data' => $productionData, // Extracted production timeline data
+            'area_to_plant' => $plan->area_to_plant,
+            'expected_yield' => $plan->expected_yield,
+            'year' => $plan->year,
+            'season' => $plan->season,
+            'seed_required' => $plan->seed_required,
+            'responsible_staff' => $plan->responsible_staff,
+            'notes' => $plan->notes,
+            'updated_at' => $plan->updated_at->format('Y-m-d H:i:s'),
+        ];
+    });
+
+    // If AJAX request, return JSON
+    if ($request->ajax()) {
+        return response()->json([
+            'plans' => $transformedPlans,
+            'total' => $transformedPlans->count()
+        ]);
+    }
+
+    return view('sector.crop_plans.productiontime', compact('cropPlans', 'transformedPlans'));
+}
+
+/**
+ * Extract production timeline data from productionplan_details
+ */
+private function extractProductionTimelineData($productionplanDetails, $planYear)
+{
+    $productionData = [
+        'production_year' => $planYear, // Production happens in the same year
+        'quarters' => [],
+        'months' => [],
+        'weeks' => [],
+        'total_distributed_yield' => 0,
+        'remaining_yield' => 0
+    ];
+
+    if (empty($productionplanDetails)) {
+        return $productionData;
+    }
+
+    // Handle different possible structures of productionplan_details
+    if (is_array($productionplanDetails)) {
+        // Check for production_year in the data
+        if (isset($productionplanDetails['production_year'])) {
+            $productionData['production_year'] = $productionplanDetails['production_year'];
+        }
+
+        // Structure 1: Direct array with quarters, months, weeks
+        if (isset($productionplanDetails['quarters'])) {
+            $productionData = array_merge($productionData, $this->extractProductionFromStructuredData($productionplanDetails));
+        }
+        // Structure 2: Array of weekly productions
+        else if (isset($productionplanDetails[0]) && is_array($productionplanDetails[0])) {
+            $productionData = array_merge($productionData, $this->extractFromWeeklyProduction($productionplanDetails));
+        }
+        // Structure 3: Legacy format with nested structure
+        else if (isset($productionplanDetails['weekly_production'])) {
+            $productionData = array_merge($productionData, $this->extractFromWeeklyProduction($productionplanDetails['weekly_production']));
+        }
+
+        // Also check for production_year in nested structures
+        if (isset($productionplanDetails['production_year'])) {
+            $productionData['production_year'] = $productionplanDetails['production_year'];
+        }
+
+        // Calculate total distributed yield
+        $productionData['total_distributed_yield'] = array_reduce($productionData['quarters'], function($carry, $quarter) {
+            return $carry + ($quarter['yield'] ?? 0);
+        }, 0);
+    }
+
+    return $productionData;
+}
+
+/**
+ * Extract from structured data with quarters, months, weeks for production
+ */
+private function extractProductionFromStructuredData($data)
+{
+    $productionData = [
+        'quarters' => [],
+        'months' => [],
+        'weeks' => [],
+        'total_distributed_yield' => 0
+    ];
+
+    // Check for production_year in structured data
+    if (isset($data['production_year'])) {
+        $productionData['production_year'] = $data['production_year'];
+    }
+
+    // Extract quarters data
+    if (isset($data['quarters']) && is_array($data['quarters'])) {
+        foreach ($data['quarters'] as $quarterName => $quarterData) {
+            if (isset($quarterData['yield']) && $quarterData['yield'] > 0) {
+                $productionData['quarters'][$quarterName] = [
+                    'yield' => $quarterData['yield'],
+                    'checked' => $quarterData['checked'] ?? false
+                ];
+                $productionData['total_distributed_yield'] += $quarterData['yield'];
+            }
+        }
+    }
+
+    // Extract months data
+    if (isset($data['months']) && is_array($data['months'])) {
+        foreach ($data['months'] as $monthName => $monthData) {
+            if (isset($monthData['yield']) && $monthData['yield'] > 0) {
+                $productionData['months'][$monthName] = [
+                    'yield' => $monthData['yield'],
+                    'quarter' => $monthData['quarter'] ?? 'Unknown',
+                    'checked' => $monthData['checked'] ?? false
+                ];
+            }
+        }
+    }
+
+    // Extract weeks data
+    if (isset($data['weeks']) && is_array($data['weeks'])) {
+        foreach ($data['weeks'] as $weekKey => $weekData) {
+            if (isset($weekData['yield']) && $weekData['yield'] > 0) {
+                $productionData['weeks'][$weekKey] = [
+                    'yield' => $weekData['yield'],
+                    'month' => $weekData['month'] ?? 'Unknown',
+                    'quarter' => $weekData['quarter'] ?? 'Unknown',
+                    'week_number' => $weekData['week_number'] ?? 1,
+                    'checked' => $weekData['checked'] ?? false
+                ];
+            }
+        }
+    }
+
+    return $productionData;
+}
+
+/**
+ * Extract from weekly production array
+ */
+private function extractFromWeeklyProduction($weeklyProduction)
+{
+    $productionData = [
+        'quarters' => [],
+        'months' => [],
+        'weeks' => [],
+        'total_distributed_yield' => 0
+    ];
+
+    foreach ($weeklyProduction as $week) {
+        if (is_array($week)) {
+            $yield = $week['yield'] ?? 0;
+            $quarter = $week['quarter'] ?? ($week['year'] ?? 'Unknown');
+            $month = $week['month'] ?? 'Unknown';
+            $weekNumber = $week['week'] ?? ($week['week_number'] ?? 1);
+
+            // Check for production_year in weekly data
+            if (isset($week['production_year'])) {
+                $productionData['production_year'] = $week['production_year'];
+            }
+
+            if ($yield > 0) {
+                // Add to total
+                $productionData['total_distributed_yield'] += $yield;
+
+                // Track quarter
+                if (!isset($productionData['quarters'][$quarter])) {
+                    $productionData['quarters'][$quarter] = ['yield' => 0];
+                }
+                $productionData['quarters'][$quarter]['yield'] += $yield;
+
+                // Track month
+                if (!isset($productionData['months'][$month])) {
+                    $productionData['months'][$month] = ['yield' => 0, 'quarter' => $quarter];
+                }
+                $productionData['months'][$month]['yield'] += $yield;
+
+                // Track week
+                $weekKey = $month . '_week_' . $weekNumber;
+                $productionData['weeks'][$weekKey] = [
+                    'yield' => $yield,
+                    'month' => $month,
+                    'quarter' => $quarter,
+                    'week_number' => $weekNumber
+                ];
+            }
+        }
+    }
+
+    return $productionData;
+}
+
 
 
 
@@ -827,6 +1324,380 @@ public function updatefertilizer(Request $request, $id)
 }
 
 
+
+
+
+
+public function fertilizerTime(Request $request)
+{
+    $user = Auth::user();
+
+    // Get crop plans for the user's kebele
+    $cropPlans = KebeleCropPlan::where('kebele_id', $user->kebele_id)
+        ->with(['cropType', 'crop'])
+        ->orderBy('year', 'desc')
+        ->orderBy('season')
+        ->get();
+
+    // Transform data for the Excel-like display
+    $transformedPlans = $cropPlans->map(function ($plan) {
+        $fertilizerDistributionDetails = $plan->fertilizer_distribution_details ?? [];
+
+        // Extract timeline data from fertilizer_distribution_details
+        $timelineData = $this->extractFertilizerTimelineData($fertilizerDistributionDetails, $plan->year);
+
+        // Get fertilizer names and amounts properly
+        $fertilizerList = $this->getFertilizerNamesAndAmounts($plan->fertilizer_details ?? []);
+
+        return [
+            'id' => $plan->id,
+            'crop_type' => $plan->cropType->name ?? 'N/A',
+            'crop_name' => $plan->crop->name ?? 'N/A',
+            'unit' => 'Kilogram',
+            'application_year' => $this->getApplicationYearData($plan),
+            'fertilizer_distribution_details' => $fertilizerDistributionDetails,
+            'timeline_data' => $timelineData,
+            'fertilizer_details' => $plan->fertilizer_details ?? [],
+            'fertilizer_list' => $fertilizerList, // Properly formatted fertilizer list
+            'area_to_plant' => $plan->area_to_plant,
+            'year' => $plan->year,
+            'season' => $plan->season,
+            'responsible_staff' => $plan->responsible_staff,
+            'notes' => $plan->notes,
+            'updated_at' => $plan->updated_at->format('Y-m-d H:i:s'),
+        ];
+    });
+
+    // If AJAX request, return JSON
+    if ($request->ajax()) {
+        return response()->json([
+            'plans' => $transformedPlans,
+            'total' => $transformedPlans->count()
+        ]);
+    }
+
+    return view('sector.fertilizers.fertilizertime', compact('cropPlans', 'transformedPlans'));
+}
+
+/**
+ * Extract fertilizer names and amounts from fertilizer_details
+ */
+private function getFertilizerNamesAndAmounts($fertilizerDetails)
+{
+    $fertilizerList = [];
+    
+    if (empty($fertilizerDetails) || !is_array($fertilizerDetails)) {
+        return $fertilizerList;
+    }
+
+    foreach ($fertilizerDetails as $fertDetail) {
+        if (is_array($fertDetail)) {
+            $fertilizerTypeId = $fertDetail['fertilizer_type_id'] ?? null;
+            $fertilizerId = $fertDetail['fertilizer_id'] ?? null;
+            $amount = $fertDetail['amount'] ?? 0;
+            $unit = $fertDetail['unit'] ?? 'kg';
+            
+            // Get fertilizer name from database
+            $fertilizerName = $this->getFertilizerName($fertilizerId, $fertilizerTypeId);
+            
+            if ($fertilizerName && $amount > 0) {
+                $fertilizerList[] = [
+                    'name' => $fertilizerName,
+                    'amount' => $amount,
+                    'unit' => $unit
+                ];
+            }
+        }
+    }
+
+    return $fertilizerList;
+}
+
+/**
+ * Get fertilizer name from database
+ */
+private function getFertilizerName($fertilizerId, $fertilizerTypeId = null)
+{
+    try {
+        // Try to get fertilizer by ID first
+        if ($fertilizerId) {
+            $fertilizer = \App\Models\Fertilizer::find($fertilizerId);
+            if ($fertilizer) {
+                return $fertilizer->name;
+            }
+        }
+        
+        // If fertilizer not found by ID, try to get by fertilizer_type_id
+        if ($fertilizerTypeId) {
+            $fertilizerType = \App\Models\FertilizerType::find($fertilizerTypeId);
+            if ($fertilizerType) {
+                return $fertilizerType->name;
+            }
+        }
+        
+        return 'Unknown Fertilizer';
+    } catch (\Exception $e) {
+        return 'Unknown Fertilizer';
+    }
+}
+
+/**
+ * Extract fertilizer timeline data from fertilizer_distribution_details
+ */
+private function extractFertilizerTimelineData($fertilizerDistributionDetails, $planYear)
+{
+    $timelineData = [
+        'application_year' => $planYear - 1, // Default fallback
+        'quarters' => [],
+        'months' => [],
+        'weeks' => [],
+        'total_distributed_quantity' => 0,
+        'fertilizer_breakdown' => []
+    ];
+
+    if (empty($fertilizerDistributionDetails)) {
+        return $timelineData;
+    }
+
+    // Handle different possible structures of fertilizer_distribution_details
+    if (is_array($fertilizerDistributionDetails)) {
+        // Check for application_year in the data
+        if (isset($fertilizerDistributionDetails['application_year'])) {
+            $timelineData['application_year'] = $fertilizerDistributionDetails['application_year'];
+        }
+
+        // Structure 1: Direct array with quarters, months, weeks
+        if (isset($fertilizerDistributionDetails['quarters'])) {
+            $timelineData = array_merge($timelineData, $this->extractFertilizerFromStructuredData($fertilizerDistributionDetails));
+        }
+        // Structure 2: Array of weekly distributions
+        else if (isset($fertilizerDistributionDetails[0]) && is_array($fertilizerDistributionDetails[0])) {
+            $timelineData = array_merge($timelineData, $this->extractFertilizerFromWeeklyDistribution($fertilizerDistributionDetails));
+        }
+        // Structure 3: Legacy format with nested structure
+        else if (isset($fertilizerDistributionDetails['weekly_distribution'])) {
+            $timelineData = array_merge($timelineData, $this->extractFertilizerFromWeeklyDistribution($fertilizerDistributionDetails['weekly_distribution']));
+        }
+
+        // Also check for application_year in nested structures
+        if (isset($fertilizerDistributionDetails['application_year'])) {
+            $timelineData['application_year'] = $fertilizerDistributionDetails['application_year'];
+        }
+    }
+
+    return $timelineData;
+}
+
+/**
+ * Extract from structured data with quarters, months, weeks for fertilizers
+ */
+private function extractFertilizerFromStructuredData($data)
+{
+    $timelineData = [
+        'quarters' => [],
+        'months' => [],
+        'weeks' => [],
+        'total_distributed_quantity' => 0,
+        'fertilizer_breakdown' => []
+    ];
+
+    // Check for application_year in structured data
+    if (isset($data['application_year'])) {
+        $timelineData['application_year'] = $data['application_year'];
+    }
+
+    // Extract quarters data
+    if (isset($data['quarters']) && is_array($data['quarters'])) {
+        foreach ($data['quarters'] as $quarterName => $quarterData) {
+            if (isset($quarterData['quantity']) && $quarterData['quantity'] > 0) {
+                $timelineData['quarters'][$quarterName] = [
+                    'quantity' => $quarterData['quantity'],
+                    'checked' => $quarterData['checked'] ?? false
+                ];
+                $timelineData['total_distributed_quantity'] += $quarterData['quantity'];
+            }
+        }
+    }
+
+    // Extract months data
+    if (isset($data['months']) && is_array($data['months'])) {
+        foreach ($data['months'] as $monthName => $monthData) {
+            if (isset($monthData['quantity']) && $monthData['quantity'] > 0) {
+                $timelineData['months'][$monthName] = [
+                    'quantity' => $monthData['quantity'],
+                    'quarter' => $monthData['quarter'] ?? 'Unknown',
+                    'checked' => $monthData['checked'] ?? false
+                ];
+            }
+        }
+    }
+
+    // Extract weeks data
+    if (isset($data['weeks']) && is_array($data['weeks'])) {
+        foreach ($data['weeks'] as $weekKey => $weekData) {
+            if (isset($weekData['quantity']) && $weekData['quantity'] > 0) {
+                $timelineData['weeks'][$weekKey] = [
+                    'quantity' => $weekData['quantity'],
+                    'month' => $weekData['month'] ?? 'Unknown',
+                    'quarter' => $weekData['quarter'] ?? 'Unknown',
+                    'week_number' => $weekData['week_number'] ?? 1,
+                    'fertilizer_name' => $weekData['fertilizer_name'] ?? 'Unknown',
+                    'unit' => $weekData['unit'] ?? 'kg',
+                    'checked' => $weekData['checked'] ?? false
+                ];
+                
+                // Track fertilizer breakdown
+                $fertName = $weekData['fertilizer_name'] ?? 'Unknown';
+                if (!isset($timelineData['fertilizer_breakdown'][$fertName])) {
+                    $timelineData['fertilizer_breakdown'][$fertName] = [
+                        'quantity' => 0,
+                        'unit' => $weekData['unit'] ?? 'kg'
+                    ];
+                }
+                $timelineData['fertilizer_breakdown'][$fertName]['quantity'] += $weekData['quantity'];
+            }
+        }
+    }
+
+    return $timelineData;
+}
+
+/**
+ * Extract from weekly distribution array for fertilizers
+ */
+private function extractFertilizerFromWeeklyDistribution($weeklyDistribution)
+{
+    $timelineData = [
+        'quarters' => [],
+        'months' => [],
+        'weeks' => [],
+        'total_distributed_quantity' => 0,
+        'fertilizer_breakdown' => []
+    ];
+
+    foreach ($weeklyDistribution as $week) {
+        if (is_array($week)) {
+            $quantity = $week['quantity'] ?? 0;
+            $quarter = $week['quarter'] ?? ($week['year'] ?? 'Unknown');
+            $month = $week['month'] ?? 'Unknown';
+            $weekNumber = $week['week'] ?? ($week['week_number'] ?? 1);
+            $fertilizerName = $week['fertilizer_name'] ?? 'Unknown';
+            $unit = $week['unit'] ?? 'kg';
+
+            // Check for application_year in weekly data
+            if (isset($week['application_year'])) {
+                $timelineData['application_year'] = $week['application_year'];
+            }
+
+            if ($quantity > 0) {
+                // Add to total
+                $timelineData['total_distributed_quantity'] += $quantity;
+
+                // Track quarter
+                if (!isset($timelineData['quarters'][$quarter])) {
+                    $timelineData['quarters'][$quarter] = ['quantity' => 0];
+                }
+                $timelineData['quarters'][$quarter]['quantity'] += $quantity;
+
+                // Track month
+                if (!isset($timelineData['months'][$month])) {
+                    $timelineData['months'][$month] = ['quantity' => 0, 'quarter' => $quarter];
+                }
+                $timelineData['months'][$month]['quantity'] += $quantity;
+
+                // Track week
+                $weekKey = $month . '_week_' . $weekNumber;
+                $timelineData['weeks'][$weekKey] = [
+                    'quantity' => $quantity,
+                    'month' => $month,
+                    'quarter' => $quarter,
+                    'week_number' => $weekNumber,
+                    'fertilizer_name' => $fertilizerName,
+                    'unit' => $unit
+                ];
+
+                // Track fertilizer breakdown
+                if (!isset($timelineData['fertilizer_breakdown'][$fertilizerName])) {
+                    $timelineData['fertilizer_breakdown'][$fertilizerName] = [
+                        'quantity' => 0,
+                        'unit' => $unit
+                    ];
+                }
+                $timelineData['fertilizer_breakdown'][$fertilizerName]['quantity'] += $quantity;
+            }
+        }
+    }
+
+    return $timelineData;
+}
+
+/**
+ * Get application year data for a crop plan
+ */
+private function getApplicationYearData($plan)
+{
+    return $plan->year - 1; // Application year is always planning year - 1
+}
+
+/**
+ * Export fertilizer plans to Excel
+ */
+public function exportFertilizerExcel()
+{
+    $user = Auth::user();
+
+    $cropPlans = KebeleCropPlan::where('kebele_id', $user->kebele_id)
+        ->with(['cropType', 'crop'])
+        ->orderBy('year', 'desc')
+        ->orderBy('season')
+        ->get();
+
+    $fileName = 'fertilizer_plans_' . date('Y-m-d') . '.csv';
+
+    $headers = [
+        'Content-Type' => 'text/csv',
+        'Content-Disposition' => 'attachment; filename="' . $fileName . '"',
+    ];
+
+    $callback = function() use ($cropPlans) {
+        $file = fopen('php://output', 'w');
+
+        // Header row
+        fputcsv($file, [
+            'Crop Type', 'Crop Name', 'Area to Plant', 'Year', 'Season', 
+            'Fertilizer Types', 'Total Fertilizer Quantity', 'Responsible Staff'
+        ]);
+
+        // Data rows
+        foreach ($cropPlans as $plan) {
+            $fertilizerTypes = [];
+            $totalFertilizer = 0;
+            
+            if ($plan->fertilizer_details && is_array($plan->fertilizer_details)) {
+                foreach ($plan->fertilizer_details as $fert) {
+                    $fertilizerTypes[] = $fert['fertilizer_name'] ?? 'Unknown';
+                    $totalFertilizer += $fert['amount'] ?? 0;
+                }
+            }
+
+            fputcsv($file, [
+                $plan->cropType->name ?? 'N/A',
+                $plan->crop->name ?? 'N/A',
+                $plan->area_to_plant,
+                $plan->year,
+                $plan->season,
+                implode(', ', $fertilizerTypes),
+                $totalFertilizer,
+                $plan->responsible_staff ?? 'N/A'
+            ]);
+        }
+
+        fclose($file);
+    };
+
+    return response()->stream($callback, 200, $headers);
+}
+// end of fertlizer 
 
 
 
@@ -885,6 +1756,130 @@ public function import(Request $request)
         ->with('success', '✅ Kebele Crop Plans imported successfully!');
 }
 
+
+
+
+
+
+
+public function fertilizerPlan($id)
+{
+    $user = Auth::user();
+
+    // Retrieve the plan; ensure user can only edit plans in their sector
+    $plan = KebeleCropPlan::where('id', $id)
+        ->where('kebele_id', $user->kebele_id)
+        ->firstOrFail();
+
+    $fertilizerTypes = FertilizerType::with('fertilizers')->get();
+
+    // Transform the single plan data for fertilizer distribution table
+    $transformedFertilizerPlans = $this->transformFertilizerPlanDataForTable($plan);
+
+    return view('sector.fertilizers.fertilizerplan', compact('plan', 'fertilizerTypes', 'transformedFertilizerPlans'));
+}
+
+private function transformFertilizerPlanDataForTable($plan)
+{
+    // Extract fertilizer timeline data from plan
+    $fertilizerDetails = $plan->fertilizer_details ?? [];
+    
+    // Initialize timeline data structure - application year is planning year - 1
+    $timelineData = [
+        'quarters' => [],
+        'months' => [],
+        'weeks' => [],
+        'total_distributed_quantity' => 0,
+        'application_year' => $plan->year - 1 // Changed to planning year - 1
+    ];
+
+    // Define Ethiopian months by quarter
+    $ethiopianMonths = [
+        'Q1' => ['Meskerem', 'Tikimt', 'Hidar'],
+        'Q2' => ['Tahsas', 'Tir', 'Yekatit'],
+        'Q3' => ['Megabit', 'Miyazia', 'Ginbot'],
+        'Q4' => ['Sene', 'Hamle', 'Nehase', 'Pagumen']
+    ];
+
+    // Process fertilizer details to extract timeline data
+    if (!empty($fertilizerDetails) && is_array($fertilizerDetails)) {
+        foreach ($fertilizerDetails as $distribution) {
+            if (isset($distribution['quantity']) && $distribution['quantity'] > 0) {
+                $quantity = floatval($distribution['quantity']);
+                $quarter = $distribution['quarter'] ?? '';
+                $month = $distribution['month'] ?? '';
+                $week = $distribution['week'] ?? '';
+                $fertilizerTypeId = $distribution['fertilizer_type_id'] ?? '';
+                $fertilizerId = $distribution['fertilizer_id'] ?? '';
+                $unit = $distribution['unit'] ?? 'kg';
+
+                // Add to total distributed quantity
+                $timelineData['total_distributed_quantity'] += $quantity;
+
+                // Add to quarter totals
+                if ($quarter && isset($ethiopianMonths[$quarter])) {
+                    if (!isset($timelineData['quarters'][$quarter])) {
+                        $timelineData['quarters'][$quarter] = ['quantity' => 0];
+                    }
+                    $timelineData['quarters'][$quarter]['quantity'] += $quantity;
+                }
+
+                // Add to month totals
+                if ($month) {
+                    if (!isset($timelineData['months'][$month])) {
+                        $timelineData['months'][$month] = ['quantity' => 0];
+                    }
+                    $timelineData['months'][$month]['quantity'] += $quantity;
+                }
+
+                // Add to week totals
+                if ($week && $month) {
+                    $weekKey = $month . ' ' . $week;
+                    if (!isset($timelineData['weeks'][$weekKey])) {
+                        $timelineData['weeks'][$weekKey] = ['quantity' => 0];
+                    }
+                    $timelineData['weeks'][$weekKey]['quantity'] += $quantity;
+                }
+            }
+        }
+    }
+
+    // Create the transformed fertilizer plan structure
+    return [
+        [
+            'planning_year' => $plan->year,
+            'application_year' => $plan->year - 1, // Added application year
+            'crop_type' => $plan->cropType->name ?? 'Unknown',
+            'crop_name' => $plan->crop->name ?? 'Unknown',
+            'area_to_plant' => floatval($plan->area_to_plant),
+            'season' => $plan->season,
+            'fertilizer_details' => $fertilizerDetails,
+            'timeline_data' => $timelineData
+        ]
+    ];
+}
+
+public function updateFertilizerDistribution(Request $request, $id)
+{
+    $user = Auth::user();
+    $cropPlan = KebeleCropPlan::findOrFail($id);
+
+    $validated = $request->validate([
+        'fertilizer_distribution_details' => 'sometimes|json',
+    ]);
+
+    // Parse fertilizer distribution details
+    $fertilizerDistributionDetails = json_decode($request->fertilizer_distribution_details, true) ?? [];
+
+    // Update the crop plan with fertilizer distribution details
+    $cropPlan->update([
+        'fertilizer_distribution_details' => $fertilizerDistributionDetails,
+        'updated_by' => $user->id,
+    ]);
+
+    return redirect()->route('sector.crop-plans.index')
+        ->with('success', '✅ Fertilizer distribution plan updated successfully!');
+}
 
 
 }

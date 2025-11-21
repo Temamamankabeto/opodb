@@ -4,7 +4,7 @@
         <div class="d-flex justify-content-between align-items-center mb-4">
             <div class="page-header">
                 <h2 class="mb-0"><i class="mdi mdi-chemical-weapon text-warning me-2"></i> Fertilizer Management</h2>
-                <p class="text-muted mb-0 mt-1">Grouped fertilizer summary by Year, Crop Type, and Crop</p>
+                <p class="text-muted mb-0 mt-1">Grouped fertilizer summary by Year, Season & Crop Type</p>
             </div>
         </div>
 
@@ -19,8 +19,6 @@
             </div>
         @endif
 
-         
-
         @if (empty($groupedData))
             <!-- Empty State -->
             <div class="empty-state text-center py-5">
@@ -29,16 +27,24 @@
                 <p class="text-muted mb-4">There are no crop plans available for fertilizer management.</p>
             </div>
         @else
+           
+
             <!-- Grouped Fertilizer Summary -->
             <div class="card border-0 shadow-sm">
                 <div class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center">
                     <h5 class="mb-0 text-dark">
                         <i class="mdi mdi-table me-2 text-primary"></i>
-                        Grouped Fertilizer Summary
+                        Fertilizer Summary
                     </h5>
                     <div class="d-flex gap-2">
-                        <input type="text" id="searchInput" class="form-control" placeholder="Search year, crop type, or crop...">
-                        <button class="btn btn-outline-primary" onclick="exportToExcel()">
+                        <div class="input-group input-group-sm" style="width: 250px;">
+                            <span class="input-group-text bg-light border-end-0">
+                                <i class="mdi mdi-magnify text-muted"></i>
+                            </span>
+                            <input type="text" id="searchInput" class="form-control border-start-0"
+                                placeholder="Search year, season, or crop type...">
+                        </div>
+                        <button class="btn btn-outline-primary btn-sm" onclick="exportToExcel()">
                             <i class="mdi mdi-download me-1"></i> Export
                         </button>
                     </div>
@@ -48,117 +54,203 @@
                         <table class="table table-hover align-middle mb-0" id="fertilizerTable">
                             <thead class="table-light sticky-header">
                                 <tr>
-                                    <th class="ps-4">Year</th>
-                                    <th>Crop Type</th>
-                                    <th>Crop</th>
-                                    <th class="text-end">Area (ha)</th>
-                                    <th class="text-end">Total Fertilizer</th>
-                                    <th class="text-center">Actions</th>
+                                    <th class="ps-4" style="width: 12%">Year</th>
+                                    <th style="width: 10%">Season</th>
+                                    <th style="width: 15%">Crop Type</th>
+                                    <th style="width: 18%">Crop Details</th>
+                                    <th style="width: 25%">Fertilizer Details</th>
+
+                                    <th class="text-center" style="width: 5%">Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach ($groupedData as $year => $yearData)
-                                    @php 
-                                        $isCurrentYear = $year == date('Y');
-                                        $yearRowspan = 0;
-                                        foreach ($yearData['crop_types'] as $typeData) {
-                                            $yearRowspan += count($typeData['crops']);
+                                @php
+                                    // Calculate proper rowspans
+                                    $yearRowspans = [];
+                                    $seasonRowspans = [];
+                                    $cropTypeRowspans = [];
+
+                                    foreach ($groupedData as $yearSeasonKey => $yearSeasonData) {
+                                        $year = $yearSeasonData['year'];
+                                        $season = $yearSeasonData['season'];
+
+                                        if (!isset($yearRowspans[$year])) {
+                                            $yearRowspans[$year] = 0;
                                         }
-                                    @endphp
-                                    
-                                    @foreach ($yearData['crop_types'] as $cropType => $typeData)
-                                        @php $typeRowspan = count($typeData['crops']); @endphp
-                                        
-                                        @foreach ($typeData['crops'] as $crop => $cropData)
-                                            <tr class="data-row" data-year="{{ $year }}" data-type="{{ $cropType }}" data-crop="{{ $crop }}">
+                                        if (!isset($seasonRowspans[$yearSeasonKey])) {
+                                            $seasonRowspans[$yearSeasonKey] = 0;
+                                        }
+
+                                        foreach ($yearSeasonData['crop_types'] as $cropType => $typeData) {
+                                            $cropCount = count($typeData['crops']);
+                                            $yearRowspans[$year] += $cropCount;
+                                            $seasonRowspans[$yearSeasonKey] += $cropCount;
+                                            $cropTypeRowspans[$yearSeasonKey . '_' . $cropType] = $cropCount;
+                                        }
+                                    }
+
+                                    $renderedYears = [];
+                                    $renderedSeasons = [];
+                                    $renderedCropTypes = [];
+                                @endphp
+
+                                @foreach ($groupedData as $yearSeasonKey => $yearSeasonData)
+                                    @foreach ($yearSeasonData['crop_types'] as $cropType => $typeData)
+                                        @foreach ($typeData['crops'] as $cropKey => $cropData)
+                                            <tr class="data-row hover-row" data-year="{{ $yearSeasonData['year'] }}"
+                                                data-season="{{ $yearSeasonData['season'] }}"
+                                                data-type="{{ $cropType }}"
+                                                data-crop="{{ $cropData['crop_name'] }}">
+
                                                 <!-- Year Column -->
-                                                @if ($loop->parent->first && $loop->first)
-                                                    <td class="fw-bold text-center year-cell ps-4 align-top {{ $isCurrentYear ? 'current-year' : '' }}" 
-                                                        rowspan="{{ $yearRowspan }}">
-                                                        <div class="year-badge">
-                                                            {{ $year }}
-                                                            @if($isCurrentYear)
-                                                                <span class="current-badge">Current</span>
+                                                @if (!in_array($yearSeasonData['year'], $renderedYears))
+                                                    <td class="year-cell align-middle text-center fw-bold"
+                                                        rowspan="{{ $yearRowspans[$yearSeasonData['year']] }}"
+                                                        style="background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);">
+                                                        <div class="year-content">
+                                                            <div class="year-value fs-5 text-primary mb-1">
+                                                                {{ $yearSeasonData['year'] }}
+                                                            </div>
+                                                            @if ($yearSeasonData['year'] == date('Y'))
+                                                                <span
+                                                                    class="badge bg-success bg-opacity-20 text-success border border-success">
+                                                                    Current
+                                                                </span>
                                                             @endif
-                                                        </div>
-                                                         
-                                                    </td>
-                                                @endif
-                                                
-                                                <!-- Crop Type Column -->
-                                                @if ($loop->first)
-                                                    <td class="fw-semibold text-primary align-top" rowspan="{{ $typeRowspan }}">
-                                                        <div class="crop-type-info">
-                                                            <i class="mdi mdi-seed-outline me-1"></i>
-                                                            {{ $cropType }}
+                                                            <div class="year-totals small text-muted mt-2">
+                                                                <div class="fw-semibold text-dark mb-1">Year Total:
+                                                                </div>
+                                                                <div>
+                                                                    <i class="mdi mdi-earth me-1 text-success">Area</i>
+                                                                    {{ number_format($yearSeasonData['year_total_area'], 2) }}
+                                                                    ha
+                                                                </div>
+                                                                @foreach ($yearSeasonData['year_fertilizer_by_unit'] as $unit => $amount)
+                                                                    <div>
+                                                                        <i
+                                                                            class="mdi mdi-chemical-weapon me-1 text-warning">fertilizer</i>
+                                                                        {{ number_format($amount, 2) }}
+                                                                        {{ $unit }}
+                                                                    </div>
+                                                                @endforeach
+                                                            </div>
                                                              
                                                         </div>
                                                     </td>
+                                                    @php $renderedYears[] = $yearSeasonData['year']; @endphp
                                                 @endif
-                                                
-                                                <!-- Crop Column -->
-                                                <td>
-                                                    <div class="d-flex align-items-center">
-                                                        <div class="crop-icon me-2">
-                                                            <i class="mdi mdi-sprout text-success"></i>
+
+                                                <!-- Season Column -->
+                                                @if (!in_array($yearSeasonKey, $renderedSeasons))
+                                                    <td class="season-cell align-middle text-center"
+                                                        rowspan="{{ $seasonRowspans[$yearSeasonKey] }}"
+                                                        style="background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);">
+                                                        <span class="season-badge fw-semibold text-dark">
+                                                            <i class="mdi mdi-weather-sunny me-1 text-warning"></i>
+                                                            {{ $yearSeasonData['season'] }}
+                                                        </span>
+                                                    </td>
+                                                    @php $renderedSeasons[] = $yearSeasonKey; @endphp
+                                                @endif
+
+                                                <!-- Crop Type Column -->
+                                                <!-- Crop Type Column -->
+                                                @if (!in_array($yearSeasonKey . '_' . $cropType, $renderedCropTypes))
+                                                    <td class="crop-type-cell align-middle"
+                                                        rowspan="{{ $cropTypeRowspans[$yearSeasonKey . '_' . $cropType] }}"
+                                                        style="background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);">
+                                                        <div class="crop-type-content text-center">
+                                                            <div class="crop-type-icon mb-2">
+                                                                <i class="mdi mdi-seed-outline fs-4 text-success"></i>
+                                                            </div>
+                                                            <div class="crop-type-name fw-bold text-dark mb-1">
+                                                                {{ $cropType }}
+                                                            </div>
+                                                            <div class="crop-type-totals small text-muted">
+                                                                <div class="mb-1">
+                                                                    <i class="mdi mdi-earth me-1"></i>
+                                                                    {{ number_format($typeData['total_area'], 2) }} ha
+                                                                </div>
+                                                                @foreach ($typeData['fertilizer_by_unit'] as $unit => $amount)
+                                                                    <div>
+                                                                        <i class="mdi mdi-chemical-weapon me-1"></i>
+                                                                        {{ number_format($amount, 2) }}
+                                                                        {{ $unit }}
+                                                                    </div>
+                                                                @endforeach
+                                                            </div>
                                                         </div>
-                                                        <div>
-                                                            <strong>{{ $crop }}</strong>
+                                                    </td>
+                                                    @php $renderedCropTypes[] = $yearSeasonKey . '_' . $cropType; @endphp
+                                                @endif
+
+                                                <!-- Crop Details Column -->
+                                                <td class="crop-details-cell">
+                                                    <div class="crop-details">
+                                                        <div
+                                                            class="d-flex justify-content-between align-items-start mb-2">
+                                                            <div class="crop-info">
+                                                                <div class="crop-name fw-semibold text-dark">
+                                                                    <i class="mdi mdi-sprout text-success me-1"></i>
+                                                                    {{ $cropData['crop_name'] }}
+                                                                </div>
+
+                                                            </div>
+                                                            <div class="crop-area">
+                                                                <span class="badge bg-primary rounded-pill px-3 py-2">
+                                                                    {{ number_format($cropData['area'], 2) }} ha
+                                                                </span>
+                                                            </div>
                                                         </div>
+
+
                                                     </div>
                                                 </td>
-                                                
-                                                <!-- Area Column -->
-                                                <td class="text-end fw-semibold text-info">
-                                                    {{ number_format($cropData['total_area'], 2) }}
-                                                </td>
-                                                
-                                                <!-- Total Fertilizer Column -->
-                                                <td>
+
+                                                <!-- Fertilizer Details Column -->
+                                                <td class="fertilizer-details-cell">
                                                     @if (!empty($cropData['fertilizers']))
-                                                        <div class="fertilizer-details">
+                                                        <div class="fertilizer-breakdown">
                                                             @foreach ($cropData['fertilizers'] as $fertKey => $fertData)
-                                                                <div class="fert-item mb-1">
-                                                                    <span class="badge bg-light text-dark fert-badge {{ $fertData['unit'] === 'kg' ? 'border-warning' : 'border-secondary' }}" 
-                                                                          data-bs-toggle="tooltip" 
-                                                                          title="{{ $fertData['fertilizer_type_name'] }} - {{ $fertData['fertilizer_name'] }} ({{ $fertData['unit'] }})">
-                                                                        <i class="mdi mdi-chemical-weapon me-1 text-warning"></i>
-                                                                        {{ $fertData['fertilizer_name'] }}: 
-                                                                        {{ number_format($fertData['amount'], 2) }} {{ $fertData['unit'] }}
-                                                                        @if($fertData['unit'] === 'kg')
-                                                                            <small class="text-success ms-1">✓</small>
-                                                                        @endif
-                                                                    </span>
+                                                                <div class="fert-item mb-2 p-2 rounded border">
+
+                                                                    <div
+                                                                        class="d-flex justify-content-between align-items-center">
+                                                                        <span class="fert-product small text-muted">
+                                                                            {{ $fertData['fertilizer_name'] }}
+                                                                        </span>
+                                                                        <span class="fert-total fw-bold text-primary">
+                                                                            {{ number_format($fertData['amount'], 2) }}
+                                                                            {{ $fertData['unit'] }}
+                                                                        </span>
+                                                                    </div>
                                                                 </div>
                                                             @endforeach
                                                         </div>
                                                     @else
-                                                        <span class="text-muted small">
-                                                            <i class="mdi mdi-alert-circle-outline me-1"></i>
-                                                            No fertilizer data
-                                                        </span>
+                                                        <div class="text-center py-3">
+                                                            <i
+                                                                class="mdi mdi-chemical-weapon-off text-muted display-6 mb-2"></i>
+                                                            <div class="text-muted small">No fertilizer requirements
+                                                            </div>
+                                                        </div>
                                                     @endif
                                                 </td>
-                                                
-                                               
-                                                
+
+
+
                                                 <!-- Actions Column -->
-                                                <td class="text-center">
-                                                    @php
-                                                        // Get the first plan ID for this crop group
-                                                        $firstPlanId = !empty($cropData['plans']) ? $cropData['plans'][0] : null;
-                                                    @endphp
-                                                    @if($firstPlanId)
-                                                        <a href="{{ route('sector.crop-plans.editfertilizer', $firstPlanId) }}" 
-                                                           class="btn btn-sm btn-warning update-fertilizer-btn"
-                                                           title="Update Fertilizer for {{ $crop }}"
-                                                           data-plan-id="{{ $firstPlanId }}">
-                                                            <i class="mdi mdi-pencil me-1"></i>
-                                                            Update
+                                                <td class="actions-cell text-center align-middle">
+                                                    <div class="action-buttons">
+                                                        <a href="{{ route('sector.crop-plans.editfertilizer', $cropData['plan_id']) }}"
+                                                            class="btn btn-warning btn-sm action-btn mb-1"
+                                                            title="Update Fertilizer"
+                                                            data-plan-id="{{ $cropData['plan_id'] }}"
+                                                            style="min-width: 80px;">
+                                                            <i class="mdi mdi-pencil"></i>
                                                         </a>
-                                                    @else
-                                                        <span class="text-muted small">No plans</span>
-                                                    @endif
+
+                                                    </div>
                                                 </td>
                                             </tr>
                                         @endforeach
@@ -178,7 +270,7 @@
         document.addEventListener('DOMContentLoaded', function() {
             // Initialize tooltips
             var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            var tooltipList = tooltipTriggerList.map(function(tooltipTriggerEl) {
                 return new bootstrap.Tooltip(tooltipTriggerEl);
             });
 
@@ -188,38 +280,44 @@
                 searchInput.addEventListener('input', function() {
                     const value = this.value.toLowerCase();
                     const rows = document.querySelectorAll('#fertilizerTable tbody tr.data-row');
-                    
+
                     rows.forEach(function(row) {
                         const year = row.getAttribute('data-year').toLowerCase();
+                        const season = row.getAttribute('data-season').toLowerCase();
                         const type = row.getAttribute('data-type').toLowerCase();
                         const crop = row.getAttribute('data-crop').toLowerCase();
-                        
-                        const show = year.includes(value) || type.includes(value) || crop.includes(value);
+
+                        const show = year.includes(value) || season.includes(value) || type
+                            .includes(value) || crop.includes(value);
                         row.style.display = show ? '' : 'none';
                     });
                 });
             }
 
-            // Add loading state to update fertilizer buttons
-            document.querySelectorAll('.update-fertilizer-btn').forEach(button => {
+            // Add loading state to action buttons
+            document.querySelectorAll('.action-btn').forEach(button => {
                 button.addEventListener('click', function(e) {
-                    const planId = this.getAttribute('data-plan-id');
-                    // Add loading state
                     const originalHtml = this.innerHTML;
-                    this.innerHTML = '<i class="mdi mdi-loading mdi-spin me-1"></i> Loading...';
+                    this.innerHTML = '<i class="mdi mdi-loading mdi-spin"></i>';
                     this.disabled = true;
-                    
-                    console.log('Navigating to update fertilizer for plan:', planId);
+
+                    setTimeout(() => {
+                        this.innerHTML = originalHtml;
+                        this.disabled = false;
+                    }, 1500);
                 });
             });
 
-            // Make table rows clickable for better UX
-            document.querySelectorAll('.data-row').forEach(row => {
-                row.addEventListener('click', function(e) {
-                    // Don't trigger if clicking on buttons or links
-                    if (!e.target.closest('a') && !e.target.closest('button')) {
-                        this.classList.toggle('table-active');
-                    }
+            // Hover effects
+            document.querySelectorAll('.hover-row').forEach(row => {
+                row.addEventListener('mouseenter', function() {
+                    this.style.background = 'linear-gradient(135deg, #f0f8ff 0%, #e7f3ff 100%)';
+                    this.style.borderLeft = '3px solid #007bff';
+                });
+
+                row.addEventListener('mouseleave', function() {
+                    this.style.background = '';
+                    this.style.borderLeft = '';
                 });
             });
         });
@@ -228,7 +326,7 @@
             try {
                 const table = document.getElementById('fertilizerTable');
                 const wb = XLSX.utils.table_to_book(table);
-                XLSX.writeFile(wb, 'grouped_fertilizer_summary.xlsx');
+                XLSX.writeFile(wb, 'fertilizer-management-summary.xlsx');
             } catch (error) {
                 console.error('Export error:', error);
                 alert('Error exporting to Excel: ' + error.message);
@@ -244,38 +342,32 @@
         }
 
         .summary-card {
-            transition: transform 0.2s ease;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            border: none;
+            border-radius: 12px;
         }
 
         .summary-card:hover {
-            transform: translateY(-2px);
+            transform: translateY(-3px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
         }
 
         .icon-circle {
             width: 50px;
             height: 50px;
-            border-radius: 50%;
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
         }
 
-        .crop-icon {
-            width: 24px;
-            height: 24px;
-            background: linear-gradient(135deg, #e8f5e8 0%, #c8e6c9 100%);
-            border-radius: 6px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        /* Scrollable Table Styles */
+        /* Table Styles */
         .table-container {
             position: relative;
             max-height: 70vh;
             overflow: auto;
-            border: 1px solid #dee2e6;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
         }
 
         .sticky-header {
@@ -286,107 +378,92 @@
         }
 
         .sticky-header th {
-            background: #f8f9fa;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
             border-bottom: 2px solid #dee2e6;
-            position: relative;
+            font-weight: 600;
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #495057;
+            vertical-align: middle;
         }
 
-        .sticky-header th::after {
-            content: '';
-            position: absolute;
-            bottom: -2px;
-            left: 0;
-            right: 0;
-            height: 2px;
-            background: #dee2e6;
+        /* Cell Styles */
+        .year-cell,
+        .season-cell,
+        .crop-type-cell {
+            border-right: 2px solid #dee2e6;
+            vertical-align: middle !important;
+        }
+
+        .crop-details-cell,
+        .fertilizer-details-cell,
+        .crop-type-summary-cell {
+            vertical-align: top;
+        }
+
+        .year-content,
+        .crop-type-content {
+            padding: 0.5rem;
+        }
+
+        .season-badge {
+            font-size: 0.9rem;
+        }
+
+        .crop-type-icon {
+            width: 40px;
+            height: 40px;
+            margin: 0 auto 0.5rem auto;
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         /* Table row styling */
-        .year-cell {
-            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-            border-right: 2px solid #dee2e6;
-        }
-
-        .current-year {
-            background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
-        }
-
-        .current-badge {
-            font-size: 0.7em;
-            background: #28a745;
-            color: white;
-            padding: 2px 6px;
-            border-radius: 4px;
-            margin-left: 8px;
-        }
-
-        .crop-type-info {
-            padding: 8px 0;
-        }
-
-        .type-totals, .year-totals {
-            font-size: 0.8em;
-        }
-
-        .fert-badge {
-            border: 1px solid #dee2e6;
-            padding: 4px 8px;
-            border-radius: 12px;
-            font-size: 0.75em;
-            cursor: help;
-            transition: all 0.2s ease;
-            display: inline-block;
-            margin: 2px;
-            max-width: 200px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-
-        .fert-badge:hover {
-            background: #f8f9fa !important;
-            transform: translateY(-1px);
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            max-width: none;
-            white-space: normal;
-            z-index: 5;
-        }
-
-        .fertilizer-details {
-            max-width: 250px;
-            min-width: 200px;
-        }
-
-        .update-fertilizer-btn {
-            transition: all 0.2s ease;
-            white-space: nowrap;
-        }
-
-        .update-fertilizer-btn:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-        }
-
-        .data-row {
-            cursor: pointer;
-            transition: background-color 0.15s ease;
-        }
-
-        .data-row:hover {
-            background-color: rgba(0, 123, 255, 0.05) !important;
-        }
-
-        .data-row.table-active {
-            background-color: rgba(0, 123, 255, 0.1) !important;
-        }
-
-        /* Ensure table cells have proper spacing */
-        .table td, .table th {
-            vertical-align: middle;
+        .table td {
             padding: 0.75rem;
+            border-bottom: 1px solid #e9ecef;
         }
 
-        /* Custom scrollbar for table container */
+        .crop-details,
+        .fertilizer-breakdown,
+        .type-summary {
+            padding: 0.5rem;
+        }
+
+        .fert-item {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef !important;
+        }
+
+        .type-total {
+            background: linear-gradient(135deg, #fff9e6 0%, #fff3cd 100%);
+        }
+
+        /* Action buttons */
+        .action-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .action-btn {
+            font-size: 0.75rem;
+            padding: 6px;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+            width: 100%;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Scrollbar */
         .table-container::-webkit-scrollbar {
             width: 8px;
             height: 8px;
@@ -406,56 +483,40 @@
             background: #a8a8a8;
         }
 
+        /* Responsive */
+        @media (max-width: 768px) {
+            .table-container {
+                font-size: 0.8rem;
+            }
+
+            .action-btn {
+                font-size: 0.7rem;
+                padding: 4px;
+            }
+
+            .year-value {
+                font-size: 1rem !important;
+            }
+        }
+
+        /* Animations */
         .mdi-loading {
             animation: spin 1s linear infinite;
         }
 
         @keyframes spin {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
+            from {
+                transform: rotate(0deg);
+            }
 
-        /* Responsive adjustments */
-        @media (max-width: 768px) {
-            .table-container {
-                max-height: 60vh;
-                font-size: 0.875rem;
-            }
-            
-            .fert-badge {
-                font-size: 0.7em;
-                padding: 3px 6px;
-                max-width: 150px;
-            }
-            
-            .update-fertilizer-btn {
-                font-size: 0.8rem;
-                padding: 0.25rem 0.5rem;
-            }
-            
-            .crop-type-info, .year-totals, .type-totals {
-                font-size: 0.75rem;
+            to {
+                transform: rotate(360deg);
             }
         }
 
-        @media (max-width: 576px) {
-            .table-container {
-                max-height: 50vh;
-            }
-            
-            .card-header {
-                flex-direction: column;
-                gap: 1rem;
-                align-items: flex-start;
-            }
-            
-            .card-header .d-flex {
-                width: 100%;
-            }
-            
-            #searchInput {
-                width: 100% !important;
-            }
+        /* Ensure proper vertical alignment */
+        .align-middle {
+            vertical-align: middle !important;
         }
     </style>
 </x-layout>

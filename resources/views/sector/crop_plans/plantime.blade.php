@@ -6,7 +6,7 @@
                     <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
                         <h4 class="mb-0">
                             <i class="mdi mdi-calendar-clock me-2"></i>
-                            Crop Plan Timeline Distribution - Excel Format
+                            Crop Plan Area Distribution - Grouped by Year & Crop Type
                         </h4>
                         <button class="btn btn-light btn-sm" onclick="exportToExcel()">
                             <i class="mdi mdi-download me-1"></i> Export Excel
@@ -17,241 +17,367 @@
                             <table class="table table-bordered table-hover mb-0" id="cropPlanTable">
                                 <thead class="table-dark sticky-top">
                                 <tr>
-                                    <th rowspan="2" class="text-center align-middle">#</th>
-                                    <th rowspan="2" class="text-center align-middle">Crop Type</th>
-                                    <th rowspan="2" class="text-center align-middle">Crop Variety</th>
-                                    <th rowspan="2" class="text-center align-middle">Unit</th>
-                                    <th rowspan="2" class="text-center align-middle">Planning Year</th>
-                                    <th rowspan="2" class="text-center align-middle">Preparation Year</th>
-                                    <th rowspan="2" class="text-center align-middle">Season</th>
-                                    <th rowspan="2" class="text-center align-middle">Total Area (ha)</th>
-                                    <th rowspan="2" class="text-center align-middle">Expected Yield (qt)</th>
+                                    <th rowspan="4" class="text-center align-middle">#</th>
+                                    <th rowspan="4" class="text-center align-middle">Planning Year</th>
+                                    <th rowspan="4" class="text-center align-middle">Crop Type</th>
+                                    <th rowspan="4" class="text-center align-middle">Crop Variety</th>
+                                    <th rowspan="4" class="text-center align-middle">Unit</th>
+                                    <th rowspan="4" class="text-center align-middle">Preparation Year</th>
+                                    <th rowspan="4" class="text-center align-middle">Season</th>
+                                    <th rowspan="4" class="text-center align-middle">Total Area (ha)</th>
 
-                                    <!-- Quarters Header -->
-                                    <th colspan="8" class="text-center bg-info text-dark">QUARTERLY DISTRIBUTION</th>
+                                   
 
-                                    <!-- Months Header -->
-                                    <th colspan="26" class="text-center bg-success text-white">MONTHLY DISTRIBUTION</th>
-
-                                    <!-- Summary -->
-                                    <th colspan="4" class="text-center bg-warning text-dark">SUMMARY</th>
+                                  
                                 </tr>
                                 <tr>
-                                    <!-- Quarter Columns -->
-                                    <th class="text-center bg-info-subtle">Q1 Area (ha)</th>
-                                    <th class="text-center bg-info-subtle">Q1 Yield (qt)</th>
-                                    <th class="text-center bg-info-subtle">Q2 Area (ha)</th>
-                                    <th class="text-center bg-info-subtle">Q2 Yield (qt)</th>
-                                    <th class="text-center bg-info-subtle">Q3 Area (ha)</th>
-                                    <th class="text-center bg-info-subtle">Q3 Yield (qt)</th>
-                                    <th class="text-center bg-info-subtle">Q4 Area (ha)</th>
-                                    <th class="text-center bg-info-subtle">Q4 Yield (qt)</th>
-
-                                    <!-- Month Columns -->
-                                    @foreach(['Meskerem', 'Tikimt', 'Hidar', 'Tahsas', 'Tir', 'Yekatit', 'Megabit', 'Miyazia', 'Ginbot', 'Sene', 'Hamle', 'Nehase', 'Pagumen'] as $month)
-                                        <th class="text-center bg-success-subtle">{{ $month }} Area</th>
-                                        <th class="text-center bg-success-subtle">{{ $month }} Yield</th>
+                                    @php
+                                        // Define months for each quarter - Pagumen has no weeks
+                                        $quarters = [
+                                            'Q1' => ['Meskerem', 'Tikimt', 'Hidar'],
+                                            'Q2' => ['Tahsas', 'Tir', 'Yekatit'],
+                                            'Q3' => ['Megabit', 'Miyazia', 'Ginbot'],
+                                            'Q4' => ['Sene', 'Hamle', 'Nehase', 'Pagumen']
+                                        ];
+                                        
+                                        // Define months that have weeks (all except Pagumen)
+                                        $monthsWithWeeks = ['Meskerem', 'Tikimt', 'Hidar', 'Tahsas', 'Tir', 'Yekatit', 'Megabit', 'Miyazia', 'Ginbot', 'Sene', 'Hamle', 'Nehase'];
+                                    @endphp
+                                    
+                                    @foreach($quarters as $quarter => $months)
+                                        @php
+                                            $colspan = 1; // Quarter total column
+                                            foreach($months as $month) {
+                                                if (in_array($month, $monthsWithWeeks)) {
+                                                    $colspan += 5; // Month total + 4 weeks
+                                                } else {
+                                                    $colspan += 1; // Only month total (no weeks for Pagumen)
+                                                }
+                                            }
+                                        @endphp
+                                        <!-- Quarter Header spans all months and weeks in the quarter -->
+                                        <th colspan="{{ $colspan }}" class="text-center bg-info text-white">{{ $quarter }}</th>
                                     @endforeach
 
                                     <!-- Summary Columns -->
-                                    <th class="text-center bg-warning-subtle">Distributed Area (ha)</th>
-                                    <th class="text-center bg-warning-subtle">Distributed Yield (qt)</th>
-                                    <th class="text-center bg-warning-subtle">Remaining Area (ha)</th>
-                                    <th class="text-center bg-warning-subtle">Remaining Yield (qt)</th>
+                                    <th colspan="2" class="text-center bg-warning text-white">Area Summary</th>
+                                </tr>
+                                <tr>
+                                    @foreach($quarters as $quarter => $months)
+                                        <!-- Quarter Total -->
+                                        <th class="text-center bg-primary text-white">{{ $quarter }} Total</th>
+                                        
+                                        @foreach($months as $month)
+                                            @if(in_array($month, $monthsWithWeeks))
+                                                <!-- Month Header spans all weeks in the month -->
+                                                <th colspan="5" class="text-center bg-success text-white">{{ $month }}</th>
+                                            @else
+                                                <!-- Pagumen - only month header, no weeks -->
+                                                <th class="text-center bg-success text-white">{{ $month }}</th>
+                                            @endif
+                                        @endforeach
+                                    @endforeach
+
+                                    <!-- Summary Sub-columns -->
+                                    <th class="text-center bg-warning-subtle fw-bold">Distributed Area (ha)</th>
+                                    <th class="text-center bg-warning-subtle fw-bold">Remaining Area (ha)</th>
+                                </tr>
+                                <tr>
+                                    @foreach($quarters as $quarter => $months)
+                                        <!-- Quarter Total Sub-columns -->
+                                        <th class="text-center bg-primary-subtle">Area (ha)</th>
+                                        
+                                        @foreach($months as $month)
+                                            <!-- Month Total -->
+                                            <th class="text-center bg-success-subtle">{{ $month }} Total</th>
+                                            
+                                            <!-- Weeks for this Month (only for months with weeks) -->
+                                            @if(in_array($month, $monthsWithWeeks))
+                                                @for($week = 1; $week <= 4; $week++)
+                                                    <th class="text-center bg-warning-subtle">W{{ $week }}</th>
+                                                @endfor
+                                            @endif
+                                        @endforeach
+                                    @endforeach
+
+                                    <!-- Summary Sub-columns (duplicated for alignment) -->
+                                    <th class="text-center bg-warning-subtle fw-bold">Area (ha)</th>
+                                    <th class="text-center bg-warning-subtle fw-bold">Area (ha)</th>
                                 </tr>
                                 </thead>
                                 <tbody>
                                 @php
                                     $counter = 1;
                                     $totalArea = 0;
-                                    $totalYield = 0;
                                     $totalDistributedArea = 0;
-                                    $totalDistributedYield = 0;
-
-                                    // Ethiopian months in order
-                                    $ethiopianMonths = [
-                                        'Meskerem', 'Tikimt', 'Hidar', 'Tahsas', 'Tir', 'Yekatit',
-                                        'Megabit', 'Miyazia', 'Ginbot', 'Sene', 'Hamle', 'Nehase', 'Pagumen'
+                                    
+                                    // Group data by Planning Year and Crop Type
+                                    $groupedPlans = [];
+                                    foreach($transformedPlans as $plan) {
+                                        $year = $plan['year'];
+                                        $cropType = $plan['crop_type'];
+                                        if (!isset($groupedPlans[$year])) {
+                                            $groupedPlans[$year] = [];
+                                        }
+                                        if (!isset($groupedPlans[$year][$cropType])) {
+                                            $groupedPlans[$year][$cropType] = [];
+                                        }
+                                        $groupedPlans[$year][$cropType][] = $plan;
+                                    }
+                                    
+                                    // Initialize totals arrays
+                                    $yearTotals = [];
+                                    $cropTypeTotals = [];
+                                    $quarterTotals = [
+                                        'Q1' => ['area' => 0],
+                                        'Q2' => ['area' => 0],
+                                        'Q3' => ['area' => 0],
+                                        'Q4' => ['area' => 0]
                                     ];
+                                    $monthTotals = [];
+                                    $weekTotals = [];
+                                    
+                                    foreach($quarters as $quarterMonths) {
+                                        foreach($quarterMonths as $month) {
+                                            $monthTotals[$month] = ['area' => 0];
+                                            if (in_array($month, $monthsWithWeeks)) {
+                                                for($week = 1; $week <= 4; $week++) {
+                                                    $weekKey = $month . ' W' . $week;
+                                                    $weekTotals[$weekKey] = ['area' => 0];
+                                                }
+                                            }
+                                        }
+                                    }
                                 @endphp
 
-                                @foreach($transformedPlans as $plan)
+                                @foreach($groupedPlans as $year => $cropTypes)
                                     @php
-                                        $timelineData = $plan['timeline_data'];
-                                        $quarters = $timelineData['quarters'] ?? [];
-                                        $months = $timelineData['months'] ?? [];
-                                        $preparationYear = $timelineData['preparation_year'] ?? 'N/A';
-
-                                        $distributedArea = $timelineData['total_distributed_area'] ?? 0;
-                                        $distributedYield = $timelineData['total_distributed_yield'] ?? 0;
-                                        $remainingArea = $plan['area_to_plant'] - $distributedArea;
-                                        $remainingYield = $plan['expected_yield'] - $distributedYield;
-
-                                        $totalArea += $plan['area_to_plant'];
-                                        $totalYield += $plan['expected_yield'];
-                                        $totalDistributedArea += $distributedArea;
-                                        $totalDistributedYield += $distributedYield;
+                                        $yearRowspan = 0;
+                                        foreach($cropTypes as $cropTypePlans) {
+                                            $yearRowspan += count($cropTypePlans);
+                                        }
+                                        $yearFirst = true;
                                     @endphp
-
-                                    <tr>
-                                        <td class="text-center fw-bold">{{ $counter++ }}</td>
-                                        <td class="fw-bold">{{ $plan['crop_type'] }}</td>
-                                        <td class="fw-bold text-primary">{{ $plan['crop_name'] }}</td>
-                                        <td class="text-center">{{ $plan['unit'] }}</td>
-                                        <td class="text-center">{{ $plan['year'] }}</td>
-                                        <td class="text-center fw-bold text-info">{{ $preparationYear }}</td>
-                                        <td class="text-center">{{ $plan['season'] }}</td>
-                                        <td class="text-end fw-bold">{{ number_format($plan['area_to_plant'], 2) }}</td>
-                                        <td class="text-end fw-bold">{{ number_format($plan['expected_yield'], 2) }}</td>
-
-                                        <!-- Quarter Data -->
-                                        @foreach(['Q1', 'Q2', 'Q3', 'Q4'] as $quarter)
+                                    
+                                    @foreach($cropTypes as $cropType => $cropTypePlans)
+                                        @php
+                                            $cropTypeRowspan = count($cropTypePlans);
+                                            $cropTypeFirst = true;
+                                            $cropTypeTotalArea = 0;
+                                            $cropTypeDistributedArea = 0;
+                                            
+                                            // Calculate crop type totals
+                                            foreach($cropTypePlans as $plan) {
+                                                $cropTypeTotalArea += $plan['area_to_plant'];
+                                                $cropTypeDistributedArea += $plan['timeline_data']['total_distributed_area'] ?? 0;
+                                            }
+                                            
+                                            if (!isset($yearTotals[$year])) {
+                                                $yearTotals[$year] = ['area' => 0, 'distributed' => 0];
+                                            }
+                                            if (!isset($cropTypeTotals[$cropType])) {
+                                                $cropTypeTotals[$cropType] = ['area' => 0, 'distributed' => 0];
+                                            }
+                                            $yearTotals[$year]['area'] += $cropTypeTotalArea;
+                                            $yearTotals[$year]['distributed'] += $cropTypeDistributedArea;
+                                            $cropTypeTotals[$cropType]['area'] += $cropTypeTotalArea;
+                                            $cropTypeTotals[$cropType]['distributed'] += $cropTypeDistributedArea;
+                                        @endphp
+                                        
+                                        @foreach($cropTypePlans as $plan)
                                             @php
-                                                $quarterData = $quarters[$quarter] ?? ['area' => 0, 'yield' => 0];
-                                            @endphp
-                                            <td class="text-end {{ $quarterData['area'] > 0 ? 'bg-info-subtle' : '' }}">
-                                                {{ number_format($quarterData['area'], 2) }}
-                                            </td>
-                                            <td class="text-end {{ $quarterData['yield'] > 0 ? 'bg-info-subtle' : '' }}">
-                                                {{ number_format($quarterData['yield'], 2) }}
-                                            </td>
-                                        @endforeach
+                                                $timelineData = $plan['timeline_data'];
+                                                $quartersData = $timelineData['quarters'] ?? [];
+                                                $monthsData = $timelineData['months'] ?? [];
+                                                $weeksData = $timelineData['weeks'] ?? [];
+                                                $weeklyDistribution = $plan['plandivision_details']['weekly_distribution'] ?? [];
+                                                $preparationYear = $timelineData['preparation_year'] ?? 'N/A';
 
-                                        <!-- Month Data -->
-                                        @foreach($ethiopianMonths as $month)
+                                                $distributedArea = $timelineData['total_distributed_area'] ?? 0;
+                                                $remainingArea = $plan['area_to_plant'] - $distributedArea;
+
+                                                $totalArea += $plan['area_to_plant'];
+                                                $totalDistributedArea += $distributedArea;
+                                                
+                                                // Process weekly distribution data
+                                                $weekDataByMonth = [];
+                                                
+                                                // Method 1: Process from the structured weeks data (backend processed)
+                                                foreach ($weeksData as $weekKey => $weekItem) {
+                                                    // Handle "Ginbot_week_1" format
+                                                    if (preg_match('/^(.+)_week_(\d+)$/', $weekKey, $matches)) {
+                                                        $monthName = $matches[1];
+                                                        $weekNum = (int)$matches[2];
+                                                        $area = $weekItem['area'] ?? 0;
+                                                        
+                                                        if ($monthName && $weekNum >= 1 && $weekNum <= 4) {
+                                                            if (!isset($weekDataByMonth[$monthName])) {
+                                                                $weekDataByMonth[$monthName] = [];
+                                                            }
+                                                            $weekDataByMonth[$monthName][$weekNum] = $area;
+                                                        }
+                                                    }
+                                                }
+                                                
+                                                // Method 2: Process from raw weekly_distribution array (if weeksData is empty)
+                                                if (empty($weekDataByMonth) && !empty($weeklyDistribution)) {
+                                                    foreach ($weeklyDistribution as $weekItem) {
+                                                        if (is_array($weekItem)) {
+                                                            $monthName = $weekItem['month'] ?? '';
+                                                            $weekText = $weekItem['week'] ?? '';
+                                                            $area = $weekItem['area'] ?? 0;
+                                                            
+                                                            // Extract week number from "Week 1", "Week 2", etc.
+                                                            $weekNum = 0;
+                                                            if (preg_match('/Week\s*(\d+)/i', $weekText, $matches)) {
+                                                                $weekNum = (int)$matches[1];
+                                                            }
+                                                            
+                                                            if ($monthName && $weekNum >= 1 && $weekNum <= 4) {
+                                                                if (!isset($weekDataByMonth[$monthName])) {
+                                                                    $weekDataByMonth[$monthName] = [];
+                                                                }
+                                                                $weekDataByMonth[$monthName][$weekNum] = $area;
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            @endphp
+
+                                            <tr>
+                                                <!-- Row counter -->
+                                                <td class="text-center fw-bold">{{ $counter++ }}</td>
+                                                
+                                                <!-- Year (with rowspan) -->
+                                                @if($yearFirst && $cropTypeFirst)
+                                                    <td rowspan="{{ $yearRowspan }}" class="text-center align-middle fw-bold bg-light">
+                                                        {{ $year }}
+                                                    </td>
+                                                @endif
+                                                
+                                                <!-- Crop Type (with rowspan) -->
+                                                @if($cropTypeFirst)
+                                                    <td rowspan="{{ $cropTypeRowspan }}" class="text-center align-middle fw-bold bg-light">
+                                                        {{ $cropType }}
+                                                        <br>
+                                                        <small class="text-muted">Total: {{ number_format($cropTypeTotalArea, 2) }} ha</small>
+                                                    </td>
+                                                @endif
+                                                
+                                                <!-- Individual plan data -->
+                                                <td class="fw-bold text-primary">{{ $plan['crop_name'] }}</td>
+                                                <td class="text-center">{{ $plan['unit'] }}</td>
+                                                <td class="text-center fw-bold text-info">{{ $preparationYear }}</td>
+                                                <td class="text-center">{{ $plan['season'] }}</td>
+                                                <td class="text-end fw-bold">{{ number_format($plan['area_to_plant'], 2) }}</td>
+
+                                                <!-- Quarter, Month, and Week Data -->
+                                                @foreach($quarters as $quarter => $months)
+                                                    @php
+                                                        // Quarter data extraction
+                                                        $quarterArea = 0;
+                                                        if (isset($quartersData[$quarter])) {
+                                                            if (is_array($quartersData[$quarter])) {
+                                                                $quarterArea = $quartersData[$quarter]['area'] ?? 0;
+                                                            } else {
+                                                                $quarterArea = floatval($quartersData[$quarter]);
+                                                            }
+                                                        }
+                                                        $quarterTotals[$quarter]['area'] += $quarterArea;
+                                                    @endphp
+                                                    
+                                                    <!-- Quarter Total -->
+                                                    <td class="text-end fw-bold {{ $quarterArea > 0 ? 'bg-primary-subtle' : '' }}">
+                                                        {{ number_format($quarterArea, 2) }}
+                                                    </td>
+                                                    
+                                                    <!-- Month Data for this Quarter -->
+                                                    @foreach($months as $month)
+                                                        @php
+                                                            // Month data extraction
+                                                            $monthArea = 0;
+                                                            if (isset($monthsData[$month])) {
+                                                                if (is_array($monthsData[$month])) {
+                                                                    $monthArea = $monthsData[$month]['area'] ?? 0;
+                                                                } else {
+                                                                    $monthArea = floatval($monthsData[$month]);
+                                                                }
+                                                            }
+                                                            $monthTotals[$month]['area'] += $monthArea;
+                                                        @endphp
+                                                        
+                                                        <!-- Month Total -->
+                                                        <td class="text-end fw-bold {{ $monthArea > 0 ? 'bg-success-subtle' : '' }}">
+                                                            {{ number_format($monthArea, 2) }}
+                                                        </td>
+                                                        
+                                                        <!-- Week Data for this Month (only for months with weeks) -->
+                                                        @if(in_array($month, $monthsWithWeeks))
+                                                            @for($week = 1; $week <= 4; $week++)
+                                                                @php
+                                                                    $weekKey = $month . ' W' . $week;
+                                                                    $weekArea = 0;
+                                                                    
+                                                                    // Get week data from the processed weekly distribution
+                                                                    if (isset($weekDataByMonth[$month][$week])) {
+                                                                        $weekArea = $weekDataByMonth[$month][$week];
+                                                                    }
+                                                                    
+                                                                    $weekTotals[$weekKey]['area'] += $weekArea;
+                                                                @endphp
+                                                                <td class="text-end {{ $weekArea > 0 ? 'bg-warning-subtle' : '' }}">
+                                                                    {{ number_format($weekArea, 2) }}
+                                                                </td>
+                                                            @endfor
+                                                        @endif
+                                                    @endforeach
+                                                @endforeach
+
+                                                <!-- Summary Data -->
+                                                <td class="text-end fw-bold bg-warning-subtle distributed-area">
+                                                    {{ number_format($distributedArea, 2) }}
+                                                </td>
+                                                <td class="text-end fw-bold bg-warning-subtle remaining-area {{ $remainingArea >= 0 ? 'text-success' : 'text-danger' }}">
+                                                    {{ number_format($remainingArea, 2) }}
+                                                </td>
+                                            </tr>
                                             @php
-                                                $monthData = $months[$month] ?? ['area' => 0, 'yield' => 0];
+                                                $yearFirst = false;
+                                                $cropTypeFirst = false;
                                             @endphp
-                                            <td class="text-end {{ $monthData['area'] > 0 ? 'bg-success-subtle' : '' }}">
-                                                {{ number_format($monthData['area'], 2) }}
-                                            </td>
-                                            <td class="text-end {{ $monthData['yield'] > 0 ? 'bg-success-subtle' : '' }}">
-                                                {{ number_format($monthData['yield'], 2) }}
-                                            </td>
                                         @endforeach
-
-                                        <!-- Summary Data -->
-                                        <td class="text-end fw-bold {{ $distributedArea > 0 ? 'bg-warning-subtle' : '' }}">
-                                            {{ number_format($distributedArea, 2) }}
-                                        </td>
-                                        <td class="text-end fw-bold {{ $distributedYield > 0 ? 'bg-warning-subtle' : '' }}">
-                                            {{ number_format($distributedYield, 2) }}
-                                        </td>
-                                        <td class="text-end fw-bold {{ $remainingArea >= 0 ? 'text-success' : 'text-danger' }}">
-                                            {{ number_format($remainingArea, 2) }}
-                                        </td>
-                                        <td class="text-end fw-bold {{ $remainingYield >= 0 ? 'text-success' : 'text-danger' }}">
-                                            {{ number_format($remainingYield, 2) }}
-                                        </td>
-                                    </tr>
+                                    @endforeach
                                 @endforeach
 
-                                <!-- Total Row -->
-                                <tr class="table-secondary fw-bold">
-                                    <td colspan="7" class="text-center">TOTAL</td>
-                                    <td class="text-end">{{ number_format($totalArea, 2) }}</td>
-                                    <td class="text-end">{{ number_format($totalYield, 2) }}</td>
-
-                                    <!-- Quarter Totals -->
-                                    @foreach(['Q1', 'Q2', 'Q3', 'Q4'] as $quarter)
-                                        @php
-                                            $quarterTotalArea = 0;
-                                            $quarterTotalYield = 0;
-                                            foreach($transformedPlans as $plan) {
-                                                $quarterData = $plan['timeline_data']['quarters'][$quarter] ?? ['area' => 0, 'yield' => 0];
-                                                $quarterTotalArea += $quarterData['area'];
-                                                $quarterTotalYield += $quarterData['yield'];
-                                            }
-                                        @endphp
-                                        <td class="text-end bg-info-subtle">{{ number_format($quarterTotalArea, 2) }}</td>
-                                        <td class="text-end bg-info-subtle">{{ number_format($quarterTotalYield, 2) }}</td>
-                                    @endforeach
-
-                                    <!-- Month Totals -->
-                                    @foreach($ethiopianMonths as $month)
-                                        @php
-                                            $monthTotalArea = 0;
-                                            $monthTotalYield = 0;
-                                            foreach($transformedPlans as $plan) {
-                                                $monthData = $plan['timeline_data']['months'][$month] ?? ['area' => 0, 'yield' => 0];
-                                                $monthTotalArea += $monthData['area'];
-                                                $monthTotalYield += $monthData['yield'];
-                                            }
-                                        @endphp
-                                        <td class="text-end bg-success-subtle">{{ number_format($monthTotalArea, 2) }}</td>
-                                        <td class="text-end bg-success-subtle">{{ number_format($monthTotalYield, 2) }}</td>
-                                    @endforeach
-
-                                    <!-- Summary Totals -->
-                                    <td class="text-end bg-warning-subtle">{{ number_format($totalDistributedArea, 2) }}</td>
-                                    <td class="text-end bg-warning-subtle">{{ number_format($totalDistributedYield, 2) }}</td>
-                                    <td class="text-end bg-warning-subtle">{{ number_format($totalArea - $totalDistributedArea, 2) }}</td>
-                                    <td class="text-end bg-warning-subtle">{{ number_format($totalYield - $totalDistributedYield, 2) }}</td>
-                                </tr>
+                                
                                 </tbody>
                             </table>
                         </div>
                     </div>
                 </div>
 
-                <!-- Statistics Cards -->
-                <div class="row mt-4">
-                    <div class="col-md-3">
-                        <div class="card bg-primary text-white">
-                            <div class="card-body text-center">
-                                <h3>{{ count($transformedPlans) }}</h3>
-                                <p class="mb-0">Total Crop Plans</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="card bg-success text-white">
-                            <div class="card-body text-center">
-                                <h3>{{ number_format($totalArea, 2) }} ha</h3>
-                                <p class="mb-0">Total Planning Area</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="card bg-info text-white">
-                            <div class="card-body text-center">
-                                <h3>{{ number_format($totalDistributedArea, 2) }} ha</h3>
-                                <p class="mb-0">Total Distributed Area</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="card bg-warning text-white">
-                            <div class="card-body text-center">
-                                <h3>{{ number_format(($totalDistributedArea / $totalArea) * 100, 1) }}%</h3>
-                                <p class="mb-0">Distribution Rate</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                 
+
+            
             </div>
         </div>
     </div>
 
     <script>
         function exportToExcel() {
-            // Create a temporary table for export
             const table = document.getElementById('cropPlanTable');
             const html = table.outerHTML;
-
-            // Create blob and download
             const blob = new Blob([html], { type: 'application/vnd.ms-excel' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = 'crop-plan-timeline-' + new Date().toISOString().split('T')[0] + '.xls';
+            a.download = 'crop-plan-grouped-' + new Date().toISOString().split('T')[0] + '.xls';
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
         }
 
-        // Add hover effects
         document.addEventListener('DOMContentLoaded', function() {
             const rows = document.querySelectorAll('#cropPlanTable tbody tr');
             rows.forEach(row => {
@@ -262,7 +388,53 @@
                     this.style.backgroundColor = '';
                 });
             });
+
+            // Week visibility toggle (only for months with weeks)
+            const monthHeaders = document.querySelectorAll('thead th.bg-success');
+            monthHeaders.forEach(header => {
+                const monthName = header.textContent.trim();
+                if (monthName !== 'Pagumen') {
+                    header.style.cursor = 'pointer';
+                    header.title = 'Click to toggle weeks visibility';
+                    header.addEventListener('click', function() {
+                        toggleWeeksVisibility(monthName);
+                    });
+                }
+            });
         });
+
+        function toggleWeeksVisibility(month) {
+            const allHeaders = document.querySelectorAll('thead th, thead td');
+            let weekColumns = [];
+            
+            allHeaders.forEach((header, index) => {
+                if (header.textContent.trim() === month && header.classList.contains('bg-success')) {
+                    const monthIndex = index;
+                    
+                    for (let i = 1; i <= 4; i++) {
+                        const weekHeader = allHeaders[monthIndex + i + 1];
+                        if (weekHeader && weekHeader.classList.contains('bg-warning-subtle')) {
+                            weekColumns.push(weekHeader);
+                        }
+                    }
+                }
+            });
+
+            weekColumns.forEach(weekHeader => {
+                const isHidden = weekHeader.style.display === 'none';
+                weekHeader.style.display = isHidden ? '' : 'none';
+                
+                const columnIndex = Array.from(weekHeader.parentElement.cells).indexOf(weekHeader);
+                const dataRows = document.querySelectorAll('#cropPlanTable tbody tr');
+                
+                dataRows.forEach(row => {
+                    const cell = row.cells[columnIndex];
+                    if (cell) {
+                        cell.style.display = isHidden ? '' : 'none';
+                    }
+                });
+            });
+        }
     </script>
 
     <style>
@@ -271,58 +443,98 @@
             font-weight: 600;
             white-space: nowrap;
         }
-
         .table td {
             font-size: 0.8rem;
             white-space: nowrap;
         }
-
         .sticky-top {
             position: sticky;
             top: 0;
             z-index: 10;
         }
-
         .table-responsive {
             max-height: 70vh;
             overflow: auto;
         }
-
-        .bg-info-subtle {
-            background-color: #d1ecf1 !important;
+        .bg-info-subtle { background-color: #d1ecf1 !important; }
+        .bg-success-subtle { background-color: #d1f2eb !important; }
+        .bg-warning-subtle { background-color: #fff3cd !important; }
+        .bg-primary-subtle { background-color: #cfe2ff !important; }
+        
+        /* Improved visibility for summary columns */
+        .distributed-area, .remaining-area {
+            background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%) !important;
+            border-left: 3px solid #ffc107 !important;
+            font-weight: 700 !important;
+            font-size: 0.85rem !important;
         }
-
-        .bg-success-subtle {
-            background-color: #d1f2eb !important;
+        
+        .distributed-area {
+            border-right: 2px solid #dee2e6 !important;
         }
-
-        .bg-warning-subtle {
-            background-color: #fff3cd !important;
+        
+        .remaining-area {
+            border-right: 2px solid #dee2e6 !important;
         }
-
+        
+        /* Enhanced header styling for summary columns */
+        thead th.bg-warning {
+            background: linear-gradient(135deg, #ffc107 0%, #e0a800 100%) !important;
+            color: #000 !important;
+            font-weight: 700 !important;
+            font-size: 0.8rem !important;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        thead th.bg-warning-subtle {
+            background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%) !important;
+            color: #000 !important;
+            font-weight: 700 !important;
+            font-size: 0.75rem !important;
+            border-bottom: 2px solid #ffc107 !important;
+        }
+        
         .table-hover tbody tr:hover {
             background-color: rgba(0, 0, 0, 0.075);
         }
-
+        
+        .table-hover tbody tr:hover .distributed-area,
+        .table-hover tbody tr:hover .remaining-area {
+            background: linear-gradient(135deg, #ffeaa7 0%, #ffd54f 100%) !important;
+        }
+        
         .card {
             box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
             border: 1px solid rgba(0, 0, 0, 0.125);
         }
-
-        /* Print styles */
+        
+        @media (max-width: 768px) {
+            .table-responsive { font-size: 0.7rem; }
+            .table th, .table td { padding: 0.3rem; }
+            .distributed-area, .remaining-area { font-size: 0.75rem !important; }
+        }
+        
         @media print {
-            .card-header button {
-                display: none;
+            .card-header button { display: none; }
+            .table-responsive { overflow: visible; }
+            .card { border: none; box-shadow: none; }
+            .distributed-area, .remaining-area { 
+                background: #fff3cd !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
             }
-
-            .table-responsive {
-                overflow: visible;
-            }
-
-            .card {
-                border: none;
-                box-shadow: none;
-            }
+        }
+        
+        /* Highlight positive/negative remaining areas */
+        .remaining-area.text-success {
+            color: #198754 !important;
+            font-weight: 800 !important;
+        }
+        
+        .remaining-area.text-danger {
+            color: #dc3545 !important;
+            font-weight: 800 !important;
         }
     </style>
 </x-layout>
