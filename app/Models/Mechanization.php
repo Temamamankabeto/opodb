@@ -22,6 +22,8 @@ class mechanization extends Model
         'unit',
         'year',
         'loan_details',
+        'mechanization_distribution_details',
+        
          
         'sector_id',
         'kebele_id',
@@ -39,6 +41,8 @@ class mechanization extends Model
         'year' => 'integer',
         'amount' => 'decimal:2',
          'loan_details' => 'array',
+         'mechanization_distribution_details' => 'array',
+         
     ];
 
     /**

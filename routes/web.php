@@ -433,12 +433,21 @@ Route::delete('/enterprise-work/{id}', [EnterpriseWorkController::class, 'destro
             Route::get('/crop-plans/export/csv', [KebeleCropPlanController::class, 'exportCsv'])->name('crop-plans.export.csv');
 
 
-         
+          Route::get('/mechanizations/{id}/plan', [MechanizationController::class, 'mechanizationPlan'])
+        ->name('mechanizations.plan');
+        Route::put('/mechanization-plans/{id}', [MechanizationController::class, 'updateMechanizationPlan'])
+        ->name('mechanization-plans.update');
         
+        Route::get('/mechanizations/timeline', [MechanizationController::class, 'mechanizationTime'])->name('mechanizations.timeline');
+        Route::get('/mechanizations/export-excel', [MechanizationController::class, 'exportMechanizationExcel'])->name('mechanizations.export-excel');
 
-        
+Route::get('/gabbina_biyyee/{id}/plan', [GabbinaBiyyeeController::class, 'compostPlan'])
+    ->name('gabbina_biyyee.plan');
+Route::put('/compost-plans/{id}', [GabbinaBiyyeeController::class, 'updateCompostPlan'])
+    ->name('compost-plans.update');
 
-        Route::get('/get-fertilizers/{typrId}',[KebeleCropPlanController::class,'getFertilizers']);
+    Route::get('/gabbina_biyyee/timeline', [GabbinaBiyyeeController::class, 'compostTime'])->name('gabbina_biyyee.timeline');
+Route::get('/gabbina_biyyee/export-excel', [GabbinaBiyyeeController::class, 'exportCompostExcel'])->name('gabbina_biyyee.export-excel');
 
         // Cascading AJAX routes
         Route::get('crops-by-year/{year}', [KebeleCropPlanController::class, 'getCropTypesByYear'])->name('crops.byYear');
@@ -591,10 +600,6 @@ Route::delete('/association-types/delete/{id}', [AssociationTypeController::clas
         ->name('building-power-institution-plans.destroy');
         Route::get('/building-power-institution-plans/check-existing', [BuildingPowerInstitutionPlanController::class, 'checkExisting'])->name('building-community-institution-plans.check-existing');
  
-
-
-
-        
 // Building deenagdee Institution Plan Routes
  
     Route::get('/building-power-institution-plans', [BuildingPowerInstitutionPlanController::class, 'index'])
@@ -616,8 +621,6 @@ Route::delete('/association-types/delete/{id}', [AssociationTypeController::clas
         ->name('building-power-institution-plans.destroy');
         Route::get('/building-power-institution-plans/check-existing', [BuildingPowerInstitutionPlanController::class, 'checkExisting'])->name('building-community-institution-plans.check-existing');
  
-
-
         // Building economic Institution Plan Routes
  
     Route::get('/building-economic-institution-plans', [BuildingEconomicInstitutionPlanController::class, 'index'])
@@ -639,7 +642,6 @@ Route::delete('/association-types/delete/{id}', [AssociationTypeController::clas
         ->name('building-economic-institution-plans.destroy');
         Route::get('/building-economic-institution-plans/check-existing', [BuildingEconomicInstitutionPlanController::class, 'checkExisting'])->name('building-community-institution-plans.check-existing');
 
-
     // Employment Opportunity Plans
     Route::get('/employment-opportunity-plans', [EmploymentOpportunityPlanController::class, 'index'])->name('employment-opportunity-plans.index');
     Route::get('/employment-opportunity-plans/create', [EmploymentOpportunityPlanController::class, 'create'])->name('employment-opportunity-plans.create');
@@ -648,9 +650,6 @@ Route::delete('/association-types/delete/{id}', [AssociationTypeController::clas
     Route::put('/employment-opportunity-plans/{id}', [EmploymentOpportunityPlanController::class, 'update'])->name('employment-opportunity-plans.update');
     Route::delete('/employment-opportunity-plans/{id}', [EmploymentOpportunityPlanController::class, 'destroy'])->name('employment-opportunity-plans.destroy');
     Route::get('/employment-opportunity-plans/check-existing', [EmploymentOpportunityPlanController::class, 'checkExisting'])->name('employment-opportunity-plans.check-existing');
-
-   
- 
 
     });
 

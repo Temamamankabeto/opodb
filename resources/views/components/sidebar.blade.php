@@ -332,7 +332,7 @@
             @endif
 
             <!-- sector admin  -->
-            @if (in_array(Auth::user()->role_id, [4]))
+            @if (in_array(Auth::user()->role_id, [4,5]))
                 <li>
                     <span class="caret"><i class="fa-solid fa-folder folder-icon"></i><span class="sidebar-text">{{ __('Karoora') }}</span></span>
                     <ul>
@@ -349,66 +349,15 @@
                                         <li><i class="fa-regular fa-file file-icon"></i><a
                                                 href=" {{url('sector/crop-fertilizer')}}"><span class="sidebar-text">{{ __('Fertilizer Supply') }}</span></a></li>
                                         <li><i class="fa-regular fa-file file-icon"></i><a
-                                                href="/fertilizer-type"><span class="sidebar-text">{{ __('Soil Management Work') }}</span></a></li>
-                                        <li><i class="fa-regular fa-file file-icon"></i><a
-                                                href="/fertilizer-type"><span class="sidebar-text">{{ __('Seedling Preparation and Storage') }}</span></a>
-                                        </li>
-                                        <li><i class="fa-regular fa-file file-icon"></i><a
-                                                href="/fertilizer-type"><span class="sidebar-text">{{ __('Livestock Supplies') }}</span></a></li>
-                                        <li><i class="fa-regular fa-file file-icon"></i><a
-                                                href="/fertilizer-type"><span class="sidebar-text">{{ __('Livestock Products') }}</span></a></li>
-                                        <li><i class="fa-regular fa-file file-icon"></i><a
-                                                href="/fertilizer-type"><span class="sidebar-text">{{ __('Livestock Production') }}</span></a></li>
-                                        <li><i class="fa-regular fa-file file-icon"></i><a
-                                                href="/fertilizer-type"><span class="sidebar-text">{{ __('Natural Resources') }}</span></a></li>
+                                                href="{{url('sector/mechanizations')}}"><span class="sidebar-text">{{ __('Diyeessii') }}</span></a></li>
+                                                   <li><i class="fa-regular fa-file file-icon"></i><a
+                                                href="{{url('sector/gabbina-biyyee')}}"><span class="sidebar-text">{{ __('Gabbina Biyyoo') }}</span></a></li>
+                                               
+                                        
+                                       
                                     </ul>
                                 </li>
-                                <li>
-                                    <span class="caret"><i
-                                            class="fa-solid fa-folder folder-icon"></i><span class="sidebar-text">{{ __('Production Infrastructure') }}</span></span>
-                                    <ul>
-                                        <li><i class="fa-regular fa-file file-icon"></i><a
-                                                href="/crop-plan"><span class="sidebar-text">{{ __('Construction Institutions') }}</span></a></li>
-                                        <li><i class="fa-regular fa-file file-icon"></i><a
-                                                href="/fertilizer-type"><span class="sidebar-text">{{ __('Renovation of Institutions') }}</span></a>
-                                        </li>
-                                        <li><i class="fa-regular fa-file file-icon"></i><a
-                                                href="/fertilizer-type"><span class="sidebar-text">{{ __('Facility Construction') }}</span></a></li>
-                                        <li><i class="fa-regular fa-file file-icon"></i><a
-                                                href="/fertilizer-type"><span class="sidebar-text">{{ __('Construction of Economic Infrastructure Facilities') }}</span></a>
-                                        </li>
-                                    </ul>
-                                </li>
-                                <li>
-                                    <span class="caret"><i class="fa-solid fa-folder folder-icon"></i><span class="sidebar-text">Misooma Hawaasummaa</span></span>
-                                    <ul>
-                                        <li><i class="fa-regular fa-file file-icon"></i><a
-                                                href="/crop-plan"><span class="sidebar-text">Hirmaannaa Fi Itti Fufiinsa</span></a></li>
-                                        <li><i class="fa-regular fa-file file-icon"></i><a
-                                                href="/fertilizer-type"><span class="sidebar-text">Bu'aqabeessummaa Barnootaa</span></a></li>
-                                        <li><i class="fa-regular fa-file file-icon"></i><a
-                                                href="/fertilizer-type"><span class="sidebar-text">Dhiyeessii Nyaata Barattootaa</span></a></li>
-                                        <li><i class="fa-regular fa-file file-icon"></i><a
-                                                href="/fertilizer-type"><span class="sidebar-text">Aadaa Fi Aartii</span></a></li>
-                                        <li><i class="fa-regular fa-file file-icon"></i><a
-                                                href="/fertilizer-type"><span class="sidebar-text">Galmeessa Sivilii</span></a></li>
-                                        <li><i class="fa-regular fa-file file-icon"></i><a
-                                                href="/fertilizer-type"><span class="sidebar-text">Fayyaa</span></a></li>
-                                    </ul>
-                                </li>
-                                <li>
-                                    <span class="caret"><i class="fa-solid fa-folder folder-icon"></i><span class="sidebar-text">Carraa Hojii Uumuu</span></span>
-                                    <ul>
-                                        <li><i class="fa-regular fa-file file-icon"></i><a href="/crop-plan"><span class="sidebar-text">Carraa Hojii Uumuu</span></a></li>
-                                    </ul>
-                                </li>
-                                <li>
-                                    <span class="caret"><i class="fa-solid fa-folder folder-icon"></i><span class="sidebar-text">Horataalee Motummaa</span></span>
-                                    <ul>
-                                        <li><i class="fa-regular fa-file file-icon"></i><a
-                                                href="/crop-plan"><span class="sidebar-text">Horataalee Motummaa</span></a></li>
-                                    </ul>
-                                </li>
+                             
                             </ul>
                         </li>
                     </ul>
@@ -433,83 +382,23 @@
                                         <li><i class="fa-regular fa-file file-icon"></i><a
                                                 href=" {{url('sector/fertilizer-plans')}}"><span class="sidebar-text">{{ __('fertilizer') }}</span></a></li>
                                         <li><i class="fa-regular fa-file file-icon"></i><a
-                                                href="/fertilizer-type"><span class="sidebar-text">{{ __('Seedling Preparation and Storage') }}</span></a>
+                                                href="{{url('sector/mechanizations/timeline')}}"><span class="sidebar-text">{{ __('Mechinization') }}</span></a>
                                         </li>
-                                        <li><i class="fa-regular fa-file file-icon"></i><a
-                                                href="/fertilizer-type"><span class="sidebar-text">{{ __('Livestock Supplies') }}</span></a></li>
-                                        <li><i class="fa-regular fa-file file-icon"></i><a
-                                                href="/fertilizer-type"><span class="sidebar-text">{{ __('Livestock Products') }}</span></a></li>
-                                        <li><i class="fa-regular fa-file file-icon"></i><a
-                                                href="/fertilizer-type"><span class="sidebar-text">{{ __('Livestock Production') }}</span></a></li>
-                                        <li><i class="fa-regular fa-file file-icon"></i><a
-                                                href="/fertilizer-type"><span class="sidebar-text">{{ __('Natural Resources') }}</span></a></li>
-                                    </ul>
-                                </li>
-                                <li>
-                                    <span class="caret"><i
-                                            class="fa-solid fa-folder folder-icon"></i><span class="sidebar-text">{{ __('Production Infrastructure') }}</span></span>
-                                    <ul>
-                                        <li><i class="fa-regular fa-file file-icon"></i><a
-                                                href="/crop-plan"><span class="sidebar-text">{{ __('Construction Institutions') }}</span></a></li>
-                                        <li><i class="fa-regular fa-file file-icon"></i><a
-                                                href="/fertilizer-type"><span class="sidebar-text">{{ __('Renovation of Institutions') }}</span></a>
+                                         <li><i class="fa-regular fa-file file-icon"></i><a
+                                                href="{{url('sector/gabbina_biyyee/timeline')}}"><span class="sidebar-text">{{ __('Gabbina Birroo') }}</span></a>
                                         </li>
-                                        <li><i class="fa-regular fa-file file-icon"></i><a
-                                                href="/fertilizer-type"><span class="sidebar-text">{{ __('Facility Construction') }}</span></a></li>
-                                        <li><i class="fa-regular fa-file file-icon"></i><a
-                                                href="/fertilizer-type"><span class="sidebar-text">{{ __('Construction of Economic Infrastructure Facilities') }}</span></a>
-                                        </li>
+                                        
+
+                                        
                                     </ul>
                                 </li>
-                                <li>
-                                    <span class="caret"><i class="fa-solid fa-folder folder-icon"></i><span class="sidebar-text">Misooma Hawaasummaa</span></span>
-                                    <ul>
-                                        <li><i class="fa-regular fa-file file-icon"></i><a
-                                                href="/crop-plan"><span class="sidebar-text">Hirmaannaa Fi Itti Fufiinsa</span></a></li>
-                                        <li><i class="fa-regular fa-file file-icon"></i><a
-                                                href="/fertilizer-type"><span class="sidebar-text">Bu'aqabeessummaa Barnootaa</span></a></li>
-                                        <li><i class="fa-regular fa-file file-icon"></i><a
-                                                href="/fertilizer-type"><span class="sidebar-text">Dhiyeessii Nyaata Barattootaa</span></a></li>
-                                        <li><i class="fa-regular fa-file file-icon"></i><a
-                                                href="/fertilizer-type"><span class="sidebar-text">Aadaa Fi Aartii</span></a></li>
-                                        <li><i class="fa-regular fa-file file-icon"></i><a
-                                                href="/fertilizer-type"><span class="sidebar-text">Galmeessa Sivilii</span></a></li>
-                                        <li><i class="fa-regular fa-file file-icon"></i><a
-                                                href="/fertilizer-type"><span class="sidebar-text">Fayyaa</span></a></li>
-                                    </ul>
-                                </li>
-                                <li>
-                                    <span class="caret"><i class="fa-solid fa-folder folder-icon"></i><span class="sidebar-text">Carraa Hojii Uumuu</span></span>
-                                    <ul>
-                                        <li><i class="fa-regular fa-file file-icon"></i><a href="/crop-plan"><span class="sidebar-text">Carraa Hojii Uumuu</span></a></li>
-                                    </ul>
-                                </li>
-                                <li>
-                                    <span class="caret"><i class="fa-solid fa-folder folder-icon"></i><span class="sidebar-text">Horataalee Motummaa</span></span>
-                                    <ul>
-                                        <li><i class="fa-regular fa-file file-icon"></i><a
-                                                href="/crop-plan"><span class="sidebar-text">Horataalee Motummaa</span></a></li>
-                                    </ul>
-                                </li>
+                                
                             </ul>
                         </li>
                     </ul>
                 </li>
 
-                <li>
-                    <span class="caret"><i class="fa-solid fa-folder folder-icon"></i><span class="sidebar-text">Gabaasaa</span></span>
-                    <ul>
-                        <li>
-                            <span class="caret"><i class="fa-solid fa-folder folder-icon"></i><span class="sidebar-text">Misooma Midhaanii</span></span>
-                            <ul>
-                                <li><i class="fa-regular fa-file file-icon"></i><a
-                                        href="#"><span class="sidebar-text">Midhaan</span></a></li>
-                                <li><i class="fa-regular fa-file file-icon"></i><a
-                                        href="{{url('sector/crop-fertilizer')}}"><span class="sidebar-text">Calla Guddiftuu</span></a></li>
-                            </ul>
-                        </li>
-                    </ul>
-                </li>
+                
             @endif
 
             <!-- Additional sections for other user roles would go here -->

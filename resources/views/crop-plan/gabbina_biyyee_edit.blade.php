@@ -56,8 +56,9 @@
                                     <option value="">-- Select Compost Type --</option>
                                     @foreach ($compostTypes as $type)
                                         <option value="{{ $type->name }}" 
+                                            data-unit="{{ $type->unit }}"
                                             {{ old('compost_type', $gabbinaBiyyee->compost_type) == $type->name ? 'selected' : '' }}>
-                                            {{ $type->name }}
+                                            {{ $type->name }} ({{ $type->unit }})
                                         </option>
                                     @endforeach
                                 </select>
@@ -67,8 +68,11 @@
                             @enderror
                         </div>
 
+                        <!-- Hidden unit field for form submission -->
+                        <input type="hidden" name="unit" id="unitInput" value="{{ old('unit', $gabbinaBiyyee->unit) }}">
+
                         <div class="col-md-4">
-                            <label class="form-label fw-semibold">Common Quantity (Qt)</label>
+                            <label class="form-label fw-semibold">Common Quantity</label>
                             <div class="input-group">
                                 <span class="input-group-text bg-light border-end-0">
                                     <i class="bi bi-people text-muted"></i>
@@ -76,6 +80,9 @@
                                 <input type="number" step="0.01" name="common" class="form-control border-start-0 ps-0"
                                        value="{{ old('common', $gabbinaBiyyee->common) }}"
                                        placeholder="0.00" id="commonInput">
+                                <span class="input-group-text bg-light">
+                                    <span id="unitDisplay">{{ old('unit', $gabbinaBiyyee->unit) ?: 'Qt' }}</span>
+                                </span>
                             </div>
                             @error('common')
                                 <div class="text-danger small mt-1">{{ $message }}</div>
@@ -83,7 +90,7 @@
                         </div>
 
                         <div class="col-md-4">
-                            <label class="form-label fw-semibold">Individual Quantity (Qt)</label>
+                            <label class="form-label fw-semibold">Individual Quantity</label>
                             <div class="input-group">
                                 <span class="input-group-text bg-light border-end-0">
                                     <i class="bi bi-person text-muted"></i>
@@ -91,6 +98,9 @@
                                 <input type="number" step="0.01" name="individual" class="form-control border-start-0 ps-0"
                                        value="{{ old('individual', $gabbinaBiyyee->individual) }}"
                                        placeholder="0.00" id="individualInput">
+                                <span class="input-group-text bg-light">
+                                    <span id="unitDisplayIndividual">{{ old('unit', $gabbinaBiyyee->unit) ?: 'Qt' }}</span>
+                                </span>
                             </div>
                             @error('individual')
                                 <div class="text-danger small mt-1">{{ $message }}</div>
@@ -98,7 +108,7 @@
                         </div>
 
                         <div class="col-md-4">
-                            <label class="form-label fw-semibold">Total Quantity (Qt)</label>
+                            <label class="form-label fw-semibold">Total Quantity</label>
                             <div class="input-group">
                                 <span class="input-group-text bg-light border-end-0">
                                     <i class="bi bi-calculator text-muted"></i>
@@ -106,6 +116,9 @@
                                 <input type="number" step="0.01" name="total" class="form-control border-start-0 ps-0"
                                        value="{{ old('total', $gabbinaBiyyee->total) }}"
                                        placeholder="0.00" id="totalInput" readonly>
+                                <span class="input-group-text bg-light">
+                                    <span id="unitDisplayTotal">{{ old('unit', $gabbinaBiyyee->unit) ?: 'Qt' }}</span>
+                                </span>
                             </div>
                             @error('total')
                                 <div class="text-danger small mt-1">{{ $message }}</div>
@@ -151,12 +164,21 @@
             document.getElementById('totalInput').value = (common + individual).toFixed(2);
         }
 
-        // Toggle land area visibility
-        function toggleLandArea() {
-            const compostType = document.getElementById('compostType').value;
+        // Toggle land area visibility and update unit
+        function toggleLandAreaAndUnit() {
+            const compostType = document.getElementById('compostType');
+            const selectedOption = compostType.options[compostType.selectedIndex];
             const landAreaSection = document.getElementById('landAreaSection');
+            const unit = selectedOption.getAttribute('data-unit') || 'Qt';
             
-            if (compostType === 'Nooraa Hojiirra oole') {
+            // Update unit displays
+            document.getElementById('unitDisplay').textContent = unit;
+            document.getElementById('unitDisplayIndividual').textContent = unit;
+            document.getElementById('unitDisplayTotal').textContent = unit;
+            document.getElementById('unitInput').value = unit;
+            
+            // Toggle land area section
+            if (compostType.value === 'Nooraa Hojiirra oole') {
                 landAreaSection.style.display = 'block';
             } else {
                 landAreaSection.style.display = 'none';
@@ -167,11 +189,11 @@
         // Event listeners
         document.getElementById('commonInput').addEventListener('input', calculateTotal);
         document.getElementById('individualInput').addEventListener('input', calculateTotal);
-        document.getElementById('compostType').addEventListener('change', toggleLandArea);
+        document.getElementById('compostType').addEventListener('change', toggleLandAreaAndUnit);
 
         // Initial calculations
         calculateTotal();
-        toggleLandArea();
+        toggleLandAreaAndUnit();
 
         // Form validation
         (function () {

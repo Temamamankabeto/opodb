@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('unit')->nullable();
             $table->year('year'); // Changed to year type
             $table->json('loan_details')->nullable();
+             $table->json('mechanization_distribution_details')->nullable()->after('loan_details');
              
             
             // Foreign keys

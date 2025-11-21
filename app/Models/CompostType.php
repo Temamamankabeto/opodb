@@ -14,5 +14,6 @@ class CompostType extends Model
 
     protected $fillable = [
         'name',
+        'unit',
     ];
 }

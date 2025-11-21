@@ -25,7 +25,15 @@ class GabbinaBiyyee extends Model
         'total',
         'land_area',
         'sector_id',
+        'unit',
+        'compost_distribution_details',
+        
+        
     ];
+   protected $casts = [
+        'compost_distribution_details' => 'array',  
+        
+   ];
 
     // Relationships
 
