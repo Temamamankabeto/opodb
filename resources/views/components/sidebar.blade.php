@@ -170,12 +170,13 @@
         <button class="sidebar-toggle" id="sidebarToggle">
             <i class="fas fa-chevron-left"></i>
         </button>
-        
+
         <ul class="sidebar-tree">
             <!-- super admin  -->
             @if (Auth::user()->role_id == 1)
                 <li>
-                    <span class="caret"><i class="fa-solid fa-folder folder-icon"></i><span class="sidebar-text">{{ __('User Management') }}</span></span>
+                    <span class="caret"><i class="fa-solid fa-folder folder-icon"></i><span
+                            class="sidebar-text">{{ __('User Management') }}</span></span>
                     <ul>
                         <li><i class="fa-regular fa-file file-icon"></i><a href="{{ url('admin/users') }}">
                                 <span class="sidebar-text">{{ __('Zone Admin') }}</span></a></li>
@@ -183,31 +184,34 @@
                 </li>
 
                 <li>
-                    <span class="caret"><i class="fa-solid fa-folder folder-icon"></i><span class="sidebar-text">{{ __('Structure') }}</span></span>
+                    <span class="caret"><i class="fa-solid fa-folder folder-icon"></i><span
+                            class="sidebar-text">{{ __('Structure') }}</span></span>
                     <ul>
-                        <li> <i class="fa-regular fa-file file-icon"></i><a
-                                href="{{ url('admin/zones') }}"><span class="sidebar-text">{{ __('Zones') }}</span></a>
+                        <li> <i class="fa-regular fa-file file-icon"></i><a href="{{ url('admin/zones') }}"><span
+                                    class="sidebar-text">{{ __('Zones') }}</span></a>
                         </li>
-                        <li> <i class="fa-regular fa-file file-icon"></i><a href="/karoora-jia"><span class="sidebar-text">{{ __('Sectors') }}</span></a>
+                        <li> <i class="fa-regular fa-file file-icon"></i><a href="/karoora-jia"><span
+                                    class="sidebar-text">{{ __('Sectors') }}</span></a>
                         </li>
                     </ul>
                 </li>
 
                 <li>
-                    <span class="caret"><i class="fa-solid fa-folder folder-icon"></i><span class="sidebar-text">{{ __('Report') }}</span></span>
+                    <span class="caret"><i class="fa-solid fa-folder folder-icon"></i><span
+                            class="sidebar-text">{{ __('Report') }}</span></span>
                     <ul>
-                        <li><i class="fa-regular fa-file file-icon"></i><a
-                                href=" {{url('admin/crop-plans')}}"><span class="sidebar-text">{{ __('Crop Plan') }}</span></a></li>
-                        <li><i class="fa-regular fa-file file-icon"></i><a
-                                href="/karoora-jia"><span class="sidebar-text">{{ __('Production Infrastructure') }}</span></a></li>
-                        <li><i class="fa-regular fa-file file-icon"></i><a
-                                href="/karoora-jia"><span class="sidebar-text">{{ __('Social Production') }}</span></a></li>
+                        <li><i class="fa-regular fa-file file-icon"></i><a href=" {{ url('admin/crop-plans') }}"><span
+                                    class="sidebar-text">{{ __('Crop Plan') }}</span></a></li>
+                        <li><i class="fa-regular fa-file file-icon"></i><a href="/karoora-jia"><span
+                                    class="sidebar-text">{{ __('Production Infrastructure') }}</span></a></li>
+                        <li><i class="fa-regular fa-file file-icon"></i><a href="/karoora-jia"><span
+                                    class="sidebar-text">{{ __('Social Production') }}</span></a></li>
 
-                        <li><i class="fa-regular fa-file file-icon"></i><a
-                                href="/karoora-jia"><span class="sidebar-text">{{ __('Job Creation Opportunity') }}</span></a>
+                        <li><i class="fa-regular fa-file file-icon"></i><a href="/karoora-jia"><span
+                                    class="sidebar-text">{{ __('Job Creation Opportunity') }}</span></a>
                         </li>
-                        <li><i class="fa-regular fa-file file-icon"></i><a
-                                href="/karoora-jia"><span class="sidebar-text">{{ __('Government Policies') }}</span></a></li>
+                        <li><i class="fa-regular fa-file file-icon"></i><a href="/karoora-jia"><span
+                                    class="sidebar-text">{{ __('Government Policies') }}</span></a></li>
 
                         <li style="color: #007bff;"><i class="fa-regular fa-file file-icon"></i><a
                                 href="/karoora-jia"><span class="sidebar-text">{{ __('ALL Report') }}</span></a></li>
@@ -215,85 +219,102 @@
                 </li>
 
                 <li>
-                    <span class="caret"><i class="fa-solid fa-folder folder-icon"></i><span class="sidebar-text">{{ __('Configuration') }}</span></span>
+                    <span class="caret"><i class="fa-solid fa-folder folder-icon"></i><span
+                            class="sidebar-text">{{ __('Configuration') }}</span></span>
                     <ul>
                         <li><i class="fa-regular fa-file file-icon"></i><a
-                                href=" {{ url('admin/livestock-supplies') }}"><span class="sidebar-text">{{ __('Livestock Supplies') }}</span></a></li>
+                                href=" {{ url('admin/livestock-supplies') }}"><span
+                                    class="sidebar-text">{{ __('Livestock Supplies') }}</span></a></li>
                         <li><i class="fa-regular fa-file file-icon"></i><a
-                                href=" {{ url('admin/livestock_product') }}"><span class="sidebar-text">{{ __('Livestock Products') }}</span></a></li>
-                        <li><i class="fa-regular fa-file file-icon"></i><a
-                                href=" {{ url('admin/naturals') }}"><span class="sidebar-text">{{ __('Natural Resources') }}</span></a></li>
+                                href=" {{ url('admin/livestock_product') }}"><span
+                                    class="sidebar-text">{{ __('Livestock Products') }}</span></a></li>
+                        <li><i class="fa-regular fa-file file-icon"></i><a href=" {{ url('admin/naturals') }}"><span
+                                    class="sidebar-text">{{ __('Natural Resources') }}</span></a></li>
 
                         <li><i class="fa-regular fa-file file-icon"></i><a
-                                href=" {{ url('admin/enviromental-activity') }}"><span class="sidebar-text">{{ __('Enviromental Activity') }}</span></a>
-                        </li>
-
-                        <li><i class="fa-regular fa-file file-icon"></i><a
-                                href=" {{ url('admin/institutions') }}"><span class="sidebar-text">{{ __('Institutions') }}</span></a></li>
-                        <li><i class="fa-regular fa-file file-icon"></i><a
-                                href=" {{ url('admin/educational-participations') }}"><span class="sidebar-text">{{ __('Education Participation') }}</span></a>
+                                href=" {{ url('admin/enviromental-activity') }}"><span
+                                    class="sidebar-text">{{ __('Enviromental Activity') }}</span></a>
                         </li>
 
                         <li><i class="fa-regular fa-file file-icon"></i><a
-                                href=" {{ url('admin/educational-effectiveness') }}"><span class="sidebar-text">{{ __('Education Effectiveness') }}</span></a>
+                                href=" {{ url('admin/institutions') }}"><span
+                                    class="sidebar-text">{{ __('Institutions') }}</span></a></li>
+                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                href=" {{ url('admin/educational-participations') }}"><span
+                                    class="sidebar-text">{{ __('Education Participation') }}</span></a>
                         </li>
 
                         <li><i class="fa-regular fa-file file-icon"></i><a
-                                href=" {{ url('admin/student-meal-supplies') }}"><span class="sidebar-text">{{ __('Student Meal Supplies') }}</span></a>
-                        </li>
-                        <li><i class="fa-regular fa-file file-icon"></i><a
-                                href=" {{ url('admin/health') }}"><span class="sidebar-text">{{ __('Health') }}</span></a>
-                        </li>
-                        <li><i class="fa-regular fa-file file-icon"></i><a
-                                href=" {{ url('admin/cultural-revival') }}"><span class="sidebar-text">{{ __('Cultural Revival') }}</span></a>
+                                href=" {{ url('admin/educational-effectiveness') }}"><span
+                                    class="sidebar-text">{{ __('Education Effectiveness') }}</span></a>
                         </li>
 
                         <li><i class="fa-regular fa-file file-icon"></i><a
-                                href=" {{ url('admin/civil-certificates') }}"><span class="sidebar-text">{{ __(' civil certificates') }}</span></a>
+                                href=" {{ url('admin/student-meal-supplies') }}"><span
+                                    class="sidebar-text">{{ __('Student Meal Supplies') }}</span></a>
+                        </li>
+                        <li><i class="fa-regular fa-file file-icon"></i><a href=" {{ url('admin/health') }}"><span
+                                    class="sidebar-text">{{ __('Health') }}</span></a>
+                        </li>
+                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                href=" {{ url('admin/cultural-revival') }}"><span
+                                    class="sidebar-text">{{ __('Cultural Revival') }}</span></a>
                         </li>
 
                         <li><i class="fa-regular fa-file file-icon"></i><a
-                                href=" {{ url('admin/government-properties') }}"><span class="sidebar-text">{{ __('  Horataalee Mootummaa') }}</span></a>
-                        </li>
-                        <li><i class="fa-regular fa-file file-icon"></i><a
-                                href=" {{ url('admin/job-opportunities') }}"><span class="sidebar-text">{{ __('  Carraa Hojii') }}</span></a>
+                                href=" {{ url('admin/civil-certificates') }}"><span
+                                    class="sidebar-text">{{ __(' civil certificates') }}</span></a>
                         </li>
 
                         <li><i class="fa-regular fa-file file-icon"></i><a
-                                href=" {{ route('languages.list') }}"><span class="sidebar-text">{{ __('Languages') }}</span></a></li>
+                                href=" {{ url('admin/government-properties') }}"><span
+                                    class="sidebar-text">{{ __('  Horataalee Mootummaa') }}</span></a>
+                        </li>
+                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                href=" {{ url('admin/job-opportunities') }}"><span
+                                    class="sidebar-text">{{ __('  Carraa Hojii') }}</span></a>
+                        </li>
+
+                        <li><i class="fa-regular fa-file file-icon"></i><a href=" {{ route('languages.list') }}"><span
+                                    class="sidebar-text">{{ __('Languages') }}</span></a></li>
                     </ul>
                 </li>
             @endif
 
             <!-- Admin admin  -->
             @if (Auth::user()->role_id == 2)
-                <span class="caret"><i class="fa-solid fa-folder folder-icon"></i><span class="sidebar-text">{{ __('User Management') }}</span></span>
+                <span class="caret"><i class="fa-solid fa-folder folder-icon"></i><span
+                        class="sidebar-text">{{ __('User Management') }}</span></span>
                 <ul>
                     <li>
-                        <span class="caret"><i class="fa-solid fa-folder folder-icon"></i><span class="sidebar-text">{{ __('Users') }}</span></span>
+                        <span class="caret"><i class="fa-solid fa-folder folder-icon"></i><span
+                                class="sidebar-text">{{ __('Users') }}</span></span>
                         <ul>
-                            <li><i class="fa-regular fa-file file-icon"></i><a
-                                    href="{{ url('admin/users') }}"><span class="sidebar-text">{{ __('Woreda Users') }}</span></a></li>
-                            <li><i class="fa-regular fa-file file-icon"></i><a
-                                    href="/fertilizer-type"><span class="sidebar-text">{{ __('Kebele Users') }}</span></a>
+                            <li><i class="fa-regular fa-file file-icon"></i><a href="{{ url('admin/users') }}"><span
+                                        class="sidebar-text">{{ __('Woreda Users') }}</span></a></li>
+                            <li><i class="fa-regular fa-file file-icon"></i><a href="/fertilizer-type"><span
+                                        class="sidebar-text">{{ __('Kebele Users') }}</span></a>
                             </li>
-                             <li><i class="fa-regular fa-file file-icon"></i><a
-                                    href="{{ url('zones/crop-plans') }}"><span class="sidebar-text">{{ __('Crop Plan') }}</span></a>
+                            <li><i class="fa-regular fa-file file-icon"></i><a
+                                    href="{{ url('zones/crop-plans') }}"><span
+                                        class="sidebar-text">{{ __('Crop Plan') }}</span></a>
                             </li>
                         </ul>
                     </li>
                 </ul>
-            @endif
+            @endif 
             <!-- Regional admin  -->
             @if (Auth::user()->role_id == 3)
-                <span class="caret"><i class="fa-solid fa-folder folder-icon"></i><span class="sidebar-text">{{ __('Reports') }}</span></span>
+                <span class="caret"><i class="fa-solid fa-folder folder-icon"></i><span
+                        class="sidebar-text">{{ __('Reports') }}</span></span>
                 <ul>
                     <li>
-                        <span class="caret"><i
-                                class="fa-solid fa-folder folder-icon"></i><span class="sidebar-text">{{ __('Crop Related Report') }}</span></span>
+                        <span class="caret"><i class="fa-solid fa-folder folder-icon"></i><span
+                                class="sidebar-text">{{ __('Crop Related Report') }}</span></span>
                         <ul>
                             <li><i class="fa-regular fa-file file-icon"></i><a
-                                    href="{{ url('woredas/woreda/crop-plans/report') }}"><span class="sidebar-text">{{ __('Crop Plan') }}</span></a></li>
+                                    href="{{ url('woredas/woreda/crop-plans/report') }}"><span
+                                        class="sidebar-text">{{ __('Crop Plan') }}</span></a></li>
                         </ul>
                     </li>
                 </ul>
@@ -303,105 +324,45 @@
             @if (Auth::user()->role_id == 4)
                 <li>
                     <h5><i class="fa-regular  ">
-                            <a href="{{ url('kebele/dashboard') }}"><span class="sidebar-text">{{ __('Dashboard') }}</span></a>
+                            <a href="{{ url('kebele/dashboard') }}"><span
+                                    class="sidebar-text">{{ __('Dashboard') }}</span></a>
                         </i> </h5>
                     <hr>
                 </li>
 
                 <li>
-                    <span class="caret"><i
-                            class="fa-solid fa-folder folder-icon"></i><span class="sidebar-text">{{ __('User Management') }}</span></span>
+                    <span class="caret"><i class="fa-solid fa-folder folder-icon"></i><span
+                            class="sidebar-text">{{ __('User Management') }}</span></span>
                     <ul>
                         <li><i class="fa-regular fa-file file-icon"></i><a
-                                href="{{ url('kebele/sector-admins') }}"><span class="sidebar-text">{{ __('Sector Admins') }}</span></a></li>
+                                href="{{ url('kebele/sector-admins') }}"><span
+                                    class="sidebar-text">{{ __('Sector Admins') }}</span></a></li>
 
-                        <li><i class="fa-regular fa-file file-icon"></i><a
-                                href="{{ url('kebele/da-users') }}"><span class="sidebar-text">{{ __('DA Expert') }}</span></a></li>
+                        <li><i class="fa-regular fa-file file-icon"></i><a href="{{ url('kebele/da-users') }}"><span
+                                    class="sidebar-text">{{ __('DA Expert') }}</span></a></li>
                     </ul>
                 </li>
 
                 <li>
-                    <span class="caret"><i class="fa-solid fa-folder folder-icon"></i><span class="sidebar-text">{{ __('Configuration') }}</span></span>
+                    <span class="caret"><i class="fa-solid fa-folder folder-icon"></i><span
+                            class="sidebar-text">{{ __('Configuration') }}</span></span>
                     <ul>
                         <li><i class="fa-regular fa-file file-icon"></i><a
-                                href="{{ url('kebele/crop-configurations') }}"><span class="sidebar-text">{{ __('Productivity') }}</span></a></li>
+                                href="{{ url('kebele/crop-configurations') }}"><span
+                                    class="sidebar-text">{{ __('Productivity') }}</span></a></li>
                         <li><i class="fa-regular fa-file file-icon"></i><a
-                                href="{{ url('kebele/associations') }}"><span class="sidebar-text">{{ __('Associations') }}</span></a></li>
+                                href="{{ url('kebele/associations') }}"><span
+                                    class="sidebar-text">{{ __('Associations') }}</span></a></li>
                     </ul>
                 </li>
             @endif
 
             <!-- sector admin  -->
-            @if (in_array(Auth::user()->role_id, [4,5]))
-                <li>
-                    <span class="caret"><i class="fa-solid fa-folder folder-icon"></i><span class="sidebar-text">{{ __('Karoora') }}</span></span>
-                    <ul>
-                        <li>
-                            <span class="caret"><i
-                                    class="fa-solid fa-folder folder-icon"></i><span class="sidebar-text">{{ __('Karrora Waggaa') }}</span></span>
-                            <ul>
-                                <li>
-                                    <span class="caret"><i
-                                            class="fa-solid fa-folder folder-icon"></i><span class="sidebar-text">{{ __('Crop Production') }}</span></span>
-                                    <ul>
-                                        <li><i class="fa-regular fa-file file-icon"></i><a
-                                                href="{{ url('sector/crop-plans') }}"><span class="sidebar-text">{{ __('Crop') }}</span></a></li>
-                                        <li><i class="fa-regular fa-file file-icon"></i><a
-                                                href=" {{url('sector/crop-fertilizer')}}"><span class="sidebar-text">{{ __('Fertilizer Supply') }}</span></a></li>
-                                        <li><i class="fa-regular fa-file file-icon"></i><a
-                                                href="{{url('sector/mechanizations')}}"><span class="sidebar-text">{{ __('Diyeessii') }}</span></a></li>
-                                                   <li><i class="fa-regular fa-file file-icon"></i><a
-                                                href="{{url('sector/gabbina-biyyee')}}"><span class="sidebar-text">{{ __('Gabbina Biyyoo') }}</span></a></li>
-                                               
-                                        
-                                       
-                                    </ul>
-                                </li>
-                             
-                            </ul>
-                        </li>
-                    </ul>
-                </li>
-
-                <!-- Raawwii section -->
-                <li>
-                    <span class="caret"><i class="fa-solid fa-folder folder-icon"></i><span class="sidebar-text">{{ __('Raawwii') }}</span></span>
-                    <ul>
-                        <li>
-                            <span class="caret"><i
-                                    class="fa-solid fa-folder folder-icon"></i><span class="sidebar-text">{{ __('Raawwii Waggaa') }}</span></span>
-                            <ul>
-                                <li>
-                                    <span class="caret"><i
-                                            class="fa-solid fa-folder folder-icon"></i><span class="sidebar-text">{{ __('sagantaa Yeroo raawwii Qonnaa') }}</span></span>
-                                    <ul>
-                                        <li><i class="fa-regular fa-file file-icon"></i><a
-                                                href="{{ url('sector/activityplan-plans') }}"><span class="sidebar-text">{{ __('Qonna') }}</span></a></li>
-                                        <li><i class="fa-regular fa-file file-icon"></i><a
-                                                href="{{url('sector/productiontime-plans')}}"><span class="sidebar-text">{{ __('oomisha') }}</span></a></li>
-                                        <li><i class="fa-regular fa-file file-icon"></i><a
-                                                href=" {{url('sector/fertilizer-plans')}}"><span class="sidebar-text">{{ __('fertilizer') }}</span></a></li>
-                                        <li><i class="fa-regular fa-file file-icon"></i><a
-                                                href="{{url('sector/mechanizations/timeline')}}"><span class="sidebar-text">{{ __('Mechinization') }}</span></a>
-                                        </li>
-                                         <li><i class="fa-regular fa-file file-icon"></i><a
-                                                href="{{url('sector/gabbina_biyyee/timeline')}}"><span class="sidebar-text">{{ __('Gabbina Birroo') }}</span></a>
-                                        </li>
-                                        
-
-                                        
-                                    </ul>
-                                </li>
-                                
-                            </ul>
-                        </li>
-                    </ul>
-                </li>
-
-                
+            @if (in_array(Auth::user()->role_id, [4, 5]))
+                @include('components.kebelesidebar')
             @endif
 
-            <!-- Additional sections for other user roles would go here -->
+            
         </ul>
     </nav>
 
@@ -413,10 +374,10 @@
     const sidebarToggle = document.getElementById('sidebarToggle');
     const sidebar = document.querySelector('nav.sidebar');
     const sidebarTexts = document.querySelectorAll('.sidebar-text');
-    
+
     sidebarToggle.addEventListener('click', () => {
         sidebar.classList.toggle('collapsed');
-        
+
         // Change the icon based on state
         const icon = sidebarToggle.querySelector('i');
         if (sidebar.classList.contains('collapsed')) {

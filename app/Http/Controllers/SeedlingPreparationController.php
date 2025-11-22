@@ -19,7 +19,7 @@ public function index()
     $user = Auth::user();
 
     $preparations = SeedlingPreparation::with(['sector', 'kebele', 'woreda', 'zone', 'region'])
-        ->where('sector_id', $user->sector_id)
+        ->where('kebele_id', $user->kebele_id)
         ->latest('year')
         ->latest('created_at')
         ->paginate(15);

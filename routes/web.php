@@ -293,7 +293,7 @@ Route::delete('/enterprise-work/{id}', [EnterpriseWorkController::class, 'destro
             Route::get('structures', [StructureController::class, 'woredastructures'])->name('woreda.structure.index');
             Route::get('woreda/crop-plans/report', [DashboardController::class, 'indexcrop'])->name('crop-plans.index');
 
-            Route::get('woreda/crop-plan/feedback/{$id}', [DashboardController::class, 'indexcrop'])->name('woreda.crop-plans.feedback');
+            Route::get('woreda/crop-plan/feedback/{id}', [DashboardController::class, 'indexcrop'])->name('woreda.crop-plans.feedback');
 
 
 
@@ -766,6 +766,4 @@ Route::get('/set-language/{language}', function ($language) {
     return redirect()->back();
 })->name('set.language');
 
-// Route::get('/weekly-plans', [WeeklyPlanController::class, 'index'])->name('weekly-plans.index');
-// Route::get('/weekly-plans/create', [WeeklyPlanController::class, 'create'])->name('weekly-plans.create');
-// Route::post('/weekly-plans', [WeeklyPlanController::class, 'store'])->name('weekly-plans.store');
+        Route::get('/raawwii-woligala', [GabbinaBiyyeeController::class, 'RaawwiiWoliigalaa'])->name('raawwii.woliigalaa');

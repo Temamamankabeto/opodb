@@ -497,7 +497,7 @@ class StructureController extends Controller
             ->where('kebele_id', $user->kebele_id)
             ->where('role_id', 6) // DA users
             ->whereHas('sector', function ($query) {
-                $query->where('id', 2); // Assuming ID 2 is Agricultural Development Sector
+                $query->where('id', 1); // Assuming ID 2 is Agricultural Development Sector
             })
             ->orderBy('created_at', 'desc')
             ->get();
@@ -514,9 +514,9 @@ class StructureController extends Controller
         }
 
         // Fetch only Agricultural Development Sector for this kebele
-        $sectors = \App\Models\KebeleSectors::where('kebele_id', $user->kebele_id)
-            ->where('id', 2) // Assuming ID 2 is Agricultural Development Sector
-            ->get();
+        $sectors = \App\Models\KebeleSectors::where('id', 1)->get();
+
+           
 
         return view('setting.da.create_admin', compact('sectors'));
     }
@@ -539,9 +539,8 @@ class StructureController extends Controller
         ]);
 
         // Ensure the sector belongs to Agricultural Development only
-        $sector = \App\Models\KebeleSectors::where('id', $request->sector_id)
-            ->where('kebele_id', $user->kebele_id)
-            ->where('id', 2) // Agricultural Development Sector
+        $sector = \App\Models\KebeleSectors::all()
+            ->where('id', 1) // Agricultural Development Sector
             ->firstOrFail();
 
         User::create([

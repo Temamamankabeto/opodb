@@ -51,10 +51,10 @@
                                         <td>{{ $dauser->created_at->format('Y-m-d') }}</td>
                                         <td>
                                             <div class="d-flex justify-content-center gap-2">
-                                                <a href="{{ route('dausers.edit', $dauser->id) }}"
+                                                {{-- <a href="{{ route('dausers.edit', $dauser->id) }}"
                                                     class="btn btn-sm btn-primary">
                                                     <i class="fas fa-edit"></i> Edit
-                                                </a>
+                                                </a> --}}
 
 
                                                 <form action="{{ route('dausers.destroy', $dauser->id) }}"

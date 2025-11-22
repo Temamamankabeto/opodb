@@ -609,6 +609,8 @@ public function exportCompostExcel()
 
     return response()->stream($callback, 200, $headers);
 }
-
-    
+public function RaawwiiWoliigalaa(){
+    return view('raawwii.soon');
+}
+     
 }
