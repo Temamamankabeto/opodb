@@ -92,230 +92,227 @@
                             </thead>
                             <tbody>
                                 @php
-                                    $currentYearIndex = null;
-                                    $currentTypeIndex = null;
-                                    $yearRowspan = 0;
-                                    $typeRowspan = 0;
-                                    $yearCounter = 0;
-                                    $typeCounter = 0;
-                                    
-                                    // Group data by year and seedling type
-                                    $groupedData = [];
+                                    // Group preparations by year and type
+                                    $groupedPreparations = [];
                                     foreach ($preparations as $preparation) {
                                         $prepData = $preparation->preparation_data ?? [];
                                         $plantData = $preparation->planting_data ?? [];
-                                        
                                         $seedlingType = $prepData['seedling_type']['name'] ?? ($plantData['seedling_type']['name'] ?? 'N/A');
                                         
-                                        $groupedData[] = [
-                                            'year' => $preparation->year,
-                                            'type' => $seedlingType,
-                                            'preparation' => $preparation,
-                                            'prepData' => $prepData,
-                                            'plantData' => $plantData
-                                        ];
+                                        $year = $preparation->year;
+                                        
+                                        if (!isset($groupedPreparations[$year])) {
+                                            $groupedPreparations[$year] = [];
+                                        }
+                                        
+                                        if (!isset($groupedPreparations[$year][$seedlingType])) {
+                                            $groupedPreparations[$year][$seedlingType] = [];
+                                        }
+                                        
+                                        $groupedPreparations[$year][$seedlingType][] = $preparation;
                                     }
                                 @endphp
 
-                                @foreach($groupedData as $index => $data)
+                                @foreach($groupedPreparations as $year => $types)
                                     @php
-                                        $year = $data['year'];
-                                        $type = $data['type'];
-                                        $preparation = $data['preparation'];
-                                        $prepData = $data['prepData'];
-                                        $plantData = $data['plantData'];
-                                        
-                                        $prepSeedlings = $prepData['selected_seedlings'] ?? [];
-                                        $plantSeedlings = $plantData['selected_seedlings'] ?? [];
-                                        
-                                        // Calculate rowspans dynamically
-                                        if ($currentYearIndex !== $year) {
-                                            $currentYearIndex = $year;
-                                            $yearRowspan = array_reduce($groupedData, function($count, $item) use ($year) {
-                                                return $item['year'] == $year ? $count + 1 : $count;
-                                            }, 0);
-                                            $yearCounter = 0;
+                                        $yearRowspan = 0;
+                                        foreach ($types as $typePreparations) {
+                                            $yearRowspan += count($typePreparations);
                                         }
-
-                                        if ($currentTypeIndex !== $year . '_' . $type) {
-                                            $currentTypeIndex = $year . '_' . $type;
-                                            $typeRowspan = array_reduce($groupedData, function($count, $item) use ($year, $type) {
-                                                return $item['year'] == $year && $item['type'] == $type ? $count + 1 : $count;
-                                            }, 0);
-                                            $typeCounter = 0;
-                                        }
-
-                                        $yearCounter++;
-                                        $typeCounter++;
+                                        $yearDisplayed = false;
                                     @endphp
                                     
-                                    <tr class="data-row hover-row" 
-                                        data-year="{{ $year }}"
-                                        data-type="{{ $type }}"
-                                        data-status="{{ $preparation->status }}">
+                                    @foreach($types as $seedlingType => $typePreparations)
+                                        @php
+                                            $typeRowspan = count($typePreparations);
+                                            $typeDisplayed = false;
+                                        @endphp
                                         
-                                        <!-- Year Column -->
-                                        @if ($yearCounter === 1)
-                                            <td class="year-cell align-middle text-center fw-bold" 
-                                                rowspan="{{ $yearRowspan }}"
-                                                style="background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);">
-                                                <div class="year-content">
-                                                    <div class="year-value fs-5 text-primary mb-1">
-                                                        {{ $year }}
-                                                    </div>
-                                                    @if($year == date('Y'))
-                                                        <span class="badge bg-success bg-opacity-20 text-success border border-success">
-                                                            Current
-                                                        </span>
-                                                    @endif
-                                                    <div class="year-total mt-2">
-                                                        <small class="text-muted d-block">Year Summary:</small>
-                                                        <div class="fw-bold text-warning">
-                                                            {{ $yearRowspan }} Prep{{ $yearRowspan > 1 ? 's' : '' }}
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </td>
-                                        @endif
-
-                                        <!-- Seedling Type Column -->
-                                        @if ($typeCounter === 1)
-                                            <td class="type-cell align-middle" 
-                                                rowspan="{{ $typeRowspan }}"
-                                                style="background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);">
-                                                <div class="type-content">
-                                                    <div class="type-name fw-bold text-dark mb-2">
-                                                        {{ $type }}
-                                                    </div>
-                                                    <div class="type-total">
-                                                        <small class="text-muted d-block">Type Summary:</small>
-                                                        <div class="fw-bold text-warning">
-                                                            {{ $typeRowspan }} Prep{{ $typeRowspan > 1 ? 's' : '' }}
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </td>
-                                        @endif
-
-                                        <!-- Seedlings Column -->
-                                        <td class="seedlings-cell">
-                                            <div class="seedlings-list">
-                                                @if (count($prepSeedlings))
-                                                    @foreach ($prepSeedlings as $s)
-                                                        <div class="seedling-item mb-2 p-2 border-start border-warning border-3 ps-2">
-                                                            <div class="d-flex align-items-center">
-                                                                <i class="mdi mdi-sprout text-success me-2"></i>
-                                                                <span class="fw-semibold text-dark">{{ $s['name'] }}</span>
+                                        @foreach($typePreparations as $preparation)
+                                            @php
+                                                $prepData = $preparation->preparation_data ?? [];
+                                                $plantData = $preparation->planting_data ?? [];
+                                                $prepSeedlings = $prepData['selected_seedlings'] ?? [];
+                                                $plantSeedlings = $plantData['selected_seedlings'] ?? [];
+                                            @endphp
+                                            
+                                            <tr class="data-row hover-row" 
+                                                data-year="{{ $year }}"
+                                                data-type="{{ $seedlingType }}"
+                                                data-status="{{ $preparation->status }}">
+                                                
+                                                <!-- Year Column -->
+                                                @if (!$yearDisplayed)
+                                                    <td class="year-cell align-middle text-center fw-bold" 
+                                                        rowspan="{{ $yearRowspan }}"
+                                                        style="background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);">
+                                                        <div class="year-content">
+                                                            <div class="year-value fs-5 text-primary mb-1">
+                                                                {{ $year }}
+                                                            </div>
+                                                            @if($year == date('Y'))
+                                                                <span class="badge bg-success bg-opacity-20 text-success border border-success">
+                                                                    Current
+                                                                </span>
+                                                            @endif
+                                                            <div class="year-total mt-2">
+                                                                <small class="text-muted d-block">Year Summary:</small>
+                                                                <div class="fw-bold text-warning">
+                                                                    {{ $yearRowspan }} Prep{{ $yearRowspan > 1 ? 's' : '' }}
+                                                                </div>
                                                             </div>
                                                         </div>
-                                                    @endforeach
-                                                @elseif(count($plantSeedlings))
-                                                    @foreach ($plantSeedlings as $s)
-                                                        <div class="seedling-item mb-2 p-2 border-start border-success border-3 ps-2">
-                                                            <div class="d-flex align-items-center">
-                                                                <i class="mdi mdi-sprout text-success me-2"></i>
-                                                                <span class="fw-semibold text-dark">{{ $s['name'] }}</span>
-                                                            </div>
-                                                        </div>
-                                                    @endforeach
-                                                @else
-                                                    <span class="text-muted">No seedlings</span>
+                                                    </td>
+                                                    @php $yearDisplayed = true; @endphp
                                                 @endif
-                                            </div>
-                                        </td>
 
-                                        <!-- Preparation Data -->
-                                        <td class="preparation-cell">
-                                            @forelse($prepSeedlings as $s)
-                                                <div class="preparation-item mb-3 p-2 border-start border-warning border-3 ps-2 bg-warning bg-opacity-5 rounded">
-                                                    <div class="d-flex justify-content-between align-items-start mb-1">
-                                                        <div class="fw-semibold text-warning">{{ $s['name'] }}</div>
-                                                        <span class="badge bg-warning bg-opacity-20 text-dark">{{ $preparation->status === 'completed' ? 'Completed' : 'In Progress' }}</span>
-                                                    </div>
-                                                    <div class="preparation-stats">
-                                                        <div class="stat-row d-flex justify-content-between">
-                                                            <span class="text-muted">Hanga:</span>
-                                                            <span class="fw-bold">{{ number_format($s['hanga_qophii'] ?? 0, 2) }}</span>
-                                                        </div>
-                                                        <div class="stat-row d-flex justify-content-between">
-                                                            <span class="text-muted">Participants:</span>
-                                                            <span class="fw-bold">{{ number_format($s['nama_hirmaate_qophii'] ?? 0, 2) }}</span>
-                                                        </div>
-                                                        <div class="stat-row d-flex justify-content-between">
-                                                            <span class="text-muted">Days:</span>
-                                                            <span class="fw-bold">{{ number_format($s['baayina_guyyaa_qophii'] ?? 0, 2) }}</span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            @empty
-                                                <div class="text-center text-muted py-3">
-                                                    <i class="mdi mdi-information-outline me-1"></i>
-                                                    No preparation data
-                                                </div>
-                                            @endforelse
-                                        </td>
-
-                                        <!-- Planting Data -->
-                                        <td class="planting-cell">
-                                            @if (count($plantSeedlings))
-                                                @foreach ($plantSeedlings as $s)
-                                                    <div class="planting-item mb-3 p-2 border-start border-success border-3 ps-2 bg-success bg-opacity-5 rounded">
-                                                        <div class="d-flex justify-content-between align-items-start mb-1">
-                                                            <div class="fw-semibold text-success">{{ $s['name'] }}</div>
-                                                            <span class="badge bg-success bg-opacity-20 text-dark">Planted</span>
-                                                        </div>
-                                                        <div class="planting-stats">
-                                                            <div class="stat-row d-flex justify-content-between">
-                                                                <span class="text-muted">Hanga:</span>
-                                                                <span class="fw-bold">{{ number_format($s['hanga_dhaabbii'] ?? 0, 2) }}</span>
+                                                <!-- Seedling Type Column -->
+                                                @if (!$typeDisplayed)
+                                                    <td class="type-cell align-middle" 
+                                                        rowspan="{{ $typeRowspan }}"
+                                                        style="background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);">
+                                                        <div class="type-content">
+                                                            <div class="type-name fw-bold text-dark mb-2">
+                                                                {{ $seedlingType }}
                                                             </div>
-                                                            <div class="stat-row d-flex justify-content-between">
-                                                                <span class="text-muted">Participants:</span>
-                                                                <span class="fw-bold">{{ number_format($s['nama_hirmaate_dhaabbii'] ?? 0, 2) }}</span>
-                                                            </div>
-                                                            <div class="stat-row d-flex justify-content-between">
-                                                                <span class="text-muted">Days:</span>
-                                                                <span class="fw-bold">{{ number_format($s['baayina_guyyaa_dhaabbii'] ?? 0, 2) }}</span>
+                                                            <div class="type-total">
+                                                                <small class="text-muted d-block">Type Summary:</small>
+                                                                <div class="fw-bold text-warning">
+                                                                    {{ $typeRowspan }} Prep{{ $typeRowspan > 1 ? 's' : '' }}
+                                                                </div>
                                                             </div>
                                                         </div>
-                                                    </div>
-                                                @endforeach
-                                            @else
-                                                <div class="text-center text-muted py-3">
-                                                    <i class="mdi mdi-information-outline me-1"></i>
-                                                    No planting data
-                                                </div>
-                                            @endif
-                                        </td>
+                                                    </td>
+                                                    @php $typeDisplayed = true; @endphp
+                                                @endif
 
-                                        <!-- Actions Column -->
-                                        <td class="actions-cell text-center align-middle">
-                                            <div class="action-buttons">
-                                                <a href="{{ route('sector.seedling-preparations.edit', $preparation->id) }}" 
-                                                   class="btn btn-primary btn-sm action-btn mb-1"
-                                                   title="{{ $preparation->status === 'completed' ? 'View Details' : 'Plant Info' }}"
-                                                   data-preparation-id="{{ $preparation->id }}">
-                                                    <i class="mdi {{ $preparation->status === 'completed' ? 'mdi-eye' : 'mdi-tree' }}"></i>
-                                                    <span class="d-block mt-1 small">{{ $preparation->status === 'completed' ? 'View' : 'Plant' }}</span>
-                                                </a>
-                                                <a href="{{ route('sector.seedling-preparations.editpreparation', $preparation->id) }}" 
-                                                   class="btn btn-warning btn-sm action-btn"
-                                                   title="Edit Preparation"
-                                                   data-preparation-id="{{ $preparation->id }}">
-                                                    <i class="mdi mdi-pencil"></i>
-                                                    <span class="d-block mt-1 small">Edit</span>
-                                                </a>
-                                            </div>
-                                        </td>
-                                    </tr>
+                                                <!-- Seedlings Column -->
+                                                <td class="seedlings-cell">
+                                                    <div class="seedlings-list">
+                                                        @if (count($prepSeedlings))
+                                                            @foreach ($prepSeedlings as $s)
+                                                                <div class="seedling-item mb-2 p-2 border-start border-warning border-3 ps-2">
+                                                                    <div class="d-flex align-items-center">
+                                                                        <i class="mdi mdi-sprout text-success me-2"></i>
+                                                                        <span class="fw-semibold text-dark">{{ $s['name'] }}</span>
+                                                                    </div>
+                                                                </div>
+                                                            @endforeach
+                                                        @elseif(count($plantSeedlings))
+                                                            @foreach ($plantSeedlings as $s)
+                                                                <div class="seedling-item mb-2 p-2 border-start border-success border-3 ps-2">
+                                                                    <div class="d-flex align-items-center">
+                                                                        <i class="mdi mdi-sprout text-success me-2"></i>
+                                                                        <span class="fw-semibold text-dark">{{ $s['name'] }}</span>
+                                                                    </div>
+                                                                </div>
+                                                            @endforeach
+                                                        @else
+                                                            <span class="text-muted">No seedlings</span>
+                                                        @endif
+                                                    </div>
+                                                </td>
+
+                                                <!-- Preparation Data -->
+                                                <td class="preparation-cell">
+                                                    @forelse($prepSeedlings as $s)
+                                                        <div class="preparation-item mb-3 p-2 border-start border-warning border-3 ps-2 bg-warning bg-opacity-5 rounded">
+                                                            <div class="d-flex justify-content-between align-items-start mb-1">
+                                                                <div class="fw-semibold text-warning">{{ $s['name'] }}</div>
+                                                                <span class="badge bg-warning bg-opacity-20 text-dark">{{ $preparation->status === 'completed' ? 'Completed' : 'In Progress' }}</span>
+                                                            </div>
+                                                            <div class="preparation-stats">
+                                                                <div class="stat-row d-flex justify-content-between">
+                                                                    <span class="text-muted">Hanga:</span>
+                                                                    <span class="fw-bold">{{ number_format($s['hanga_qophii'] ?? 0, 2) }}</span>
+                                                                </div>
+                                                                <div class="stat-row d-flex justify-content-between">
+                                                                    <span class="text-muted">Participants:</span>
+                                                                    <span class="fw-bold">{{ number_format($s['nama_hirmaate_qophii'] ?? 0, 2) }}</span>
+                                                                </div>
+                                                                <div class="stat-row d-flex justify-content-between">
+                                                                    <span class="text-muted">Days:</span>
+                                                                    <span class="fw-bold">{{ number_format($s['baayina_guyyaa_qophii'] ?? 0, 2) }}</span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    @empty
+                                                        <div class="text-center text-muted py-3">
+                                                            <i class="mdi mdi-information-outline me-1"></i>
+                                                            No preparation data
+                                                        </div>
+                                                    @endforelse
+                                                </td>
+
+                                                <!-- Planting Data -->
+                                                <td class="planting-cell">
+                                                    @if (count($plantSeedlings))
+                                                        @foreach ($plantSeedlings as $s)
+                                                            <div class="planting-item mb-3 p-2 border-start border-success border-3 ps-2 bg-success bg-opacity-5 rounded">
+                                                                <div class="d-flex justify-content-between align-items-start mb-1">
+                                                                    <div class="fw-semibold text-success">{{ $s['name'] }}</div>
+                                                                    <span class="badge bg-success bg-opacity-20 text-dark">Planted</span>
+                                                                </div>
+                                                                <div class="planting-stats">
+                                                                    <div class="stat-row d-flex justify-content-between">
+                                                                        <span class="text-muted">Hanga:</span>
+                                                                        <span class="fw-bold">{{ number_format($s['hanga_dhaabbii'] ?? 0, 2) }}</span>
+                                                                    </div>
+                                                                    <div class="stat-row d-flex justify-content-between">
+                                                                        <span class="text-muted">Participants:</span>
+                                                                        <span class="fw-bold">{{ number_format($s['nama_hirmaate_dhaabbii'] ?? 0, 2) }}</span>
+                                                                    </div>
+                                                                    <div class="stat-row d-flex justify-content-between">
+                                                                        <span class="text-muted">Days:</span>
+                                                                        <span class="fw-bold">{{ number_format($s['baayina_guyyaa_dhaabbii'] ?? 0, 2) }}</span>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        @endforeach
+                                                    @else
+                                                        <div class="text-center text-muted py-3">
+                                                            <i class="mdi mdi-information-outline me-1"></i>
+                                                            No planting data
+                                                        </div>
+                                                    @endif
+                                                </td>
+
+                                                <!-- Actions Column -->
+                                                <td class="actions-cell text-center align-middle">
+                                                    <div class="action-buttons">
+                                                        <a href="{{ url('/sector/seedling-preparations/' . $preparation->id . '/edit') }}" 
+                                                           class="btn btn-primary btn-sm action-btn mb-1"
+                                                           title="{{ $preparation->status === 'completed' ? 'View Details' : 'Plant Info' }}"
+                                                           data-preparation-id="{{ $preparation->id }}">
+                                                            <i class="mdi {{ $preparation->status === 'completed' ? 'mdi-eye' : 'mdi-tree' }}"></i>
+                                                            <span class="d-block mt-1 small">{{ $preparation->status === 'completed' ? 'View' : 'Plant' }}</span>
+                                                        </a>
+                                                        <a href="{{ url('/sector/seedling-preparations/' . $preparation->id . '/editpreparation') }}" 
+                                                           class="btn btn-warning btn-sm action-btn"
+                                                           title="Edit Preparation"
+                                                           data-preparation-id="{{ $preparation->id }}">
+                                                            <i class="mdi mdi-pencil"></i>
+                                                            <span class="d-block mt-1 small">Edit</span>
+                                                        </a>
+                                                       <a href="{{ route('sector.seedling-preparations.plan', $preparation->id) }}" 
+   class="btn btn-warning btn-sm action-btn"
+   title="Edit Planting Plan"
+   data-preparation-id="{{ $preparation->id }}">
+    <i class="mdi mdi-pencil"></i>
+    <span class="d-block mt-1 small">Schedule</span>
+</a>
+                                                      
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        @endforeach
+                                    @endforeach
                                 @endforeach
                             </tbody>
                         </table>
                     </div>
                 </div>
             </div>
-
-           
         @endif
     </div>
 
@@ -465,48 +462,6 @@
             font-size: 0.85rem;
         }
 
-        /* Performance Cards */
-        .performance-card {
-            padding: 1.5rem;
-            border-radius: 10px;
-            text-align: center;
-            transition: transform 0.3s ease;
-            height: 100%;
-        }
-
-        .performance-card:hover {
-            transform: translateY(-5px);
-        }
-
-        .performance-growth {
-            background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
-            border: 1px solid #c3e6cb;
-        }
-
-        .performance-decline {
-            background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
-            border: 1px solid #f5c6cb;
-        }
-
-        .performance-new {
-            background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
-            border: 1px solid #ffeaa7;
-        }
-
-        .performance-total {
-            background: linear-gradient(135deg, #cce7ff 0%, #b3d9ff 100%);
-            border: 1px solid #b3d9ff;
-        }
-
-        .performance-value {
-            margin: 0.5rem 0;
-        }
-
-        .performance-label {
-            font-weight: 600;
-            margin-bottom: 0.25rem;
-        }
-
         /* Action buttons */
         .action-buttons {
             display: flex;
@@ -565,14 +520,6 @@
             
             .year-value {
                 font-size: 0.9rem !important;
-            }
-            
-            .performance-card {
-                padding: 1rem;
-            }
-            
-            .performance-value {
-                font-size: 1.5rem !important;
             }
         }
 

@@ -17,7 +17,7 @@ class LivestockPlanController extends Controller
    public function index()
 {
     $plans = LivestockPlan::with(['sector', 'kebele', 'woreda', 'zone', 'region', 'user'])
-        ->where('sector_id', Auth::user()->sector_id)
+        ->where('kebele_id', Auth::user()->kebele_id)
         ->orderBy('year', 'desc')
         ->get()
         ->map(function ($plan) {
@@ -124,7 +124,7 @@ public function store(Request $request)
     public function show($id)
     {
         $plan = LivestockPlan::with(['sector', 'kebele', 'woreda', 'zone', 'region', 'user'])
-            ->where('sector_id', Auth::user()->sector_id)
+            ->where('kebele_id', Auth::user()->kebele_id)
             ->findOrFail($id);
 
         return view('sector.livestock-plans.show', compact('plan'));
@@ -135,7 +135,7 @@ public function store(Request $request)
      */
     public function edit($id)
     {
-        $plan = LivestockPlan::where('sector_id', Auth::user()->sector_id)
+        $plan = LivestockPlan::where('kebele_id', Auth::user()->kebele_id)
             ->findOrFail($id);
 
         $supplies = LivestockSupply::all();
@@ -147,7 +147,7 @@ public function store(Request $request)
     }
        public function editproduct($id)
     {
-        $plan = LivestockPlan::where('sector_id', Auth::user()->sector_id)
+        $plan = LivestockPlan::where('kebele_id', Auth::user()->kebele_id)
             ->findOrFail($id);
 
         $supplies = LivestockSupply::all();
@@ -220,7 +220,7 @@ public function store(Request $request)
      */
     public function destroy($id)
     {
-        $plan = LivestockPlan::where('sector_id', Auth::user()->sector_id)
+        $plan = LivestockPlan::where('kebele_id', Auth::user()->kebele_id)
             ->findOrFail($id);
 
         $plan->delete();

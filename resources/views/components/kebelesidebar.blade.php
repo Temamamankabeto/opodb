@@ -52,6 +52,11 @@
                                          <li><i class="fa-regular fa-file file-icon"></i><a
                                                 href="{{url('sector/gabbina_biyyee/timeline')}}"><span class="sidebar-text">{{ __('Gabbina Birroo') }}</span></a>
                                         </li>
+
+                                          <li><i class="fa-regular fa-file file-icon"></i><a
+                                                href="{{url('sector/seedling-preparations/timeline')}}"><span class="sidebar-text">{{ __('Qophii Fi Dhaabbii Biqiltuu') }}</span></a>
+                                        </li>
+                                        
                                         
 
                                         

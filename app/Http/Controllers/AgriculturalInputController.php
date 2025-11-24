@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Exports\InputPlanningExport;
-use App\Models\AgriculturalInput;
+use App\Models\AgriculturalInput;   
 use App\Models\CallaGuddiftuu;
 use App\Models\CropType;
 use App\Models\Kebele;

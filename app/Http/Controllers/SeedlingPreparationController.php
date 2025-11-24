@@ -69,10 +69,7 @@ public function index()
         
         return view('sector.seedling-preparations.create', compact('seedlingTypes'));
     }
-
-    /**
-     * Store a newly created resource in storage.
-     */
+ 
 public function store(Request $request)
 {
     // Convert JSON string to array for validation
@@ -103,7 +100,6 @@ public function store(Request $request)
         'nerserif_nama_hirmaate' => 'nullable|numeric|min:0',
         'nerserif_baayina_guyyaa' => 'nullable|numeric|min:0',
     ]);
-    
 
     // Get seedling type data
     $seedlingType = SeedlingType::findOrFail($request->preparation_data['seedling_type_id']);
@@ -119,6 +115,43 @@ public function store(Request $request)
     if (empty($filteredSeedlings)) {
         return redirect()->back()->withErrors([
             'preparation_data' => 'Please fill preparation details for at least one seedling.'
+        ])->withInput();
+    }
+
+    // Extract seedling IDs from the request
+    $requestSeedlingIds = array_map(function($seedling) {
+        return $seedling['seedling_id'];
+    }, $filteredSeedlings);
+
+    // Check for duplicate seedlings in existing records
+    $existingPreparations = SeedlingPreparation::where('sector_id', Auth::user()->sector_id)
+        ->where('year', $request->year)
+        ->whereJsonContains('preparation_data->seedling_type->id', $request->preparation_data['seedling_type_id'])
+        ->get();
+
+    $duplicateSeedlings = [];
+
+    foreach ($existingPreparations as $existingPrep) {
+        $existingSeedlings = $existingPrep->preparation_data['selected_seedlings'] ?? [];
+        
+        foreach ($existingSeedlings as $existingSeedling) {
+            if (in_array($existingSeedling['id'], $requestSeedlingIds)) {
+                $seedling = Seedling::find($existingSeedling['id']);
+                if ($seedling) {
+                    $duplicateSeedlings[] = $seedling->name;
+                }
+            }
+        }
+    }
+
+    // Remove duplicates from the array
+    $duplicateSeedlings = array_unique($duplicateSeedlings);
+
+    // If there are duplicate seedlings, return error
+    if (!empty($duplicateSeedlings)) {
+        $seedlingList = implode(', ', $duplicateSeedlings);
+        return redirect()->back()->withErrors([
+            'preparation_data' => "The following seedlings already have preparation records for year {$request->year}: {$seedlingList}. Please edit the existing record instead."
         ])->withInput();
     }
 
@@ -143,7 +176,7 @@ public function store(Request $request)
         ];
     }
 
-    // Check for duplicate entry
+    // Check for duplicate entry (same seedling type in same year)
     $exists = SeedlingPreparation::where('sector_id', Auth::user()->sector_id)
                 ->where('year', $request->year)
                 ->whereJsonContains('preparation_data->seedling_type->id', $request->preparation_data['seedling_type_id'])
@@ -176,12 +209,10 @@ public function store(Request $request)
     return redirect()->route('sector.seedling-preparations.index')->with('success', 'Seedling preparation created successfully! You can add planting data later.');
 }
 
-    /**
-     * Show the form for editing planting data.
-     */
+    
     public function edit($id)
     {
-        $preparation = SeedlingPreparation::where('sector_id', Auth::user()->sector_id)
+        $preparation = SeedlingPreparation::where('kebele_id', Auth::user()->kebele_id)
                         ->findOrFail($id);
         
         $seedlingTypes = SeedlingType::withCount('seedlings')->get();
@@ -200,7 +231,7 @@ public function store(Request $request)
      */
     public function update(Request $request, $id)
     {
-        $preparation = SeedlingPreparation::where('sector_id', Auth::user()->sector_id)
+        $preparation = SeedlingPreparation::where('kebele_id', Auth::user()->kebele_id)
                         ->findOrFail($id);
 
         // Convert JSON string to array for validation
@@ -261,7 +292,7 @@ public function store(Request $request)
 
     public function editpreparation($id)
     {
-        $preparation = SeedlingPreparation::where('sector_id', Auth::user()->sector_id)
+        $preparation = SeedlingPreparation::where('kebele_id', Auth::user()->kebele_id)
                         ->findOrFail($id);
         
         $seedlingTypes = SeedlingType::withCount('seedlings')->get();
@@ -270,7 +301,7 @@ public function store(Request $request)
     }
  public function updatePreparation(Request $request, $id)
 {
-    $preparation = SeedlingPreparation::where('sector_id', Auth::user()->sector_id)
+    $preparation = SeedlingPreparation::where('kebele_id', Auth::user()->kebele_id)
         ->findOrFail($id);
 
          $preparationData = $request->preparation_data;
@@ -336,4 +367,537 @@ public function store(Request $request)
     }
 
 
+
+
+    public function seedlingPlan($id)
+{
+    $user = Auth::user();
+
+    // Retrieve the seedling preparation record; ensure user can only edit in their sector
+    $seedlingPreparation = SeedlingPreparation::where('id', $id)
+        ->where('kebele_id', $user->kebele_id)
+        ->firstOrFail();
+
+    // Transform the data for planting timeline table
+    $transformedSeedlingPlans = $this->transformSeedlingPlanDataForTable($seedlingPreparation);
+
+    return view('sector.seedling-preparations.seedlingplan', compact('seedlingPreparation', 'transformedSeedlingPlans'));
+}
+
+private function transformSeedlingPlanDataForTable($seedlingPreparation)
+{
+    // Extract planting timeline data from plantingdata_detail
+    $plantingDetails = $seedlingPreparation->plantingdata_detail ?? [];
+    
+    // Initialize timeline data structure
+    $timelineData = [
+        'quarters' => [],
+        'months' => [],
+        'weeks' => [],
+        'total_planted_quantity' => 0,
+        'total_participants' => 0,
+        'total_days' => 0,
+        'planting_year' => $seedlingPreparation->year
+    ];
+
+    // Define Ethiopian months by quarter
+    $ethiopianMonths = [
+        'Q1' => ['Meskerem', 'Tikimt', 'Hidar'],
+        'Q2' => ['Tahsas', 'Tir', 'Yekatit'],
+        'Q3' => ['Megabit', 'Miyazia', 'Ginbot'],
+        'Q4' => ['Sene', 'Hamle', 'Nehase', 'Pagumen']
+    ];
+
+    // Process planting details to extract timeline data
+    if (!empty($plantingDetails) && is_array($plantingDetails)) {
+        if (isset($plantingDetails['selected_seedlings'])) {
+            foreach ($plantingDetails['selected_seedlings'] as $seedling) {
+                if (isset($seedling['weekly_planting'])) {
+                    foreach ($seedling['weekly_planting'] as $planting) {
+                        if (isset($planting['hanga_dhaabbii']) && $planting['hanga_dhaabbii'] > 0) {
+                            $quantity = floatval($planting['hanga_dhaabbii']);
+                            $participants = floatval($planting['nama_hirmaate_dhaabbii'] ?? 0);
+                            $days = floatval($planting['baayina_guyyaa_dhaabbii'] ?? 0);
+                            $quarter = $planting['quarter'] ?? '';
+                            $month = $planting['month'] ?? '';
+                            $week = $planting['week'] ?? '';
+                            $seedlingName = $seedling['name'] ?? '';
+
+                            // Add to totals
+                            $timelineData['total_planted_quantity'] += $quantity;
+                            $timelineData['total_participants'] += $participants;
+                            $timelineData['total_days'] += $days;
+
+                            // Add to quarter totals
+                            if ($quarter && isset($ethiopianMonths[$quarter])) {
+                                if (!isset($timelineData['quarters'][$quarter])) {
+                                    $timelineData['quarters'][$quarter] = [
+                                        'quantity' => 0,
+                                        'participants' => 0,
+                                        'days' => 0
+                                    ];
+                                }
+                                $timelineData['quarters'][$quarter]['quantity'] += $quantity;
+                                $timelineData['quarters'][$quarter]['participants'] += $participants;
+                                $timelineData['quarters'][$quarter]['days'] += $days;
+                            }
+
+                            // Add to month totals
+                            if ($month) {
+                                if (!isset($timelineData['months'][$month])) {
+                                    $timelineData['months'][$month] = [
+                                        'quantity' => 0,
+                                        'participants' => 0,
+                                        'days' => 0
+                                    ];
+                                }
+                                $timelineData['months'][$month]['quantity'] += $quantity;
+                                $timelineData['months'][$month]['participants'] += $participants;
+                                $timelineData['months'][$month]['days'] += $days;
+                            }
+
+                            // Add to week totals
+                            if ($week && $month) {
+                                $weekKey = $month . ' ' . $week;
+                                if (!isset($timelineData['weeks'][$weekKey])) {
+                                    $timelineData['weeks'][$weekKey] = [
+                                        'quantity' => 0,
+                                        'participants' => 0,
+                                        'days' => 0
+                                    ];
+                                }
+                                $timelineData['weeks'][$weekKey]['quantity'] += $quantity;
+                                $timelineData['weeks'][$weekKey]['participants'] += $participants;
+                                $timelineData['weeks'][$weekKey]['days'] += $days;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    // Create the transformed seedling plan structure
+    return [
+        [
+            'planning_year' => $seedlingPreparation->year,
+            'planting_year' => $seedlingPreparation->year,
+            'seedling_type' => $plantingDetails['seedling_type']['name'] ?? ($seedlingPreparation->preparation_data['seedling_type']['name'] ?? 'N/A'),
+            'total_prepared_quantity' => $this->calculateTotalPreparedQuantity($seedlingPreparation),
+            'total_planted_quantity' => $timelineData['total_planted_quantity'],
+            'remaining_quantity' => $this->calculateTotalPreparedQuantity($seedlingPreparation) - $timelineData['total_planted_quantity'],
+            'plantingdata_detail' => $plantingDetails,
+            'timeline_data' => $timelineData
+        ]
+    ];
+}
+
+// private function calculateTotalPreparedQuantity($seedlingPreparation)
+// {
+//     $total = 0;
+//     $prepData = $seedlingPreparation->preparation_data ?? [];
+    
+//     if (isset($prepData['selected_seedlings'])) {
+//         foreach ($prepData['selected_seedlings'] as $seedling) {
+//             $total += floatval($seedling['hanga_qophii'] ?? 0);
+//         }
+//     }
+    
+//     return $total;
+// }
+
+public function updateSeedlingPlan(Request $request, $id)
+{
+    $user = Auth::user();
+
+    // Retrieve the seedling preparation record; ensure user can only edit in their sector
+    $seedlingPreparation = SeedlingPreparation::where('id', $id)
+        ->where('kebele_id', $user->kebele_id)
+        ->firstOrFail();
+
+    $validated = $request->validate([
+        'plantingdata_detail' => 'nullable|json'
+    ]);
+
+    // Update planting data and status
+    $seedlingPreparation->update([
+        'plantingdata_detail' => $request->has('plantingdata_detail') 
+            ? json_decode($request->plantingdata_detail, true) 
+            : null,
+        'status' => 'completed'
+    ]);
+
+    return redirect()->route('sector.seedling-preparations.index')
+        ->with('success', 'Seedling planting plan updated successfully!');
+}
+
+
+
+
+
+public function seedlingTime(Request $request)
+{
+    $user = Auth::user();
+
+    // Get seedling preparations for the user's sector
+    $seedlingPreparations = SeedlingPreparation::where('kebele_id', $user->kebele_id)
+        ->orderBy('year', 'desc')
+        ->orderBy('created_at', 'desc')
+        ->get();
+
+    // Transform data for the Excel-like display
+    $transformedSeedlingPlans = $seedlingPreparations->map(function ($preparation) {
+        $preparationData = $preparation->preparation_data ?? [];
+        $plantingData = $preparation->planting_data ?? [];
+
+        // Extract timeline data from planting_data
+        $timelineData = $this->extractSeedlingTimelineData($plantingData, $preparation->year);
+
+        return [
+            'id' => $preparation->id,
+            'seedling_type' => $preparationData['seedling_type']['name'] ?? 'N/A',
+            'seedlings' => $preparationData['selected_seedlings'] ?? [],
+            'application_year' => $preparation->year,
+            'planting_data' => $plantingData,
+            'timeline_data' => $timelineData,
+            'total_prepared_quantity' => $this->calculateTotalPreparedQuantity($preparation),
+            'total_planted_quantity' => $timelineData['total_planted_quantity'] ?? 0,
+            'total_participants' => $timelineData['total_participants'] ?? 0,
+            'total_days' => $timelineData['total_days'] ?? 0,
+            'year' => $preparation->year,
+            'status' => $preparation->status,
+            'updated_at' => $preparation->updated_at->format('Y-m-d H:i:s'),
+        ];
+    });
+
+    // If AJAX request, return JSON
+    if ($request->ajax()) {
+        return response()->json([
+            'seedling_plans' => $transformedSeedlingPlans,
+            'total' => $transformedSeedlingPlans->count()
+        ]);
+    }
+
+    return view('sector.seedling-preparations.seedlingtime', compact('seedlingPreparations', 'transformedSeedlingPlans'));
+}
+
+/**
+ * Calculate total prepared seedlings quantity
+ */
+private function calculateTotalPreparedQuantity($seedlingPreparation)
+{
+    $total = 0;
+    $prepData = $seedlingPreparation->plantingdata_detail ?? [];
+    
+    if (isset($prepData['selected_seedlings'])) {
+        foreach ($prepData['selected_seedlings'] as $seedling) {
+            $total += floatval($seedling['hanga_qophii'] ?? 0);
+        }
+    }
+    
+    return $total;
+}
+
+/**
+ * Extract seedling timeline data from planting_data
+ */
+private function extractSeedlingTimelineData($plantingData, $planYear)
+{
+    $timelineData = [
+        'application_year' => $planYear,
+        'quarters' => [],
+        'months' => [],
+        'weeks' => [],
+        'total_planted_quantity' => 0,
+        'total_participants' => 0,
+        'total_days' => 0,
+        'seedling_breakdown' => []
+    ];
+
+    if (empty($plantingData)) {
+        return $timelineData;
+    }
+
+    // Handle different possible structures of planting_data
+    if (is_array($plantingData)) {
+        // Check for application_year in the data
+        if (isset($plantingData['application_year'])) {
+            $timelineData['application_year'] = $plantingData['application_year'];
+        }
+
+        // Structure 1: Direct array with quarters, months, weeks
+        if (isset($plantingData['quarters'])) {
+            $timelineData = array_merge($timelineData, $this->extractSeedlingFromStructuredData($plantingData));
+        }
+        // Structure 2: Array of weekly plantings
+        else if (isset($plantingData['selected_seedlings']) && is_array($plantingData['selected_seedlings'])) {
+            $timelineData = array_merge($timelineData, $this->extractSeedlingFromWeeklyPlanting($plantingData['selected_seedlings']));
+        }
+        // Structure 3: Legacy format with nested structure
+        else if (isset($plantingData[0]) && is_array($plantingData[0])) {
+            $timelineData = array_merge($timelineData, $this->extractSeedlingFromWeeklyPlanting($plantingData));
+        }
+
+        // Also check for application_year in nested structures
+        if (isset($plantingData['application_year'])) {
+            $timelineData['application_year'] = $plantingData['application_year'];
+        }
+    }
+
+    return $timelineData;
+}
+
+/**
+ * Extract from structured data with quarters, months, weeks for seedlings
+ */
+private function extractSeedlingFromStructuredData($data)
+{
+    $timelineData = [
+        'quarters' => [],
+        'months' => [],
+        'weeks' => [],
+        'total_planted_quantity' => 0,
+        'total_participants' => 0,
+        'total_days' => 0,
+        'seedling_breakdown' => []
+    ];
+
+    // Check for application_year in structured data
+    if (isset($data['application_year'])) {
+        $timelineData['application_year'] = $data['application_year'];
+    }
+
+    // Extract quarters data
+    if (isset($data['quarters']) && is_array($data['quarters'])) {
+        foreach ($data['quarters'] as $quarterName => $quarterData) {
+            if (isset($quarterData['quantity']) && $quarterData['quantity'] > 0) {
+                $timelineData['quarters'][$quarterName] = [
+                    'quantity' => $quarterData['quantity'],
+                    'participants' => $quarterData['participants'] ?? 0,
+                    'days' => $quarterData['days'] ?? 0,
+                    'checked' => $quarterData['checked'] ?? false
+                ];
+                $timelineData['total_planted_quantity'] += $quarterData['quantity'];
+                $timelineData['total_participants'] += $quarterData['participants'] ?? 0;
+                $timelineData['total_days'] += $quarterData['days'] ?? 0;
+            }
+        }
+    }
+
+    // Extract months data
+    if (isset($data['months']) && is_array($data['months'])) {
+        foreach ($data['months'] as $monthName => $monthData) {
+            if (isset($monthData['quantity']) && $monthData['quantity'] > 0) {
+                $timelineData['months'][$monthName] = [
+                    'quantity' => $monthData['quantity'],
+                    'participants' => $monthData['participants'] ?? 0,
+                    'days' => $monthData['days'] ?? 0,
+                    'quarter' => $monthData['quarter'] ?? 'Unknown',
+                    'checked' => $monthData['checked'] ?? false
+                ];
+            }
+        }
+    }
+
+    // Extract weeks data
+    if (isset($data['weeks']) && is_array($data['weeks'])) {
+        foreach ($data['weeks'] as $weekKey => $weekData) {
+            if (isset($weekData['quantity']) && $weekData['quantity'] > 0) {
+                $timelineData['weeks'][$weekKey] = [
+                    'quantity' => $weekData['quantity'],
+                    'participants' => $weekData['participants'] ?? 0,
+                    'days' => $weekData['days'] ?? 0,
+                    'month' => $weekData['month'] ?? 'Unknown',
+                    'quarter' => $weekData['quarter'] ?? 'Unknown',
+                    'week_number' => $weekData['week_number'] ?? 1,
+                    'seedling' => $weekData['seedling'] ?? 'Unknown',
+                    'checked' => $weekData['checked'] ?? false
+                ];
+                
+                // Track seedling breakdown
+                $seedlingName = $weekData['seedling'] ?? 'Unknown';
+                if (!isset($timelineData['seedling_breakdown'][$seedlingName])) {
+                    $timelineData['seedling_breakdown'][$seedlingName] = [
+                        'quantity' => 0,
+                        'participants' => 0,
+                        'days' => 0
+                    ];
+                }
+                $timelineData['seedling_breakdown'][$seedlingName]['quantity'] += $weekData['quantity'];
+                $timelineData['seedling_breakdown'][$seedlingName]['participants'] += $weekData['participants'] ?? 0;
+                $timelineData['seedling_breakdown'][$seedlingName]['days'] += $weekData['days'] ?? 0;
+            }
+        }
+    }
+
+    return $timelineData;
+}
+
+/**
+ * Extract from weekly planting array for seedlings
+ */
+private function extractSeedlingFromWeeklyPlanting($selectedSeedlings)
+{
+    $timelineData = [
+        'quarters' => [],
+        'months' => [],
+        'weeks' => [],
+        'total_planted_quantity' => 0,
+        'total_participants' => 0,
+        'total_days' => 0,
+        'seedling_breakdown' => []
+    ];
+
+    foreach ($selectedSeedlings as $seedling) {
+        if (is_array($seedling)) {
+            $seedlingName = $seedling['name'] ?? 'Unknown';
+            $weeklyPlanting = $seedling['weekly_planting'] ?? [];
+
+            foreach ($weeklyPlanting as $week) {
+                if (is_array($week)) {
+                    $quantity = $week['hanga_dhaabbii'] ?? 0;
+                    $participants = $week['nama_hirmaate_dhaabbii'] ?? 0;
+                    $days = $week['baayina_guyyaa_dhaabbii'] ?? 0;
+                    $quarter = $week['quarter'] ?? ($week['year'] ?? 'Unknown');
+                    $month = $week['month'] ?? 'Unknown';
+                    $weekNumber = $week['week'] ?? ($week['week_number'] ?? 1);
+
+                    // Check for application_year in weekly data
+                    if (isset($week['application_year'])) {
+                        $timelineData['application_year'] = $week['application_year'];
+                    }
+
+                    if ($quantity > 0 || $participants > 0 || $days > 0) {
+                        // Add to totals
+                        $timelineData['total_planted_quantity'] += $quantity;
+                        $timelineData['total_participants'] += $participants;
+                        $timelineData['total_days'] += $days;
+
+                        // Track quarter
+                        if (!isset($timelineData['quarters'][$quarter])) {
+                            $timelineData['quarters'][$quarter] = [
+                                'quantity' => 0,
+                                'participants' => 0,
+                                'days' => 0
+                            ];
+                        }
+                        $timelineData['quarters'][$quarter]['quantity'] += $quantity;
+                        $timelineData['quarters'][$quarter]['participants'] += $participants;
+                        $timelineData['quarters'][$quarter]['days'] += $days;
+
+                        // Track month
+                        if (!isset($timelineData['months'][$month])) {
+                            $timelineData['months'][$month] = [
+                                'quantity' => 0,
+                                'participants' => 0,
+                                'days' => 0,
+                                'quarter' => $quarter
+                            ];
+                        }
+                        $timelineData['months'][$month]['quantity'] += $quantity;
+                        $timelineData['months'][$month]['participants'] += $participants;
+                        $timelineData['months'][$month]['days'] += $days;
+
+                        // Track week
+                        $weekKey = $month . '_week_' . $weekNumber;
+                        $timelineData['weeks'][$weekKey] = [
+                            'quantity' => $quantity,
+                            'participants' => $participants,
+                            'days' => $days,
+                            'month' => $month,
+                            'quarter' => $quarter,
+                            'week_number' => $weekNumber,
+                            'seedling' => $seedlingName
+                        ];
+
+                        // Track seedling breakdown
+                        if (!isset($timelineData['seedling_breakdown'][$seedlingName])) {
+                            $timelineData['seedling_breakdown'][$seedlingName] = [
+                                'quantity' => 0,
+                                'participants' => 0,
+                                'days' => 0
+                            ];
+                        }
+                        $timelineData['seedling_breakdown'][$seedlingName]['quantity'] += $quantity;
+                        $timelineData['seedling_breakdown'][$seedlingName]['participants'] += $participants;
+                        $timelineData['seedling_breakdown'][$seedlingName]['days'] += $days;
+                    }
+                }
+            }
+        }
+    }
+
+    return $timelineData;
+}
+
+/**
+ * Export seedling plans to Excel
+ */
+public function exportSeedlingExcel()
+{
+    $user = Auth::user();
+
+    $seedlingPreparations = SeedlingPreparation::where('sector_id', $user->sector_id)
+        ->orderBy('year', 'desc')
+        ->orderBy('created_at', 'desc')
+        ->get();
+
+    $fileName = 'seedling_plans_' . date('Y-m-d') . '.csv';
+
+    $headers = [
+        'Content-Type' => 'text/csv',
+        'Content-Disposition' => 'attachment; filename="' . $fileName . '"',
+    ];
+
+    $callback = function() use ($seedlingPreparations) {
+        $file = fopen('php://output', 'w');
+
+        // Header row
+        fputcsv($file, [
+            'Seedling Type', 'Year', 'Total Prepared', 'Total Planted', 'Remaining',
+            'Total Participants', 'Total Days', 'Status'
+        ]);
+
+        // Data rows
+        foreach ($seedlingPreparations as $preparation) {
+            $prepData = $preparation->preparation_data ?? [];
+            $plantingData = $preparation->planting_data ?? [];
+            
+            $totalPrepared = $this->calculateTotalPreparedQuantity($preparation);
+            
+            $totalPlanted = 0;
+            $totalParticipants = 0;
+            $totalDays = 0;
+            
+            if (isset($plantingData['selected_seedlings'])) {
+                foreach ($plantingData['selected_seedlings'] as $seedling) {
+                    if (isset($seedling['weekly_planting'])) {
+                        foreach ($seedling['weekly_planting'] as $planting) {
+                            $totalPlanted += $planting['hanga_dhaabbii'] ?? 0;
+                            $totalParticipants += $planting['nama_hirmaate_dhaabbii'] ?? 0;
+                            $totalDays += $planting['baayina_guyyaa_dhaabbii'] ?? 0;
+                        }
+                    }
+                }
+            }
+
+            $remaining = $totalPrepared - $totalPlanted;
+
+            fputcsv($file, [
+                $prepData['seedling_type']['name'] ?? 'N/A',
+                $preparation->year,
+                $totalPrepared,
+                $totalPlanted,
+                $remaining,
+                $totalParticipants,
+                $totalDays,
+                $preparation->status
+            ]);
+        }
+
+        fclose($file);
+    };
+
+    return response()->stream($callback, 200, $headers);
+}
 }

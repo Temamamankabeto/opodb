@@ -12,6 +12,7 @@ class SeedlingPreparation extends Model
         'year',
         'preparation_data',
         'planting_data',
+        'plantingdata_detail',        
         'baayyina_nersery',
         'ballina_nersery',
         'nerserif_nama_hirmaate',
@@ -28,6 +29,8 @@ class SeedlingPreparation extends Model
     protected $casts = [
         'preparation_data' => 'array',
         'planting_data' => 'array',
+        'plantingdata_detail' => 'array',
+        
         'baayyina_nersery' => 'decimal:2',
         'ballina_nersery' => 'decimal:2',
         'nerserif_nama_hirmaate' => 'decimal:2',

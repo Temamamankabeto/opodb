@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+
 use Illuminate\Support\Facades\Session;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ZoneController;
@@ -49,12 +50,13 @@ use App\Http\Controllers\BuildingPowerInstitutionPlanController;
 use App\Http\Controllers\RegistrationOfCivilCertificateController;
 use App\Http\Controllers\BuildingEconomicInstitutionPlanController;
 use App\Http\Controllers\BuildingCommunityInstitutionPlanController;
+use App\Http\Controllers\woredadashboardController;
 
 Route::middleware([SecurityHeaders::class])->group(function () {
     // Public routes
 
     Route::get('/', [UserController::class, 'login'])->name('users.login');
-    Route::post('/checkuser', [UserController::class, 'checkuser'])->name('user.check');
+    // Route::post('/checkuser', [UserController::class, 'checkuser'])->name('user.check');
     Route::get('/login', [UserController::class, 'login'])->name('login');
     Route::post('/login', [UserController::class, 'checkuser'])->name('user.check');
 
@@ -63,12 +65,12 @@ Route::middleware([SecurityHeaders::class])->group(function () {
         // Super Admin only
 
         Route::middleware('role:1')->prefix('admin')->group(function () {
- Route::get('crop-plans', [DashboardController::class, 'indexregioncrop'])->name('crop-plans.index');
+ Route::get('crop-plans', [DashboardController::class, 'indexregioncrop'])->name('crop-plans.indexa');
             Route::post('sectors/store', [StructureController::class, 'kebelesectorstore'])->name('sectors.store');
             Route::get('sectors/create', [StructureController::class, 'sectorcreate'])->name('sectors.create');
             Route::get('sectors', [StructureController::class, 'sektorsIndex'])->name('sectors.index');
             Route::get('sectors/{id}/edit', [StructureController::class, 'editSector'])->name('sectors.edit');
-            Route::get('sectors/{id}/product', [StructureController::class, 'editSector'])->name('sectors.edit');
+            // Route::get('sectors/{id}/product', [StructureController::class, 'editSector'])->name('sectors.edit');
             Route::put('sectors/{id}', [StructureController::class, 'updateSector'])->name('sectors.update');
             Route::delete('sectors/{id}', [StructureController::class, 'destroySector'])->name('sectors.destroy');
 
@@ -84,7 +86,7 @@ Route::middleware([SecurityHeaders::class])->group(function () {
             Route::delete('user/delete/{id}', [UserController::class, 'destroy'])->name('users.destroy');
             Route::get('woreda-users', [UserController::class, 'woredaadmin'])->name('woreda.users.index');
             Route::get('kebele-users', [UserController::class, 'kebeleadmin'])->name('admin.kebele.users.index');
-            Route::get('users/sector-user', [UserController::class, 'sectoruser'])->name('sector.users.index');
+            // Route::get('users/sector-user', [UserController::class, 'sectoruser'])->name('sector.users.index');
             Route::post('users/save/sector-user', [UserController::class, 'storesectoradmin'])->name('users.sector.admin.store');
             Route::post('user/save', [UserController::class, 'store'])->name('users.store');
             Route::post('user-kebele/save', [UserController::class, 'kebeleadminstore'])->name('users.kebele.admin.store');
@@ -115,7 +117,7 @@ Route::middleware([SecurityHeaders::class])->group(function () {
             Route::get('woredas', [StructureController::class, 'woredalist'])->name('woredas.index');
             Route::post('/woreda/save', [StructureController::class, 'storeworeda'])->name('admin.woreda.store');
 
-            Route::get('profile/{uuid}/edit', [UserController::class, 'edit'])->name('users.edit');
+             
             Route::put('profile/{uuid}', [UserController::class, 'update'])->name('admin.users.update');
             Route::get('/profile/users/{uuid}', [UserController::class, 'profileedit'])->name('admin.users.edit');
 
@@ -176,7 +178,6 @@ Route::delete('/educational-participations/delete/{id}', [EducationalParticipati
     Route::get('/health/create', [HealthController::class, 'create'])->name('health.create');
     Route::post('/health/store', [HealthController::class, 'store'])->name('health.store');
     Route::get('/health/edit/{id}', [HealthController::class, 'edit'])->name('health.edit');
-    Route::put('/health/update/{id}', [HealthController::class, 'update'])->name('health.update');
     Route::put('/healthupdate/{id}', [HealthController::class, 'update'])->name('health.update');
     Route::delete('/health/delete/{id}', [HealthController::class, 'destroy'])->name('health.delete');
 
@@ -229,26 +230,22 @@ Route::delete('/enterprise-work/{id}', [EnterpriseWorkController::class, 'destro
 
         // Zone Admin only
         Route::middleware('role:2,4')->prefix('zones')->group(function () {
-        Route::get('/crop-plans', [DashboardController::class, 'indexzonecrop'])->name('crop-plans.index');
-        Route::get('/report/crop-plans', [DashboardController::class, 'indexzonecrop'])->name('crop-plans.index');
+        Route::get('/crop-plans', [DashboardController::class, 'indexzonecrop'])->name('crop-plans.indexz');
+        Route::get('/report/crop-plans', [DashboardController::class, 'indexzonecrop'])->name('crop-plans.indext');
             // Route::get('users', [UserController::class, 'zoneUsers'])->name('zone.users');
             Route::get('zone-list', [ZoneController::class, 'zoneOnlyList'])->name('zone.zones');
             Route::get('all-zones', [StructureController::class, 'zonelist'])->name('zones.index');
             Route::post('zones/save', [StructureController::class, 'storezone'])->name('zones.store');
 
-            Route::get('woreda/users', [UserController::class, 'woredaUsers'])->name('woreda.users');
             Route::get('dashboard', [DashboardController::class, 'zoneDashboard'])->name('zone.dashboard');
 
-            Route::get('woreda-admins', [UserController::class, 'woredaadmin'])->name('woreda.users.index');
             Route::get('kebele-admins', [UserController::class, 'kebeleadmin'])->name('kebele.users.index');
 
             Route::get('structures', [StructureController::class, 'structures'])->name('structure.index');
             Route::get('woreda/structures', [StructureController::class, 'woredastructures'])->name('woreda.structure.index');
 
-            Route::get('woredas', [StructureController::class, 'woredalist'])->name('woredas.index');
             Route::post('/woredas/save', [StructureController::class, 'storeworeda'])->name('woredas.store');
 
-            Route::get('kebele-list', [StructureController::class, 'kebelelist'])->name('kebeles.list');
             Route::post('kebeles', [StructureController::class, 'storekebele'])->name('kebeles.store');
             Route::get('kebeles/{kebele}/edit', [StructureController::class, 'edit'])->name('kebeles.edit');
             Route::put('kebeles/{kebele}', [StructureController::class, 'update'])->name('kebeles.update');
@@ -256,9 +253,8 @@ Route::delete('/enterprise-work/{id}', [EnterpriseWorkController::class, 'destro
 
             Route::put('update/woreda/{woreda}', [StructureController::class, 'updateworeda'])->name('zones.woreda.update');
 
-            Route::post('sectors/store', [StructureController::class, 'kebelesectorstore'])->name('sectors.store');
 
-            Route::post('user-kebele/save', [UserController::class, 'kebeleadminstore'])->name('users.kebele.admin.store');
+            // Route::post('user-kebele/save', [UserController::class, 'kebeleadminstore'])->name('users.kebele.admin.store');
             Route::post('user/save', [UserController::class, 'store'])->name('zones.susers.store');
             Route::get('woreda-users', [UserController::class, 'woredaadmin'])->name('zone.woreda.users.index');
             Route::post('user/save', [UserController::class, 'store'])->name('zone.user.store');
@@ -268,7 +264,7 @@ Route::delete('/enterprise-work/{id}', [EnterpriseWorkController::class, 'destro
 
             Route::get('profile/{uuid}/edit', [UserController::class, 'edit'])->name('zone.users.edit');
             Route::put('profile/{uuid}', [UserController::class, 'update'])->name('zone.users.update');
-            Route::get('/profile/users/{uuid}', [UserController::class, 'edit'])->name('zone.users.edit');
+            // Route::get('/profile/users/{uuid}', [UserController::class, 'edit'])->name('zone.users.edit');
 
             Route::get('/profile/{uuid}', [UserController::class, 'profile'])->name('zone.profile.users');
             Route::get('/profile/security/{uuid}', [UserController::class, 'changePasswordForm'])->name('zone.users.password');
@@ -279,22 +275,22 @@ Route::delete('/enterprise-work/{id}', [EnterpriseWorkController::class, 'destro
 
         // Woreda Admin only
         Route::middleware('role:3')->prefix('woredas')->group(function () {
-            Route::get('/woreda/users', [UserController::class, 'woredaUsers'])->name('woreda.users');
             // add more woreda admin routes here
             Route::get('/woreda-dashboard', [DashboardController::class, 'woredaDashboard'])->name('woreda.dashboard');
-            Route::get('profile/{uuid}/edit', [UserController::class, 'edit'])->name('woreda.users.edit');
+            // Route::get('profile/{uuid}/edit', [UserController::class, 'edit'])->name('woreda.users.edit');
             Route::put('profile/{uuid}', [UserController::class, 'update'])->name('woreda.users.update');
-            Route::get('/profile/users/{uuid}', [UserController::class, 'edit'])->name('woreda.users.edit');
+            // Route::get('/profile/users/{uuid}', [UserController::class, 'edit'])->name('woreda.users.edit');
 
             Route::get('/profile/{uuid}', [UserController::class, 'profile'])->name('woreda.profile.users');
             Route::get('/profile/security/{uuid}', [UserController::class, 'changePasswordForm'])->name('woreda.users.password');
             Route::post('/change-password', [UserController::class, 'changePassword'])->name('woreda.password.change');
 
-            Route::get('structures', [StructureController::class, 'woredastructures'])->name('woreda.structure.index');
-            Route::get('woreda/crop-plans/report', [DashboardController::class, 'indexcrop'])->name('crop-plans.index');
+            // Route::get('structures', [StructureController::class, 'woredastructures'])->name('woreda.structure.index');
+            Route::get('woreda/crop-plans/report', [DashboardController::class, 'indexcrop'])->name('crop-plans.indexw');
 
             Route::get('woreda/crop-plan/feedback/{id}', [DashboardController::class, 'indexcrop'])->name('woreda.crop-plans.feedback');
 
+          Route::get('/livestock-plans', [woredadashboardController::class, 'livestock'])->name('livestock_plans.livestock');
 
 
             Route::post('/crop-plans/{id}/feedback', [DashboardController::class, 'storeFeedback']);
@@ -306,30 +302,26 @@ Route::delete('/enterprise-work/{id}', [EnterpriseWorkController::class, 'destro
 
         // Kebele Admin only
         Route::middleware('role:4')->prefix('kebele')->group(function () {
-            Route::get('/woreda/users', [UserController::class, 'woredaUsers'])->name('woreda.users');
             // add more woreda admin routes here
-            Route::get('profile/{uuid}/edit', [UserController::class, 'edit'])->name('woreda.users.edit');
             Route::put('profile/{uuid}', [UserController::class, 'update'])->name('woreda.users.update');
-            Route::get('/profile/users/{uuid}', [UserController::class, 'edit'])->name('woreda.users.edit');
+            // Route::get('/profile/users/{uuid}', [UserController::class, 'edit'])->name('woreda.users.edit');
 
             Route::get('/profile/{uuid}', [UserController::class, 'profile'])->name('users.profile');
             Route::get('/profile/security/{uuid}', [UserController::class, 'changePasswordForm'])->name('users.password');
             Route::post('/change-password', [UserController::class, 'changePassword'])->name('password.change');
 
-            Route::get('profile/{uuid}/edit', [UserController::class, 'edit'])->name('kebele.users.edit');
             Route::put('profile/{uuid}', [UserController::class, 'profileupdate'])->name('kebele.users.update');
             // Route::put('profile/{uuid}', [UserController::class, 'update'])->name('kebele.users.update');
-            Route::get('/profile/users/{uuid}', [UserController::class, 'profileedit'])->name('kebele.users.edit');
+             
 
             Route::get('/profile/{uuid}', [UserController::class, 'profile'])->name('kebele.profile.users');
             Route::get('/profile/security/{uuid}', [UserController::class, 'changePasswordForm'])->name('kebele.users.password');
             Route::post('/change-password', [UserController::class, 'changePassword'])->name('kebele.password.change');
 
-            Route::get('/woreda/users', [UserController::class, 'woredaUsers'])->name('woreda.users');
             // add more woreda admin routes here
-            Route::get('profile/{uuid}/edit', [UserController::class, 'edit'])->name('woreda.users.edit');
+            // Route::get('profile/{uuid}/edit', [UserController::class, 'edit'])->name('woreda.users.edit');
             Route::put('profile/{uuid}', [UserController::class, 'update'])->name('woreda.users.update');
-            Route::get('/profile/users/{uuid}', [UserController::class, 'edit'])->name('woreda.users.edit');
+            // Route::get('/profile/users/{uuid}', [UserController::class, 'edit'])->name('woreda.users.edit');
 
             Route::get('/profile/{uuid}', [UserController::class, 'profile'])->name('users.profile');
             Route::get('/profile/security/{uuid}', [UserController::class, 'changePasswordForm'])->name('users.password');
@@ -338,14 +330,13 @@ Route::delete('/enterprise-work/{id}', [EnterpriseWorkController::class, 'destro
             Route::get('profile/{uuid}/edit', [UserController::class, 'edit'])->name('kebele.users.edit');
             Route::put('profile/{uuid}', [UserController::class, 'profileupdate'])->name('kebele.users.update');
             // Route::put('profile/{uuid}', [UserController::class, 'update'])->name('kebele.users.update');
-            Route::get('/profile/users/{uuid}', [UserController::class, 'profileedit'])->name('kebele.users.edit');
 
             Route::get('/profile/{uuid}', [UserController::class, 'profile'])->name('kebele.profile.users');
             Route::get('/profile/security/{uuid}', [UserController::class, 'changePasswordForm'])->name('kebele.users.password');
             Route::post('/change-password', [UserController::class, 'changePassword'])->name('kebele.password.change');
 
             Route::get('sector-admins', [StructureController::class, 'indexSectorAdmins'])->name('sectoradmin.index');
-            Route::get('users/sector-user', [UserController::class, 'sectoruser'])->name('sector.users.index');
+            // Route::get('users/sector-user', [UserController::class, 'sectoruser'])->name('sector.users.index');
             Route::get('sector-admin/create', [StructureController::class, 'createSectorAdmin'])->name('sectoradmin.create');
             Route::post('sector-admin/store', [StructureController::class, 'storeSectorAdmin'])->name('sectoradmin.store');
             Route::get('sector-admin/edit/{id}', [StructureController::class, 'editSectorAdmin'])->name('sectoradmin.edit');
@@ -355,7 +346,7 @@ Route::delete('/enterprise-work/{id}', [EnterpriseWorkController::class, 'destro
             Route::get('/dashboard', [KebeleAdminController::class, 'dashboard'])->name('kebele.dashboard');
             Route::post('/approve/{sector}/{id}', [KebeleAdminController::class, 'approve'])->name('kebele.approve');
             Route::post('/reject/{sector}/{id}', [KebeleAdminController::class, 'reject'])->name('kebele.reject');
-            Route::post('update-status', [KebeleAdminController::class, 'updateStatus'])->name('kebele.update.status');
+            // Route::post('update-status', [KebeleAdminController::class, 'updateStatus'])->name('kebele.update.status');
 
             Route::get('da-users', [StructureController::class, 'indexdausers'])->name('dausers.index');
             Route::get('da-user/create', [StructureController::class, 'createdausers'])->name('dausers.create');
@@ -452,13 +443,13 @@ Route::delete('/enterprise-work/{id}', [EnterpriseWorkController::class, 'destro
         Route::get('/mechanizations/timeline', [MechanizationController::class, 'mechanizationTime'])->name('mechanizations.timeline');
         Route::get('/mechanizations/export-excel', [MechanizationController::class, 'exportMechanizationExcel'])->name('mechanizations.export-excel');
 
-Route::get('/gabbina_biyyee/{id}/plan', [GabbinaBiyyeeController::class, 'compostPlan'])
-    ->name('gabbina_biyyee.plan');
-Route::put('/compost-plans/{id}', [GabbinaBiyyeeController::class, 'updateCompostPlan'])
-    ->name('compost-plans.update');
+            Route::get('/gabbina_biyyee/{id}/plan', [GabbinaBiyyeeController::class, 'compostPlan'])
+                ->name('gabbina_biyyee.plan');
+            Route::put('/compost-plans/{id}', [GabbinaBiyyeeController::class, 'updateCompostPlan'])
+                ->name('compost-plans.update');
 
-    Route::get('/gabbina_biyyee/timeline', [GabbinaBiyyeeController::class, 'compostTime'])->name('gabbina_biyyee.timeline');
-Route::get('/gabbina_biyyee/export-excel', [GabbinaBiyyeeController::class, 'exportCompostExcel'])->name('gabbina_biyyee.export-excel');
+                Route::get('/gabbina_biyyee/timeline', [GabbinaBiyyeeController::class, 'compostTime'])->name('gabbina_biyyee.timeline');
+            Route::get('/gabbina_biyyee/export-excel', [GabbinaBiyyeeController::class, 'exportCompostExcel'])->name('gabbina_biyyee.export-excel');
 
         // Cascading AJAX routes
         Route::get('crops-by-year/{year}', [KebeleCropPlanController::class, 'getCropTypesByYear'])->name('crops.byYear');
@@ -510,6 +501,14 @@ Route::get('/gabbina_biyyee/export-excel', [GabbinaBiyyeeController::class, 'exp
         // AJAX route for getting group details
         Route::get('/seedling-preparations/group-details/{year}/{typeId}', [SeedlingPreparationController::class, 'getGroupDetails'])->name('seedling-preparations.group-details');
 
+            Route::get('/seedling-preparations/{id}/plan', [SeedlingPreparationController::class, 'seedlingPlan'])
+        ->name('seedling-preparations.plan');
+            Route::put('/seedling-plans/{id}', [SeedlingPreparationController::class, 'updateSeedlingPlan'])
+                ->name('seedling-plans.update');
+
+                Route::get('/seedling-preparations/timeline', [SeedlingPreparationController::class, 'seedlingTime'])->name('seedling-preparations.timeline');
+            Route::get('/seedling-preparations/export-excel', [SeedlingPreparationController::class, 'exportSeedlingExcel'])->name('seedling-preparations.export-excel');
+
         Route::get('/livestock-plans', [LivestockPlanController::class, 'index'])->name('livestock_plans.index');
         Route::get('/livestock-plans/create', [LivestockPlanController::class, 'create'])->name('livestock_plans.create');
         Route::post('/livestock-plans/store', [LivestockPlanController::class, 'store'])->name('livestock_plans.store');
@@ -542,133 +541,133 @@ Route::get('/gabbina_biyyee/export-excel', [GabbinaBiyyeeController::class, 'exp
             Route::put('/environmental-plans/{id}', [EnvironmentalProtectionPlanController::class, 'update'])->name('environmental-plans.update');
             Route::delete('/environmental-plans/{id}', [EnvironmentalProtectionPlanController::class, 'destroy'])->name('environmental-plans.destroy');
 
-Route::get('/natural-plans', [NaturalResourcePlanController::class, 'index'])->name('natural-plans.index');
-    Route::get('/natural-plans/create', [NaturalResourcePlanController::class, 'create'])->name('natural-plans.create');
-    Route::post('/natural-plans/store', [NaturalResourcePlanController::class, 'store'])->name('natural-plans.store');
-    Route::get('/natural-plans/{id}/edit', [NaturalResourcePlanController::class, 'edit'])->name('natural-plans.edit');
-    Route::get('/natural-plans/{id}/product', [NaturalResourcePlanController::class, 'editproduct'])->name('natural-plans.editproduct');
-    Route::put('/natural-plans/{id}/update', [NaturalResourcePlanController::class, 'update'])->name('natural-plans.update');
-    Route::delete('/natural-plans/{id}/delete', [NaturalResourcePlanController::class, 'destroy'])->name('natural-plans.destroy');
+            Route::get('/natural-plans', [NaturalResourcePlanController::class, 'index'])->name('natural-plans.index');
+                Route::get('/natural-plans/create', [NaturalResourcePlanController::class, 'create'])->name('natural-plans.create');
+                Route::post('/natural-plans/store', [NaturalResourcePlanController::class, 'store'])->name('natural-plans.store');
+                Route::get('/natural-plans/{id}/edit', [NaturalResourcePlanController::class, 'edit'])->name('natural-plans.edit');
+                Route::get('/natural-plans/{id}/product', [NaturalResourcePlanController::class, 'editproduct'])->name('natural-plans.editproduct');
+                Route::put('/natural-plans/{id}/update', [NaturalResourcePlanController::class, 'update'])->name('natural-plans.update');
+                Route::delete('/natural-plans/{id}/delete', [NaturalResourcePlanController::class, 'destroy'])->name('natural-plans.destroy');
 
 
-    Route::get('/association-expansion-plans', [AssociationExpansionPlanController::class, 'index'])->name('association-expansion-plans.index');
-Route::get('/association-expansion-plans/create', [AssociationExpansionPlanController::class, 'create'])->name('association-expansion-plans.create');
-Route::post('/association-expansion-plans', [AssociationExpansionPlanController::class, 'store'])->name('association-expansion-plans.store');
-Route::get('/association-expansion-plans/{id}/edit', [AssociationExpansionPlanController::class, 'edit'])->name('association-expansion-plans.edit');
-Route::put('/association-expansion-plans/{id}', [AssociationExpansionPlanController::class, 'update'])->name('association-expansion-plans.update');
-Route::delete('/association-expansion-plans/{id}', [AssociationExpansionPlanController::class, 'destroy'])->name('association-expansion-plans.destroy');
+                Route::get('/association-expansion-plans', [AssociationExpansionPlanController::class, 'index'])->name('association-expansion-plans.index');
+            Route::get('/association-expansion-plans/create', [AssociationExpansionPlanController::class, 'create'])->name('association-expansion-plans.create');
+            Route::post('/association-expansion-plans', [AssociationExpansionPlanController::class, 'store'])->name('association-expansion-plans.store');
+            Route::get('/association-expansion-plans/{id}/edit', [AssociationExpansionPlanController::class, 'edit'])->name('association-expansion-plans.edit');
+            Route::put('/association-expansion-plans/{id}', [AssociationExpansionPlanController::class, 'update'])->name('association-expansion-plans.update');
+                    Route::delete('/association-expansion-plans/{id}', [AssociationExpansionPlanController::class, 'destroy'])->name('association-expansion-plans.destroy');
 
-Route::get('/association-types', [AssociationTypeController::class, 'index'])->name('association_types.index');
-Route::get('/association-types/create', [AssociationTypeController::class, 'create'])->name('association_types.create');
-Route::post('/association-types/store', [AssociationTypeController::class, 'store'])->name('association_types.store');
-Route::get('/association-types/edit/{id}', [AssociationTypeController::class, 'edit'])->name('association_types.edit');
-Route::put('/association-types/update/{id}', [AssociationTypeController::class, 'update'])->name('association_types.update');
-Route::delete('/association-types/delete/{id}', [AssociationTypeController::class, 'destroy'])->name('association_types.destroy');
-
-
-
-// Building Community Institution Plan Routes
-
-    Route::get('/building-community-institution-plans', [BuildingCommunityInstitutionPlanController::class, 'index'])
-        ->name('building-community-institution-plans.index');
-
-    Route::get('/building-community-institution-plans/create', [BuildingCommunityInstitutionPlanController::class, 'create'])
-        ->name('building-community-institution-plans.create');
-
-    Route::post('/building-community-institution-plans/store', [BuildingCommunityInstitutionPlanController::class, 'store'])
-        ->name('building-community-institution-plans.store');
-
-    Route::get('/building-community-institution-plans/{id}/edit', [BuildingCommunityInstitutionPlanController::class, 'edit'])
-        ->name('building-community-institution-plans.edit');
-
-    Route::put('/building-community-institution-plans/{id}/update', [BuildingCommunityInstitutionPlanController::class, 'update'])
-        ->name('building-community-institution-plans.update');
-
-    Route::delete('/building-community-institution-plans/{id}/destroy', [BuildingCommunityInstitutionPlanController::class, 'destroy'])
-        ->name('building-community-institution-plans.destroy');
-        Route::get('/building-community-institution-plans/check-existing', [BuildingCommunityInstitutionPlanController::class, 'checkExisting'])->name('building-community-institution-plans.check-existing');
+            Route::get('/association-types', [AssociationTypeController::class, 'index'])->name('association_types.index');
+            Route::get('/association-types/create', [AssociationTypeController::class, 'create'])->name('association_types.create');
+            Route::post('/association-types/store', [AssociationTypeController::class, 'store'])->name('association_types.store');
+            Route::get('/association-types/edit/{id}', [AssociationTypeController::class, 'edit'])->name('association_types.edit');
+            Route::put('/association-types/update/{id}', [AssociationTypeController::class, 'update'])->name('association_types.update');
+            Route::delete('/association-types/delete/{id}', [AssociationTypeController::class, 'destroy'])->name('association_types.destroy');
 
 
 
-// Building Powers Institution Plan Routes
+        // Building Community Institution Plan Routes
 
-    Route::get('/building-power-institution-plans', [BuildingPowerInstitutionPlanController::class, 'index'])
-        ->name('building-power-institution-plans.index');
+            Route::get('/building-community-institution-plans', [BuildingCommunityInstitutionPlanController::class, 'index'])
+                ->name('building-community-institution-plans.index');
 
-    Route::get('/building-power-institution-plans/create', [BuildingPowerInstitutionPlanController::class, 'create'])
-        ->name('building-power-institution-plans.create');
+            Route::get('/building-community-institution-plans/create', [BuildingCommunityInstitutionPlanController::class, 'create'])
+                ->name('building-community-institution-plans.create');
 
-    Route::post('/building-power-institution-plans/store', [BuildingPowerInstitutionPlanController::class, 'store'])
-        ->name('building-power-institution-plans.store');
+            Route::post('/building-community-institution-plans/store', [BuildingCommunityInstitutionPlanController::class, 'store'])
+                ->name('building-community-institution-plans.store');
 
-    Route::get('/building-power-institution-plans/{id}/edit', [BuildingPowerInstitutionPlanController::class, 'edit'])
-        ->name('building-power-institution-plans.edit');
+            Route::get('/building-community-institution-plans/{id}/edit', [BuildingCommunityInstitutionPlanController::class, 'edit'])
+                ->name('building-community-institution-plans.edit');
 
-    Route::put('/building-power-institution-plans/{id}/update', [BuildingPowerInstitutionPlanController::class, 'update'])
-        ->name('building-power-institution-plans.update');
+            Route::put('/building-community-institution-plans/{id}/update', [BuildingCommunityInstitutionPlanController::class, 'update'])
+                ->name('building-community-institution-plans.update');
 
-    Route::delete('/building-power-institution-plans/{id}/destroy', [BuildingPowerInstitutionPlanController::class, 'destroy'])
-        ->name('building-power-institution-plans.destroy');
-        Route::get('/building-power-institution-plans/check-existing', [BuildingPowerInstitutionPlanController::class, 'checkExisting'])->name('building-community-institution-plans.check-existing');
- 
-// Building deenagdee Institution Plan Routes
+            Route::delete('/building-community-institution-plans/{id}/destroy', [BuildingCommunityInstitutionPlanController::class, 'destroy'])
+                ->name('building-community-institution-plans.destroy');
+                // Route::get('/building-community-institution-plans/check-existing', [BuildingCommunityInstitutionPlanController::class, 'checkExisting'])->name('building-community-institution-plans.check-existing');
 
-    Route::get('/building-power-institution-plans', [BuildingPowerInstitutionPlanController::class, 'index'])
-        ->name('building-power-institution-plans.index');
 
-    Route::get('/building-power-institution-plans/create', [BuildingPowerInstitutionPlanController::class, 'create'])
-        ->name('building-power-institution-plans.create');
 
-    Route::post('/building-power-institution-plans/store', [BuildingPowerInstitutionPlanController::class, 'store'])
-        ->name('building-power-institution-plans.store');
+        // Building Powers Institution Plan Routes
 
-    Route::get('/building-power-institution-plans/{id}/edit', [BuildingPowerInstitutionPlanController::class, 'edit'])
-        ->name('building-power-institution-plans.edit');
+            Route::get('/building-power-institution-plans', [BuildingPowerInstitutionPlanController::class, 'index'])
+                ->name('building-power-institution-plans.index');
 
-    Route::put('/building-power-institution-plans/{id}/update', [BuildingPowerInstitutionPlanController::class, 'update'])
-        ->name('building-power-institution-plans.update');
+            Route::get('/building-power-institution-plans/create', [BuildingPowerInstitutionPlanController::class, 'create'])
+                ->name('building-power-institution-plans.create');
 
-    Route::delete('/building-power-institution-plans/{id}/destroy', [BuildingPowerInstitutionPlanController::class, 'destroy'])
-        ->name('building-power-institution-plans.destroy');
-        Route::get('/building-power-institution-plans/check-existing', [BuildingPowerInstitutionPlanController::class, 'checkExisting'])->name('building-community-institution-plans.check-existing');
- 
-        // Building economic Institution Plan Routes
+            Route::post('/building-power-institution-plans/store', [BuildingPowerInstitutionPlanController::class, 'store'])
+                ->name('building-power-institution-plans.store');
 
-    Route::get('/building-economic-institution-plans', [BuildingEconomicInstitutionPlanController::class, 'index'])
-        ->name('building-economic-institution-plans.index');
+            Route::get('/building-power-institution-plans/{id}/edit', [BuildingPowerInstitutionPlanController::class, 'edit'])
+                ->name('building-power-institution-plans.edit');
 
-    Route::get('/building-economic-institution-plans/create', [BuildingEconomicInstitutionPlanController::class, 'create'])
-        ->name('building-economic-institution-plans.create');
+            Route::put('/building-power-institution-plans/{id}/update', [BuildingPowerInstitutionPlanController::class, 'update'])
+                ->name('building-power-institution-plans.update');
 
-    Route::post('/building-economic-institution-plans/store', [BuildingEconomicInstitutionPlanController::class, 'store'])
-        ->name('building-economic-institution-plans.store');
+            Route::delete('/building-power-institution-plans/{id}/destroy', [BuildingPowerInstitutionPlanController::class, 'destroy'])
+                ->name('building-power-institution-plans.destroy');
+                // Route::get('/building-power-institution-plans/check-existing', [BuildingPowerInstitutionPlanController::class, 'checkExisting'])->name('building-community-institution-plans.check-existing');
+        
+        // Building deenagdee Institution Plan Routes
 
-    Route::get('/building-economic-institution-plans/{id}/edit', [BuildingEconomicInstitutionPlanController::class, 'edit'])
-        ->name('building-economic-institution-plans.edit');
+            Route::get('/building-power-institution-plans', [BuildingPowerInstitutionPlanController::class, 'index'])
+                ->name('building-power-institution-plans.index');
 
-    Route::put('/building-economic-institution-plans/{id}/update', [BuildingEconomicInstitutionPlanController::class, 'update'])
-        ->name('building-economic-institution-plans.update');
+            Route::get('/building-power-institution-plans/create', [BuildingPowerInstitutionPlanController::class, 'create'])
+                ->name('building-power-institution-plans.create');
 
-    Route::delete('/building-economic-institution-plans/{id}/destroy', [BuildingEconomicInstitutionPlanController::class, 'destroy'])
-        ->name('building-economic-institution-plans.destroy');
-        Route::get('/building-economic-institution-plans/check-existing', [BuildingEconomicInstitutionPlanController::class, 'checkExisting'])->name('building-community-institution-plans.check-existing');
+            Route::post('/building-power-institution-plans/store', [BuildingPowerInstitutionPlanController::class, 'store'])
+                ->name('building-power-institution-plans.store');
 
-    // Employment Opportunity Plans
-    Route::get('/employment-opportunity-plans', [EmploymentOpportunityPlanController::class, 'index'])->name('employment-opportunity-plans.index');
-    Route::get('/employment-opportunity-plans/create', [EmploymentOpportunityPlanController::class, 'create'])->name('employment-opportunity-plans.create');
-    Route::post('/employment-opportunity-plans', [EmploymentOpportunityPlanController::class, 'store'])->name('employment-opportunity-plans.store');
-    Route::get('/employment-opportunity-plans/{id}/edit', [EmploymentOpportunityPlanController::class, 'edit'])->name('employment-opportunity-plans.edit');
-    Route::put('/employment-opportunity-plans/{id}', [EmploymentOpportunityPlanController::class, 'update'])->name('employment-opportunity-plans.update');
-    Route::delete('/employment-opportunity-plans/{id}', [EmploymentOpportunityPlanController::class, 'destroy'])->name('employment-opportunity-plans.destroy');
-    Route::get('/employment-opportunity-plans/check-existing', [EmploymentOpportunityPlanController::class, 'checkExisting'])->name('employment-opportunity-plans.check-existing');
+            Route::get('/building-power-institution-plans/{id}/edit', [BuildingPowerInstitutionPlanController::class, 'edit'])
+                ->name('building-power-institution-plans.edit');
+
+            Route::put('/building-power-institution-plans/{id}/update', [BuildingPowerInstitutionPlanController::class, 'update'])
+                ->name('building-power-institution-plans.update');
+
+            Route::delete('/building-power-institution-plans/{id}/destroy', [BuildingPowerInstitutionPlanController::class, 'destroy'])
+                ->name('building-power-institution-plans.destroy');
+                // Route::get('/building-power-institution-plans/check-existing', [BuildingPowerInstitutionPlanController::class, 'checkExisting'])->name('building-community-institution-plans.check-existing');
+        
+                // Building economic Institution Plan Routes
+
+            Route::get('/building-economic-institution-plans', [BuildingEconomicInstitutionPlanController::class, 'index'])
+                ->name('building-economic-institution-plans.index');
+
+            Route::get('/building-economic-institution-plans/create', [BuildingEconomicInstitutionPlanController::class, 'create'])
+                ->name('building-economic-institution-plans.create');
+
+            Route::post('/building-economic-institution-plans/store', [BuildingEconomicInstitutionPlanController::class, 'store'])
+                ->name('building-economic-institution-plans.store');
+
+            Route::get('/building-economic-institution-plans/{id}/edit', [BuildingEconomicInstitutionPlanController::class, 'edit'])
+                ->name('building-economic-institution-plans.edit');
+
+            Route::put('/building-economic-institution-plans/{id}/update', [BuildingEconomicInstitutionPlanController::class, 'update'])
+                ->name('building-economic-institution-plans.update');
+
+            Route::delete('/building-economic-institution-plans/{id}/destroy', [BuildingEconomicInstitutionPlanController::class, 'destroy'])
+                ->name('building-economic-institution-plans.destroy');
+                Route::get('/building-economic-institution-plans/check-existing', [BuildingEconomicInstitutionPlanController::class, 'checkExisting'])->name('building-community-institution-plans.check-existing');
+
+            // Employment Opportunity Plans
+            Route::get('/employment-opportunity-plans', [EmploymentOpportunityPlanController::class, 'index'])->name('employment-opportunity-plans.index');
+            Route::get('/employment-opportunity-plans/create', [EmploymentOpportunityPlanController::class, 'create'])->name('employment-opportunity-plans.create');
+            Route::post('/employment-opportunity-plans', [EmploymentOpportunityPlanController::class, 'store'])->name('employment-opportunity-plans.store');
+            Route::get('/employment-opportunity-plans/{id}/edit', [EmploymentOpportunityPlanController::class, 'edit'])->name('employment-opportunity-plans.edit');
+            Route::put('/employment-opportunity-plans/{id}', [EmploymentOpportunityPlanController::class, 'update'])->name('employment-opportunity-plans.update');
+            Route::delete('/employment-opportunity-plans/{id}', [EmploymentOpportunityPlanController::class, 'destroy'])->name('employment-opportunity-plans.destroy');
+            Route::get('/employment-opportunity-plans/check-existing', [EmploymentOpportunityPlanController::class, 'checkExisting'])->name('employment-opportunity-plans.check-existing');
 
     });
 
     Route::middleware('role:6')->prefix('da')->group(function () {
         Route::get('/da-dashboard', [DashboardController::class, 'daDashboard'])->name('da.dashboard');
 
-        Route::post('/approve/{sector}/{id}', [KebeleAdminController::class, 'approve'])->name('kebele.approve');
-        Route::post('/reject/{sector}/{id}', [KebeleAdminController::class, 'reject'])->name('kebele.reject');
+        // Route::post('/approve/{sector}/{id}', [KebeleAdminController::class, 'approve'])->name('kebele.approve');
+        // Route::post('/reject/{sector}/{id}', [KebeleAdminController::class, 'reject'])->name('kebele.reject');
         Route::post('update-status', [KebeleAdminController::class, 'updateStatus'])->name('kebele.update.status');
     });
 });
@@ -689,7 +688,7 @@ Route::post('/farmers/store', [FarmerController::class, 'store'])->name('farmers
 Route::get('/farmers/edit/{id}', [FarmerController::class, 'edit'])->name('farmers.edit');
 Route::get('/farmers/show/{id}', [FarmerController::class, 'show'])->name('farmers.show');
 // Route::post('/farmers/update/{id}', [FarmerController::class, 'update'])->name('farmers.update');
-Route::put('/farmers/update/{id}', [FarmerController::class, 'update'])->name('farmers.update');
+// Route::put('/farmers/update/{id}', [FarmerController::class, 'update'])->name('farmers.update');
 
 Route::delete('/farmers/destroy/{id}', [FarmerController::class, 'destroy'])->name('farmers.destroy');
 
@@ -727,7 +726,7 @@ Route::put('/soils/{id}/update', [SoilTypeController::class, 'update'])->name('s
 Route::delete('/soils/{id}/delete', [SoilTypeController::class, 'destroy'])->name('soil.delete');
 
 // Parcel Crop Plan routes
-Route::get('/farmers/{farmer}/parcel-crop-plans', [ParcelCropPlanController::class, 'index'])->name('parcel-crop-plans.index');
+// Route::get('/farmers/{farmer}/parcel-crop-plans', [ParcelCropPlanController::class, 'index'])->name('parcel-crop-plans.index');
 Route::get('/farmers/{farmer}/parcel-crop-plans/create', [ParcelCropPlanController::class, 'create'])->name('parcel-crop-plans.create');
 Route::post('/farmers/{farmer}/parcel-crop-plans', [ParcelCropPlanController::class, 'store'])->name('parcel-crop-plans.store');
 

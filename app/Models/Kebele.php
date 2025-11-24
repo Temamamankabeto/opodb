@@ -29,4 +29,13 @@ class Kebele extends Model
     {
         return $this->hasMany(KebeleSectors::class);
     }
+
+
+     public function livestockPlans()
+    {
+        return $this->hasMany(LivestockPlan::class, 'kebele_id');
+    }
+
+    // Other relationships you might have...
+     
 }
