@@ -96,7 +96,7 @@ Route::middleware([SecurityHeaders::class])->group(function () {
             Route::post('kebeles', [StructureController::class, 'storekebele'])->name('admin.kebeles.store');
 
             Route::get('zones', [StructureController::class, 'zonelist'])->name('admin.zones.index');
-            // Route::post('zones/save', [StructureController::class, 'storezone'])->name('admin.zones.store');
+            Route::post('zones/save', [StructureController::class, 'storezone'])->name('admin.zones.store');
             Route::put('kebeles/{kebele}', [StructureController::class, 'update'])->name('admin.kebeles.update');
 
             Route::put('update/woreda/{woreda}', [StructureController::class, 'updateworeda'])->name('admin.woreda.update');
