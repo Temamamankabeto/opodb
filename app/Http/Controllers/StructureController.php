@@ -86,7 +86,7 @@ class StructureController extends Controller
     public function storezone(Request $request)
     {
         // Allow only users with role_id == 1
-        if (Auth::user()->role_id !== 1) {
+        if (Auth::user()->role_id == 1) {
             abort(403, 'Unauthorized action.');
         }
 

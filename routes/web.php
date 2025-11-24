@@ -688,7 +688,7 @@ Route::post('/farmers/store', [FarmerController::class, 'store'])->name('farmers
 Route::get('/farmers/edit/{id}', [FarmerController::class, 'edit'])->name('farmers.edit');
 Route::get('/farmers/show/{id}', [FarmerController::class, 'show'])->name('farmers.show');
 // Route::post('/farmers/update/{id}', [FarmerController::class, 'update'])->name('farmers.update');
-// Route::put('/farmers/update/{id}', [FarmerController::class, 'update'])->name('farmers.update');
+// Route::put('/farmers/update/{id}', [FarmerControlle r::class, 'update'])->name('farmers.update');
 
 Route::delete('/farmers/destroy/{id}', [FarmerController::class, 'destroy'])->name('farmers.destroy');
 
