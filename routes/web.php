@@ -235,7 +235,7 @@ Route::delete('/enterprise-work/{id}', [EnterpriseWorkController::class, 'destro
             // Route::get('users', [UserController::class, 'zoneUsers'])->name('zone.users');
             Route::get('zone-list', [ZoneController::class, 'zoneOnlyList'])->name('zone.zones');
             Route::get('all-zones', [StructureController::class, 'zonelist'])->name('zones.index');
-            Route::post('zones/save', [StructureController::class, 'storezone'])->name('zones.store');
+            
 
             Route::get('dashboard', [DashboardController::class, 'zoneDashboard'])->name('zone.dashboard');
 
