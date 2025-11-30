@@ -109,30 +109,42 @@
                                 </div>
                             </div>
 
-                            <!-- Additional Information Display -->
-                            <div class="row g-2 g-md-4 mb-3 mb-md-4">
-                                <div class="col-6 col-md-3">
-                                    <div class="info-card p-2 p-md-3 bg-light rounded">
-                                        <small class="text-muted">Productivity</small>
-                                        <div class="fw-bold text-primary fs-6 fs-md-normal">{{ $plan->productivity }} qt/ha</div>
+                            <!-- Planning Summary -->
+                            <div class="section-header mt-4 mt-md-5 mb-3 mb-md-4">
+                                <h5 class="section-title fs-6 fs-md-5">
+                                    <i class="mdi mdi-chart-bar me-2 text-info"></i>
+                                    Planning Overview (Preparation Year: <span id="preparationYear">{{ $plan->year - 1 }}</span>)
+                                </h5>
+                                <div class="section-divider"></div>
+                            </div>
+
+                            <!-- Summary Cards -->
+                            <div class="row g-2 g-md-3 mb-4">
+                                <div class="col-6 col-md-4">
+                                    <div class="card summary-card border-0 shadow-sm">
+                                        <div class="card-body text-center">
+                                            <i class="mdi mdi-target display-6 text-primary mb-2"></i>
+                                            <div class="summary-value fs-4 fw-bold text-primary" id="totalAreaDisplay">{{ $plan->area_to_plant }}</div>
+                                            <div class="summary-label text-muted">Total Area (ha)</div>
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="col-6 col-md-3">
-                                    <div class="info-card p-2 p-md-3 bg-light rounded">
-                                        <small class="text-muted">Expected Yield</small>
-                                        <div class="fw-bold text-primary fs-6 fs-md-normal">{{ $plan->expected_yield }} qt</div>
+                                <div class="col-6 col-md-4">
+                                    <div class="card summary-card border-0 shadow-sm">
+                                        <div class="card-body text-center">
+                                            <i class="mdi mdi-calendar-check display-6 text-warning mb-2"></i>
+                                            <div class="summary-value fs-4 fw-bold text-warning" id="plannedAreaSummary">0</div>
+                                            <div class="summary-label text-muted">Planned (ha)</div>
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="col-6 col-md-3">
-                                    <div class="info-card p-2 p-md-3 bg-light rounded">
-                                        <small class="text-muted">Seed Required</small>
-                                        <div class="fw-bold text-primary fs-6 fs-md-normal">{{ $plan->seed_required }} kg</div>
-                                    </div>
-                                </div>
-                                <div class="col-6 col-md-3">
-                                    <div class="info-card p-2 p-md-3 bg-light rounded">
-                                        <small class="text-muted">Status</small>
-                                        <div class="fw-bold text-primary fs-6 fs-md-normal">{{ $plan->status ?? 'Active' }}</div>
+                                <div class="col-6 col-md-4">
+                                    <div class="card summary-card border-0 shadow-sm">
+                                        <div class="card-body text-center">
+                                            <i class="mdi mdi-progress-check display-6 text-info mb-2"></i>
+                                            <div class="summary-value fs-4 fw-bold text-info" id="completionPercentage">0%</div>
+                                            <div class="summary-label text-muted">Allocation</div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -141,38 +153,12 @@
                             <div class="section-header mt-4 mt-md-5 mb-3 mb-md-4">
                                 <h5 class="section-title fs-6 fs-md-5">
                                     <i class="mdi mdi-calendar-multiple me-2 text-info"></i>
-                                    Land Preparation Planning (Preparation Year: <span id="preparationYear">{{ $plan->year - 1 }}</span>)
+                                    Land Preparation Planning
                                 </h5>
                                 <div class="section-divider"></div>
                                 <p class="text-muted mt-2 d-none d-md-block">
-                                    Select multiple quarters, months, and distribute area across weeks for land preparation activities in the preparation year ({{ $plan->year - 1 }}).
+                                    Plan land preparation activities for each week in the preparation year ({{ $plan->year - 1 }}).
                                 </p>
-                                <p class="text-muted mt-1 d-md-none small">
-                                    Select quarters, months, and distribute area across weeks for preparation year.
-                                </p>
-                                <div class="area-summary-card mt-2 mt-md-3">
-                                    <div class="card border-0 bg-light">
-                                        <div class="card-body py-2 py-md-3">
-                                            <div class="row text-center">
-                                                <div class="col-4">
-                                                    <small class="text-muted">Total Area</small>
-                                                    <div class="fw-bold fs-6 text-primary" id="totalAreaDisplay">{{ $plan->area_to_plant }} ha</div>
-                                                </div>
-                                                <div class="col-4">
-                                                    <small class="text-muted">Distributed</small>
-                                                    <div class="fw-bold fs-6 text-success" id="distributedAreaDisplay">0 ha</div>
-                                                </div>
-                                                <div class="col-4">
-                                                    <small class="text-muted">Remaining</small>
-                                                    <div class="fw-bold fs-6 text-warning" id="remainingAreaDisplay">{{ $plan->area_to_plant }} ha</div>
-                                                </div>
-                                            </div>
-                                            <div class="progress mt-2" style="height: 6px;">
-                                                <div class="progress-bar bg-success" id="distributionProgress" style="width: 0%"></div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
                             </div>
 
                             <div class="activity-planning-container">
@@ -189,7 +175,6 @@
                                             </div>
                                         </div>
                                         <small class="text-muted d-none d-md-block">All land preparation activities occur in the year before planting ({{ $plan->year - 1 }})</small>
-                                        <small class="text-muted d-md-none small">Preparation year: {{ $plan->year - 1 }}</small>
                                     </div>
                                 </div>
 
@@ -210,8 +195,7 @@
                                                 </button>
                                             </div>
                                         </div>
-                                        <small class="text-muted d-none d-md-block">Click on quarter cards to select/deselect multiple quarters for preparation year {{ $plan->year - 1 }}</small>
-                                        <small class="text-muted d-md-none small">Tap quarter cards to select</small>
+                                        <small class="text-muted">Click on quarter cards to select/deselect multiple quarters</small>
                                     </div>
                                     <div class="card-body">
                                         <div class="row g-2 g-md-3" id="quartersContainer">
@@ -237,8 +221,7 @@
                                                 </button>
                                             </div>
                                         </div>
-                                        <small class="text-muted d-none d-md-block">Select months from the chosen quarters for preparation year {{ $plan->year - 1 }}</small>
-                                        <small class="text-muted d-md-none small">Select months from chosen quarters</small>
+                                        <small class="text-muted">Select months from the chosen quarters</small>
                                     </div>
                                     <div class="card-body">
                                         <div class="row g-2 g-md-3" id="monthsContainer">
@@ -253,10 +236,10 @@
                                         <div class="d-flex justify-content-between align-items-center flex-column flex-md-row">
                                             <h6 class="mb-1 mb-md-0 fs-6">
                                                 <i class="mdi mdi-calendar-week me-2 text-warning"></i>
-                                                Distribute Area ({{ $plan->year - 1 }})
+                                                Plan Distribution ({{ $plan->year - 1 }})
                                             </h6>
                                             <div class="mt-1 mt-md-0 text-center text-md-end">
-                                                <small class="text-muted me-2 d-none d-md-inline">Total Distributed: </small>
+                                                <small class="text-muted me-2 d-none d-md-inline">Total: </small>
                                                 <span class="badge bg-primary fs-6" id="totalDistributedBadge">0 ha</span>
                                             </div>
                                         </div>
@@ -270,7 +253,7 @@
                                                 <div class="col-md-8 mb-2 mb-md-0">
                                                     <small class="text-muted">
                                                         <i class="mdi mdi-information-outline me-1"></i>
-                                                        Enter area in hectares for each week in preparation year {{ $plan->year - 1 }}.
+                                                        Enter planned area for each week. Total allocation will be calculated automatically.
                                                     </small>
                                                 </div>
                                                 <div class="col-md-4 text-center text-md-end">
@@ -309,13 +292,14 @@
                                                     <th>Month</th>
                                                     <th>Week</th>
                                                     <th class="d-none d-md-table-cell">Date Range</th>
-                                                    <th>Area (ha)</th>
+                                                    <th>Planned (ha)</th>
+                                                    <th>Status</th>
                                                     <th>Action</th>
                                                 </tr>
                                                 </thead>
                                                 <tbody id="summaryTable">
                                                 <tr>
-                                                    <td colspan="7" class="text-center text-muted py-4">
+                                                    <td colspan="8" class="text-center text-muted py-4">
                                                         <i class="mdi mdi-calendar-blank me-2"></i>
                                                         No distribution yet. Start by selecting quarters above.
                                                     </td>
@@ -323,10 +307,10 @@
                                                 </tbody>
                                                 <tfoot class="table-secondary">
                                                 <tr>
-                                                    <td colspan="5" class="text-end fw-bold d-none d-md-table-cell">Total Distributed:</td>
-                                                    <td colspan="2" class="text-center fw-bold d-md-none">Total Distributed:</td>
-                                                    <td class="fw-bold text-success" id="summaryTotal">0 ha</td>
-                                                    <td class="d-md-none"></td>
+                                                    <td colspan="5" class="text-end fw-bold d-none d-md-table-cell">Total:</td>
+                                                    <td colspan="3" class="text-center fw-bold d-md-none">Total:</td>
+                                                    <td class="fw-bold text-primary" id="summaryTotal">0 ha</td>
+                                                    <td colspan="2" class="fw-bold text-info" id="summaryCompletion">0%</td>
                                                 </tr>
                                                 </tfoot>
                                             </table>
@@ -372,7 +356,7 @@
         let totalArea = parseFloat({{ $plan->area_to_plant }});
         let selectedQuarters = new Set();
         let selectedMonths = new Set();
-        let summaryRows = [];
+        let weeklyDistributions = [];
         let currentDisplayedMonths = new Set();
         const preparationYear = {{ $plan->year - 1 }};
 
@@ -400,6 +384,20 @@
             4: [10, 11, 12, 13]
         };
 
+        // Status calculation function
+        function calculateStatus(planned) {
+            if (planned === 0) return 'Not Planned';
+            return 'Planned';
+        }
+
+        function getStatusClass(status) {
+            switch(status) {
+                case 'Not Planned': return 'bg-secondary';
+                case 'Planned': return 'bg-success';
+                default: return 'bg-secondary';
+            }
+        }
+
         // Initialize form
         $(document).ready(function() {
             console.log('Document ready - initializing land preparation planning for preparation year:', preparationYear);
@@ -421,15 +419,12 @@
 
             renderQuarters();
             loadExistingDistribution();
-            updateAreaSummary();
+            updateSummaryCards();
 
             // Mobile touch improvements
             improveMobileTouch();
         });
 
-        /* -------------------------------
-           MOBILE TOUCH IMPROVEMENTS
-        ------------------------------- */
         function improveMobileTouch() {
             // Prevent zoom on input focus for better mobile experience
             $('input, select, textarea').on('focus', function() {
@@ -448,13 +443,13 @@
         }
 
         /* -------------------------------
-           QUARTERS MANAGEMENT - MULTI SELECTION
+           QUARTERS MANAGEMENT
         ------------------------------- */
         function renderQuarters() {
             $("#quartersContainer").empty();
 
             Object.keys(EC_QUARTERS).forEach(q => {
-                const quarterArea = calculateQuarterDistributedArea(parseInt(q));
+                const quarterData = calculateQuarterData(parseInt(q));
                 const isSelected = selectedQuarters.has(parseInt(q));
                 const quarterName = `Q${q}`;
                 const monthNames = EC_QUARTERS[q].map(m => EC_MONTHS[m-1].name).join(", ");
@@ -472,7 +467,7 @@
                         <small class="text-muted d-none d-md-block">${monthNames}</small>
                         <small class="text-muted d-md-none">${EC_QUARTERS[q].length} months</small>
                         <div class="mt-1 mt-md-2">
-                            <small class="text-success">${quarterArea.toFixed(2)} ha</small>
+                            <small class="text-primary">Planned: ${quarterData.planned.toFixed(2)} ha</small>
                         </div>
                         <div class="mt-1">
                             <small class="text-info">Year: ${preparationYear}</small>
@@ -482,7 +477,7 @@
             `);
             });
 
-            // Add event listeners for quarter checkboxes
+            // Add event listeners
             $('.quarter-checkbox').on('change', function() {
                 const quarterNum = parseInt($(this).closest('.quarter-card').data('q'));
                 const isChecked = $(this).is(':checked');
@@ -506,13 +501,21 @@
             });
 
             $(".quarter-card").click(function(e) {
-                // Don't trigger if clicking on checkbox
                 if (!$(e.target).is('input') && !$(e.target).is('label')) {
                     const checkbox = $(this).find('.quarter-checkbox');
                     checkbox.prop('checked', !checkbox.prop('checked'));
                     checkbox.trigger('change');
                 }
             });
+        }
+
+        function calculateQuarterData(quarter) {
+            const quarterName = `Q${quarter}`;
+            const quarterDistributions = weeklyDistributions.filter(dist => dist.quarter === quarterName);
+            
+            return {
+                planned: quarterDistributions.reduce((total, dist) => total + (dist.planned_area || 0), 0)
+            };
         }
 
         function selectAllQuarters() {
@@ -537,7 +540,7 @@
         }
 
         /* -------------------------------
-           MONTHS MANAGEMENT - MULTI SELECTION
+           MONTHS MANAGEMENT
         ------------------------------- */
         function renderMonths() {
             $("#monthsContainer").empty();
@@ -561,7 +564,7 @@
 
             allMonths.forEach(monthNum => {
                 const month = EC_MONTHS[monthNum - 1];
-                const monthArea = calculateMonthDistributedArea(monthNum);
+                const monthData = calculateMonthData(monthNum);
                 const isSelected = selectedMonths.has(monthNum);
 
                 $("#monthsContainer").append(`
@@ -576,7 +579,7 @@
                         </div>
                         <small class="text-muted">Q${findQuarter(monthNum)}</small>
                         <div class="mt-1 mt-md-2">
-                            <small class="text-success">${monthArea.toFixed(2)} ha</small>
+                            <small class="text-primary">Planned: ${monthData.planned.toFixed(2)} ha</small>
                         </div>
                         <div class="mt-1">
                             <small class="text-info">Year: ${preparationYear}</small>
@@ -586,7 +589,7 @@
             `);
             });
 
-            // Add event listeners for month checkboxes
+            // Add event listeners
             $('.month-checkbox').on('change', function() {
                 const monthNum = parseInt($(this).closest('.month-card').data('month'));
                 const isChecked = $(this).is(':checked');
@@ -605,13 +608,21 @@
             });
 
             $(".month-card").click(function(e) {
-                // Don't trigger if clicking on checkbox
                 if (!$(e.target).is('input') && !$(e.target).is('label')) {
                     const checkbox = $(this).find('.month-checkbox');
                     checkbox.prop('checked', !checkbox.prop('checked'));
                     checkbox.trigger('change');
                 }
             });
+        }
+
+        function calculateMonthData(monthNum) {
+            const monthName = EC_MONTHS[monthNum - 1].name;
+            const monthDistributions = weeklyDistributions.filter(dist => dist.month === monthName);
+            
+            return {
+                planned: monthDistributions.reduce((total, dist) => total + (dist.planned_area || 0), 0)
+            };
         }
 
         function selectAllMonths() {
@@ -646,7 +657,7 @@
         }
 
         /* -------------------------------
-           WEEKS MANAGEMENT - MULTI MONTH
+           WEEKS MANAGEMENT
         ------------------------------- */
         function renderWeeks() {
             $("#weeksContainer").empty();
@@ -664,7 +675,7 @@
 
             monthsArray.forEach(monthNum => {
                 const month = EC_MONTHS[monthNum - 1];
-                const monthArea = calculateMonthDistributedArea(monthNum);
+                const monthData = calculateMonthData(monthNum);
 
                 // Month header
                 $("#weeksContainer").append(`
@@ -675,13 +686,12 @@
                             ${month.name} (Q${findQuarter(monthNum)}) - ${preparationYear}
                         </h6>
                         <div class="text-center text-md-end mt-1 mt-md-0">
-                            <span class="badge bg-info me-1 me-md-2 mb-1 mb-md-0">${monthArea.toFixed(2)} ha</span>
-                            <button type="button" class="btn btn-outline-primary btn-xs btn-sm me-1" onclick="distributeEqually(${monthNum})">
-                                <i class="mdi mdi-autorenew me-1"></i> Equal
-                            </button>
-                            <button type="button" class="btn btn-outline-secondary btn-xs btn-sm" onclick="clearMonthDistribution(${monthNum})">
-                                <i class="mdi mdi-refresh me-1"></i> Clear
-                            </button>
+                            <span class="badge bg-primary me-1 me-md-2 mb-1 mb-md-0">
+                                Planned: ${monthData.planned.toFixed(2)} ha
+                            </span>
+                            <span class="badge bg-info">
+                                ${totalArea > 0 ? ((monthData.planned / totalArea * 100).toFixed(1)) : 0}%
+                            </span>
                         </div>
                     </div>
                     <div class="weeks-grid" id="weeksGrid${monthNum}">
@@ -695,8 +705,6 @@
             });
 
             updateTotalDistributedBadge();
-
-            // Add enhanced input event listeners with live validation
             enhanceWeekInputValidation();
         }
 
@@ -714,40 +722,57 @@
             }
 
             weeks.forEach((w, i) => {
-                const existingWeek = summaryRows.find(row =>
-                    row.month === month.name && row.week === `Week ${i+1}`
-                );
                 const weekNumber = i + 1;
-                const remainingArea = totalArea - calculateTotalDistributedArea() + (existingWeek ? existingWeek.area : 0);
-                const maxArea = Math.min(totalArea, remainingArea + (existingWeek ? existingWeek.area : 0));
+                const existingDistribution = weeklyDistributions.find(dist =>
+                    dist.month === month.name && dist.week === `Week ${weekNumber}`
+                );
+                
+                const plannedArea = existingDistribution ? existingDistribution.planned_area : 0;
+                const status = calculateStatus(plannedArea);
+                const statusClass = getStatusClass(status);
 
                 weeksGrid.append(`
-                <div class="row mb-2 align-items-center week-row">
-                    <div class="col-12 col-md-3 mb-1 mb-md-0">
-                        <strong class="fs-6">Week ${weekNumber}</strong><br>
-                        <small class="text-muted">Days ${w.start}-${w.end}</small>
-                        <br>
-                        <small class="text-info">Year: ${preparationYear}</small>
-                    </div>
-                    <div class="col-8 col-md-5">
-                        <div class="input-group input-group-sm">
-                            <input type="number" step="0.01" min="0" max="${maxArea}"
-                                   class="form-control week-input"
-                                   data-month="${monthNum}"
-                                   data-week="${weekNumber}"
-                                   data-range="${w.start}-${w.end}"
-                                   value="${existingWeek ? existingWeek.area : ''}"
-                                   placeholder="0.00"
-                                   oninput="validateWeekInput(this)">
-                            <span class="input-group-text">ha</span>
+                <div class="week-combined-row mb-3 p-2 border rounded bg-white">
+                    <div class="row align-items-center">
+                        <div class="col-12 col-md-3 mb-2 mb-md-0">
+                            <strong class="fs-6">Week ${weekNumber}</strong><br>
+                            <small class="text-muted">Days ${w.start}-${w.end}</small><br>
+                            <small class="text-info">Year: ${preparationYear}</small>
                         </div>
-                        <div class="validation-feedback mt-1"></div>
-                    </div>
-                    <div class="col-4 col-md-4 text-center text-md-start">
-                        ${existingWeek ?
-                    '<span class="badge bg-success"><i class="mdi mdi-check me-1"></i></span>' :
-                    '<span class="badge bg-secondary"><i class="mdi mdi-clock me-1"></i></span>'
-                }
+                        
+                        <!-- Planning Section -->
+                        <div class="col-12 col-md-5 mb-2 mb-md-0">
+                            <label class="form-label small fw-bold text-primary">Planned Area</label>
+                            <div class="input-group input-group-sm">
+                                <input type="number" step="0.01" min="0" max="${totalArea}"
+                                       class="form-control planned-input"
+                                       data-month="${monthNum}"
+                                       data-week="${weekNumber}"
+                                       value="${plannedArea}"
+                                       placeholder="0.00"
+                                       oninput="validatePlannedInput(this)">
+                                <span class="input-group-text">ha</span>
+                            </div>
+                            <div class="validation-feedback mt-1"></div>
+                        </div>
+                        
+                        <!-- Status -->
+                        <div class="col-12 col-md-4">
+                            <div class="row text-center">
+                                <div class="col-12">
+                                    <small class="text-muted d-block">Status</small>
+                                    <span class="badge ${statusClass} fs-6">${status}</span>
+                                </div>
+                            </div>
+                            <div class="progress mt-2" style="height: 6px;">
+                                <div class="progress-bar ${statusClass}" 
+                                     style="width: ${totalArea > 0 ? Math.min((plannedArea / totalArea * 100), 100) : 0}%">
+                                </div>
+                            </div>
+                            <small class="text-muted">
+                                ${totalArea > 0 ? ((plannedArea / totalArea * 100).toFixed(1)) : 0}%
+                            </small>
+                        </div>
                     </div>
                 </div>
             `);
@@ -755,23 +780,12 @@
         }
 
         /* -------------------------------
-           ENHANCED LIVE VALIDATION
+           INPUT VALIDATION
         ------------------------------- */
-        function enhanceWeekInputValidation() {
-            $('.week-input').off('input').on('input', function() {
-                validateWeekInput(this);
-                validateTotalDistribution();
-                updateAreaSummary();
-                updateTotalDistributedBadge();
-            });
-        }
-
-        function validateWeekInput(input) {
+        function validatePlannedInput(input) {
             const value = parseFloat($(input).val()) || 0;
-            const max = parseFloat($(input).attr('max')) || totalArea;
             const feedback = $(input).siblings('.validation-feedback');
 
-            // Clear previous validation
             $(input).removeClass('is-valid is-invalid');
             feedback.empty();
 
@@ -781,94 +795,247 @@
                 return false;
             }
 
-            if (value > max) {
+            if (value > totalArea) {
                 $(input).addClass('is-invalid');
-                feedback.html(`<small class="text-danger"><i class="mdi mdi-alert-circle me-1"></i>Exceeds available area (${max.toFixed(2)} ha)</small>`);
+                feedback.html(`<small class="text-danger"><i class="mdi mdi-alert-circle me-1"></i>Exceeds total area (${totalArea.toFixed(2)} ha)</small>`);
                 return false;
             }
 
             if (value > 0) {
                 $(input).addClass('is-valid');
-                feedback.html('<small class="text-success"><i class="mdi mdi-check-circle me-1"></i>Valid</small>');
             }
 
+            updateWeekDistribution(input);
             return true;
         }
 
-        function distributeEqually(monthNum) {
-            const month = EC_MONTHS[monthNum - 1];
-            const monthWeeks = getWeeksForMonth(monthNum);
-            const remainingArea = totalArea - calculateTotalDistributedArea();
-            const currentMonthArea = calculateMonthDistributedArea(monthNum);
-            const availableArea = remainingArea + currentMonthArea;
-
-            if (monthWeeks.length === 0 || availableArea <= 0) {
-                showAlert('No area available to distribute for this month', 'warning');
-                return;
-            }
-
-            const equalArea = availableArea / monthWeeks.length;
-
-            monthWeeks.forEach(week => {
-                const input = $(`.week-input[data-month="${monthNum}"][data-week="${week.weekNumber}"]`);
-                input.val(equalArea.toFixed(2));
-                updateWeekDistribution(monthNum, week.weekNumber, equalArea);
-            });
-
-            updateSummaryTable();
-            updateAreaSummary();
-            updateTotalDistributedBadge();
-            enhanceWeekInputValidation();
-            showAlert(`Distributed ${availableArea.toFixed(2)} ha equally across ${monthWeeks.length} weeks in ${month.name}`, 'success');
-        }
-
-        function clearMonthDistribution(monthNum) {
-            const month = EC_MONTHS[monthNum - 1];
-            summaryRows = summaryRows.filter(row => row.month !== month.name);
-
-            // Clear all inputs for this month
-            $(`.week-input[data-month="${monthNum}"]`).val('');
-
-            updateSummaryTable();
-            saveJSON();
-            updateAreaSummary();
-            updateTotalDistributedBadge();
-            renderWeeksForMonth(monthNum);
-            enhanceWeekInputValidation();
-
-            showAlert(`All distributions cleared for ${month.name}`, 'info');
-        }
-
-        function updateWeekDistribution(monthNum, weekNumber, area) {
+        function updateWeekDistribution(input) {
+            const monthNum = parseInt($(input).data('month'));
+            const weekNumber = parseInt($(input).data('week'));
             const month = EC_MONTHS[monthNum - 1];
             const quarter = `Q${findQuarter(monthNum)}`;
-
-            // Find or create distribution entry
-            let distribution = summaryRows.find(d =>
-                d.month === month.name && d.week === `Week ${weekNumber}`
+            
+            const plannedInput = $(`.planned-input[data-month="${monthNum}"][data-week="${weekNumber}"]`);
+            const plannedArea = parseFloat(plannedInput.val()) || 0;
+            
+            // Find or create distribution
+            let distribution = weeklyDistributions.find(dist =>
+                dist.month === month.name && dist.week === `Week ${weekNumber}`
             );
 
             if (distribution) {
-                distribution.area = area;
+                distribution.planned_area = plannedArea;
             } else {
                 const weekData = getWeekData(monthNum, weekNumber);
                 distribution = {
-                    year: preparationYear, // Add preparation year
+                    year: preparationYear,
                     quarter: quarter,
                     month: month.name,
                     week: `Week ${weekNumber}`,
                     range: weekData.range,
-                    area: area
+                    planned_area: plannedArea
                 };
-                summaryRows.push(distribution);
+                weeklyDistributions.push(distribution);
             }
 
+            // Update status
+            distribution.status = calculateStatus(plannedArea);
+
             // Remove if area is 0
-            if (area === 0) {
-                summaryRows = summaryRows.filter(d =>
-                    !(d.month === month.name && d.week === `Week ${weekNumber}`)
+            if (plannedArea === 0) {
+                weeklyDistributions = weeklyDistributions.filter(dist =>
+                    !(dist.month === month.name && dist.week === `Week ${weekNumber}`)
                 );
             }
+
+            // Update UI
+            updateWeekUI(monthNum, weekNumber, plannedArea);
+            updateSummaryTable();
+            updateSummaryCards();
+            updateTotalDistributedBadge();
+        }
+
+        function updateWeekUI(monthNum, weekNumber, plannedArea) {
+            const status = calculateStatus(plannedArea);
+            const statusClass = getStatusClass(status);
+            
+            const weekRow = $(`.planned-input[data-month="${monthNum}"][data-week="${weekNumber}"]`).closest('.week-combined-row');
+            
+            weekRow.find('.badge').removeClass('bg-secondary bg-success');
+            weekRow.find('.badge').addClass(statusClass).text(status);
+            
+            weekRow.find('.progress-bar')
+                .removeClass('bg-secondary bg-success')
+                .addClass(statusClass)
+                .css('width', totalArea > 0 ? Math.min((plannedArea / totalArea * 100), 100) + '%' : '0%');
+            
+            weekRow.find('.text-muted').last().text(totalArea > 0 ? ((plannedArea / totalArea * 100).toFixed(1)) + '%' : '0%');
+        }
+
+        function enhanceWeekInputValidation() {
+            $('.planned-input').off('input').on('input', function() {
+                validatePlannedInput(this);
+            });
+        }
+
+        function saveAllDistributions() {
+            let hasErrors = false;
+
+            // Validate all inputs first
+            $('.planned-input').each(function() {
+                if (!validatePlannedInput(this)) hasErrors = true;
+            });
+
+            if (hasErrors) {
+                showAlert('Please fix validation errors before saving', 'error');
+                return;
+            }
+
+            saveJSON();
+            showAlert('All distributions saved successfully!', 'success');
+        }
+
+        /* -------------------------------
+           SUMMARY & DATA MANAGEMENT
+        ------------------------------- */
+        function updateSummaryTable() {
+            $("#summaryTable").empty();
+            let totalPlanned = 0;
+
+            if (weeklyDistributions.length === 0) {
+                $("#summaryTable").append(`
+                <tr>
+                    <td colspan="8" class="text-center text-muted py-4">
+                        <i class="mdi mdi-calendar-blank me-2"></i>
+                        No distribution yet. Start by selecting quarters above.
+                    </td>
+                </tr>
+            `);
+            } else {
+                weeklyDistributions.forEach((dist, i) => {
+                    totalPlanned += dist.planned_area;
+                    const statusClass = getStatusClass(dist.status);
+
+                    $("#summaryTable").append(`
+                    <tr>
+                        <td class="d-none d-md-table-cell">${dist.year || preparationYear}</td>
+                        <td class="d-none d-md-table-cell">${dist.quarter}</td>
+                        <td>${dist.month}</td>
+                        <td>${dist.week}</td>
+                        <td class="d-none d-md-table-cell">${dist.range}</td>
+                        <td class="fw-bold text-primary">${dist.planned_area.toFixed(2)} ha</td>
+                        <td><span class="badge ${statusClass}">${dist.status}</span></td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-danger" onclick="removeDistribution(${i})">
+                                <i class="mdi mdi-delete"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `);
+                });
+            }
+
+            const overallCompletion = totalArea > 0 ? (totalPlanned / totalArea * 100) : 0;
+            $("#summaryTotal").text(totalPlanned.toFixed(2) + " ha");
+            $("#summaryCompletion").text(overallCompletion.toFixed(1) + "%");
+        }
+
+        function updateSummaryCards() {
+            const totalPlanned = weeklyDistributions.reduce((total, dist) => total + dist.planned_area, 0);
+            const completion = totalArea > 0 ? (totalPlanned / totalArea * 100) : 0;
+
+            $('#plannedAreaSummary').text(totalPlanned.toFixed(2));
+            $('#completionPercentage').text(completion.toFixed(1) + '%');
+        }
+
+        function removeDistribution(index) {
+            weeklyDistributions.splice(index, 1);
+            updateSummaryTable();
+            saveJSON();
+            updateSummaryCards();
+            renderWeeks();
+            showAlert('Distribution removed successfully!', 'info');
+        }
+
+        function saveJSON() {
+            const totalPlanned = weeklyDistributions.reduce((total, dist) => total + dist.planned_area, 0);
+            const overallCompletion = totalArea > 0 ? (totalPlanned / totalArea * 100) : 0;
+
+            const planData = {
+                preparation_year: preparationYear,
+                weekly_distribution: weeklyDistributions,
+                summary: {
+                    total_planned: totalPlanned,
+                    overall_completion: overallCompletion,
+                    updated_at: new Date().toISOString()
+                }
+            };
+
+            $("#plandivisionDetails").val(JSON.stringify(planData));
+            console.log('Saved plan data:', planData);
+            
+            // Update summary cards
+            updateSummaryCards();
+        }
+
+        function loadExistingDistribution() {
+            let existing = {!! json_encode($plan->plandivision_details ?? '[]') !!};
+            console.log('Loading existing distribution:', existing);
+
+            if (existing && typeof existing === 'object') {
+                if (existing.weekly_distribution && Array.isArray(existing.weekly_distribution)) {
+                    weeklyDistributions = existing.weekly_distribution.map(dist => ({
+                        year: dist.year || preparationYear,
+                        quarter: dist.quarter,
+                        month: dist.month,
+                        week: dist.week,
+                        range: dist.range,
+                        planned_area: parseFloat(dist.planned_area || dist.area || 0),
+                        status: dist.status || calculateStatus(parseFloat(dist.planned_area || dist.area || 0))
+                    }));
+                }
+
+                // Restore selections
+                weeklyDistributions.forEach(dist => {
+                    const quarterNum = parseInt(dist.quarter.replace('Q', ''));
+                    selectedQuarters.add(quarterNum);
+
+                    const monthNum = EC_MONTHS.findIndex(m => m.name === dist.month) + 1;
+                    if (monthNum > 0) selectedMonths.add(monthNum);
+                });
+
+                updateSummaryTable();
+                updateBadges();
+                updateSummaryCards();
+
+                if (selectedQuarters.size > 0) {
+                    $("#monthsSection").show();
+                    renderMonths();
+                }
+
+                if (selectedMonths.size > 0) {
+                    $("#weeksSection").show();
+                    renderWeeks();
+                }
+            }
+        }
+
+        /* -------------------------------
+           UTILITY FUNCTIONS
+        ------------------------------- */
+        function updateTotalDistributedBadge() {
+            const totalPlanned = weeklyDistributions.reduce((total, dist) => total + dist.planned_area, 0);
+            $('#totalDistributedBadge').text(totalPlanned.toFixed(2) + ' ha');
+        }
+
+        function updateBadges() {
+            $("#selectedQuartersBadge").text(selectedQuarters.size + " quarters");
+            $("#selectedMonthsBadge").text(selectedMonths.size + " months");
+            $("#selectedWeeksBadge").text(weeklyDistributions.length + " weeks");
+        }
+
+        function findQuarter(monthId) {
+            return Object.keys(EC_QUARTERS).find(q => EC_QUARTERS[q].includes(monthId));
         }
 
         function getWeekData(monthNum, weekNumber) {
@@ -878,93 +1045,14 @@
             return { range: `${start}-${end}` };
         }
 
-        function getWeeksForMonth(monthNum) {
-            const month = EC_MONTHS[monthNum - 1];
-            let weeks = [];
-            let start = 1;
-            let weekNumber = 1;
-
-            while (start <= month.days) {
-                let end = Math.min(start + 6, month.days);
-                weeks.push({ weekNumber, start, end });
-                start += 7;
-                weekNumber++;
-            }
-
-            return weeks;
-        }
-
-        function saveAllDistributions() {
-            let hasErrors = false;
-
-            // Validate all inputs first
-            $('.week-input').each(function() {
-                if (!validateWeekInput(this)) {
-                    hasErrors = true;
-                }
-            });
-
-            if (hasErrors) {
-                showAlert('Please fix validation errors before saving', 'error');
-                return;
-            }
-
-            // Update all week distributions from inputs
-            $('.week-input').each(function() {
-                const monthNum = parseInt($(this).data('month'));
-                const weekNumber = parseInt($(this).data('week'));
-                const area = parseFloat($(this).val()) || 0;
-
-                updateWeekDistribution(monthNum, weekNumber, area);
-            });
-
-            updateSummaryTable();
-            saveJSON();
-            updateAreaSummary();
-            showAlert('All distributions saved successfully for preparation year ' + preparationYear + '!', 'success');
-        }
-
-        // Update week distribution when input changes
-        $(document).on('input', '.week-input', function() {
-            const monthNum = parseInt($(this).data('month'));
-            const weekNumber = parseInt($(this).data('week'));
-            const area = parseFloat($(this).val()) || 0;
-
-            updateWeekDistribution(monthNum, weekNumber, area);
-            updateSummaryTable();
-            updateAreaSummary();
-        });
-
-        /* -------------------------------
-           UTILITY FUNCTIONS
-        ------------------------------- */
-        function updateTotalDistributedBadge() {
-            const totalDistributed = calculateTotalDistributedArea();
-            $('#totalDistributedBadge').text(totalDistributed.toFixed(2) + ' ha');
-        }
-
         function validateForm() {
             let isValid = true;
             const errors = [];
 
-            // Enhanced distribution validation
-            const distributedArea = calculateTotalDistributedArea();
-
-            if (distributedArea === 0) {
-                const proceed = confirm('No land preparation distribution has been planned for preparation year ' + preparationYear + '. Do you want to proceed without distribution?');
-                if (!proceed) {
-                    errors.push('Please add land preparation distribution or confirm to proceed without it');
-                    isValid = false;
-                }
-            } else if (distributedArea > totalArea) {
-                errors.push(`Distributed area (${distributedArea.toFixed(2)} ha) exceeds planting area (${totalArea.toFixed(2)} ha)`);
-                isValid = false;
-            }
-
             // Check for individual input errors
-            $('.week-input').each(function() {
+            $('.planned-input').each(function() {
                 if ($(this).hasClass('is-invalid')) {
-                    errors.push('Some week distributions have validation errors');
+                    errors.push('Some distributions have validation errors');
                     isValid = false;
                     return false; // break the loop
                 }
@@ -976,55 +1064,6 @@
             }
 
             return isValid;
-        }
-
-        function validateDistribution() {
-            const distributedArea = calculateTotalDistributedArea();
-            const plantingArea = parseFloat({{ $plan->area_to_plant }});
-
-            if (distributedArea === 0) {
-                // Allow submission with warning but don't block it
-                console.log('No distribution planned - this is allowed');
-                return true;
-            }
-
-            if (distributedArea > plantingArea) {
-                showAlert(`Distributed area (${distributedArea.toFixed(2)} ha) exceeds planting area (${plantingArea.toFixed(2)} ha)`, 'error');
-                return false;
-            }
-
-            return true;
-        }
-
-        function validateTotalDistribution() {
-            const distributedArea = calculateTotalDistributedArea();
-            const plantingArea = parseFloat({{ $plan->area_to_plant }});
-
-            if (distributedArea > plantingArea) {
-                $('.distribution-warning').remove();
-                $('#totalAreaDisplay').closest('.area-summary-card').after(`
-                <div class="distribution-warning alert alert-warning mt-2">
-                    <i class="mdi mdi-alert-circle-outline me-2"></i>
-                    Distributed area (${distributedArea.toFixed(2)} ha) exceeds planting area. Please adjust your distribution.
-                </div>
-            `);
-                // Disable submit button
-                $('#submitBtn').prop('disabled', true).addClass('btn-secondary').removeClass('btn-warning');
-                return false;
-            } else {
-                $('.distribution-warning').remove();
-                // Enable submit button
-                $('#submitBtn').prop('disabled', false).removeClass('btn-secondary').addClass('btn-warning');
-                return true;
-            }
-        }
-
-        function calculateTotalDistributedArea() {
-            let total = 0;
-            summaryRows.forEach(row => {
-                total += row.area;
-            });
-            return total;
         }
 
         function showValidationErrors(errors) {
@@ -1088,152 +1127,6 @@
             document.getElementById(toastId).addEventListener('hidden.bs.toast', function() {
                 this.remove();
             });
-        }
-
-        function updateSummaryTable() {
-            $("#summaryTable").empty();
-            let total = 0;
-
-            if (summaryRows.length === 0) {
-                $("#summaryTable").append(`
-                <tr>
-                    <td colspan="7" class="text-center text-muted py-4">
-                        <i class="mdi mdi-calendar-blank me-2"></i>
-                        No distribution yet. Start by selecting quarters above.
-                    </td>
-                </tr>
-            `);
-            } else {
-                summaryRows.forEach((row, i) => {
-                    total += row.area;
-                    $("#summaryTable").append(`
-                    <tr>
-                        <td class="d-none d-md-table-cell">${row.year || preparationYear}</td>
-                        <td class="d-none d-md-table-cell">${row.quarter}</td>
-                        <td>${row.month}</td>
-                        <td>${row.week}</td>
-                        <td class="d-none d-md-table-cell">${row.range}</td>
-                        <td class="fw-bold text-success">${row.area.toFixed(2)} ha</td>
-                        <td>
-                            <button class="btn btn-sm btn-outline-danger" onclick="removeRow(${i})">
-                                <i class="mdi mdi-delete"></i>
-                            </button>
-                        </td>
-                    </tr>
-                `);
-                });
-            }
-
-            $("#summaryTotal").text(total.toFixed(2) + " ha");
-        }
-
-        function removeRow(i) {
-            summaryRows.splice(i, 1);
-            updateSummaryTable();
-            saveJSON();
-            updateAreaSummary();
-            showAlert('Distribution removed successfully!', 'info');
-        }
-
-        function saveJSON() {
-            const planData = {
-                preparation_year: preparationYear,
-                weekly_distribution: summaryRows,
-                total_distributed: calculateTotalDistributedArea(),
-                remaining_area: totalArea - calculateTotalDistributedArea(),
-                updated_at: new Date().toISOString()
-            };
-
-            $("#plandivisionDetails").val(JSON.stringify(planData));
-            console.log('Saved plandivision_details for preparation year ' + preparationYear + ':', planData);
-        }
-
-        function loadExistingDistribution() {
-            let existing = {!! json_encode($plan->plandivision_details ?? '[]') !!};
-
-            console.log('Loading existing distribution:', existing);
-
-            if (existing && typeof existing === 'object') {
-                // Handle both array and object formats
-                if (Array.isArray(existing)) {
-                    summaryRows = existing.map(row => ({
-                        year: row.year || preparationYear,
-                        quarter: row.quarter,
-                        month: row.month,
-                        week: row.week,
-                        range: row.range || row.dates || '',
-                        area: parseFloat(row.area) || 0
-                    }));
-                } else if (existing.weekly_distribution) {
-                    summaryRows = existing.weekly_distribution.map(row => ({
-                        year: row.year || preparationYear,
-                        quarter: row.quarter,
-                        month: row.month,
-                        week: row.week,
-                        range: row.range || row.dates || '',
-                        area: parseFloat(row.area) || 0
-                    }));
-                }
-
-                // Restore selections
-                summaryRows.forEach(row => {
-                    const quarterNum = parseInt(row.quarter.replace('Q', ''));
-                    selectedQuarters.add(quarterNum);
-
-                    const monthNum = EC_MONTHS.findIndex(m => m.name === row.month) + 1;
-                    if (monthNum > 0) selectedMonths.add(monthNum);
-                });
-
-                updateSummaryTable();
-                updateBadges();
-
-                if (selectedQuarters.size > 0) {
-                    $("#monthsSection").show();
-                    renderMonths();
-                }
-
-                if (selectedMonths.size > 0) {
-                    $("#weeksSection").show();
-                    renderWeeks();
-                }
-
-                updateAreaSummary();
-            }
-        }
-
-        function updateBadges() {
-            $("#selectedQuartersBadge").text(selectedQuarters.size + " quarters");
-            $("#selectedMonthsBadge").text(selectedMonths.size + " months");
-            $("#selectedWeeksBadge").text(summaryRows.length + " weeks");
-        }
-
-        function updateAreaSummary() {
-            const distributed = calculateTotalDistributedArea();
-            const remaining = totalArea - distributed;
-
-            $("#distributedAreaDisplay").text(distributed.toFixed(2) + " ha");
-            $("#remainingAreaDisplay").text(remaining.toFixed(2) + " ha");
-
-            const progress = totalArea > 0 ? (distributed / totalArea * 100) : 0;
-            $("#distributionProgress").css('width', progress + '%');
-        }
-
-        function calculateQuarterDistributedArea(quarter) {
-            const quarterName = `Q${quarter}`;
-            return summaryRows
-                .filter(row => row.quarter === quarterName)
-                .reduce((total, row) => total + row.area, 0);
-        }
-
-        function calculateMonthDistributedArea(month) {
-            const monthName = EC_MONTHS[month - 1].name;
-            return summaryRows
-                .filter(row => row.month === monthName)
-                .reduce((total, row) => total + row.area, 0);
-        }
-
-        function findQuarter(monthId) {
-            return Object.keys(EC_QUARTERS).find(q => EC_QUARTERS[q].includes(monthId));
         }
     </script>
 
@@ -1302,6 +1195,26 @@
             min-height: 80px;
         }
 
+        .summary-card {
+            padding: 1.5rem;
+            border-radius: 10px;
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .summary-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .summary-value {
+            margin: 0.5rem 0;
+        }
+
+        .summary-label {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
         /* Quarter and Month Card Styles */
         .quarter-card, .month-card {
             transition: all 0.3s ease;
@@ -1327,28 +1240,43 @@
             transform: scale(1.2);
         }
 
-        .week-input:focus {
-            border-color: #28a745;
-            box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
+        /* Combined week row styling */
+        .week-combined-row {
+            transition: all 0.3s ease;
+            border-left: 4px solid #007bff;
+        }
+
+        .week-combined-row:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .planned-input:focus {
+            border-color: #007bff;
+            box-shadow: 0 0 0 0.2rem rgba(0,123,255,0.25);
         }
 
         .month-section {
             border-left: 4px solid #007bff !important;
         }
 
-        .week-row {
-            border-bottom: 1px solid #e9ecef;
-            padding: 0.5rem 0;
-        }
-
-        .week-row:last-child {
-            border-bottom: none;
-        }
-
         .btn-xs {
             padding: 0.25rem 0.5rem;
             font-size: 0.75rem;
         }
+
+        /* Status badge colors */
+        .badge.bg-success {
+            background-color: #198754 !important;
+        }
+
+        .badge.bg-secondary {
+            background-color: #6c757d !important;
+        }
+
+        /* Progress bar colors */
+        .progress-bar.bg-success { background-color: #198754 !important; }
+        .progress-bar.bg-secondary { background-color: #6c757d !important; }
 
         /* Mobile-first responsive adjustments */
         @media (max-width: 576px) {
@@ -1383,6 +1311,12 @@
             .btn-lg {
                 padding: 0.75rem 1rem;
                 font-size: 0.9rem;
+            }
+
+            .week-combined-row .col-md-3,
+            .week-combined-row .col-md-5,
+            .week-combined-row .col-md-4 {
+                margin-bottom: 1rem;
             }
         }
 
@@ -1440,14 +1374,12 @@
             min-height: 20px;
         }
 
-        .week-input.is-valid {
+        .planned-input.is-valid {
             border-color: #28a745;
-            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3e%3cpath fill='%2328a745' d='M2.3 6.73L.6 4.53c-.4-1.04.46-1.4 1.1-.8l1.1 1.4 3.4-3.8c.6-.63 1.6-.27 1.2.7l-4 4.6c-.43.5-.8.4-1.1.1z'/%3e%3c/svg%3e");
         }
 
-        .week-input.is-invalid {
+        .planned-input.is-invalid {
             border-color: #dc3545;
-            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' width='12' height='12' fill='none' stroke='%23dc3545'%3e%3ccircle cx='6' cy='6' r='4.5'/%3e%3cpath d='m5.8 3.6.4.4.4-.4'/%3e%3cpath d='M6 7v2.5'/%3e%3c/svg%3e");
         }
     </style>
 </x-layout>

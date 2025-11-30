@@ -78,6 +78,80 @@ class KebeleCropPlanController extends Controller
     }
 
 
+    public function rawwiiqonnaa()
+    {
+        $user = Auth::user();
+
+        $cropPlans = KebeleCropPlan::with(['cropType', 'crop'])
+            ->where('kebele_id', $user->kebele_id)
+            ->orderBy('year')
+            ->orderBy('season')
+            ->orderBy('croptype_id')
+            ->get();
+
+        // Calculate totals
+        $grandTotalArea = $cropPlans->sum('area_to_plant');
+        $grandTotalYield = $cropPlans->sum('expected_yield');
+
+        // Calculate yearly totals
+        $yearlyTotals = [];
+        foreach ($cropPlans->groupBy('year') as $year => $plansByYear) {
+            $yearlyTotals[$year] = [
+                'total_area' => $plansByYear->sum('area_to_plant'),
+                'total_yield' => $plansByYear->sum('expected_yield'),
+            ];
+        }
+
+        // Get crop types for the productivity comparison
+        $cropTypes = \App\Models\CropType::all(); // Adjust this based on your model
+
+        return view('sector.crop_plans.raawwiiqonnaa',
+            compact(
+                'cropPlans',
+                'yearlyTotals',
+                'grandTotalArea',
+                'grandTotalYield',
+                'cropTypes'));
+    }
+
+
+    public function rawwiiomisha()
+    {
+        $user = Auth::user();
+
+        $cropPlans = KebeleCropPlan::with(['cropType', 'crop'])
+            ->where('kebele_id', $user->kebele_id)
+            ->orderBy('year')
+            ->orderBy('season')
+            ->orderBy('croptype_id')
+            ->get();
+
+        // Calculate totals
+        $grandTotalArea = $cropPlans->sum('area_to_plant');
+        $grandTotalYield = $cropPlans->sum('expected_yield');
+
+        // Calculate yearly totals
+        $yearlyTotals = [];
+        foreach ($cropPlans->groupBy('year') as $year => $plansByYear) {
+            $yearlyTotals[$year] = [
+                'total_area' => $plansByYear->sum('area_to_plant'),
+                'total_yield' => $plansByYear->sum('expected_yield'),
+            ];
+        }
+
+        // Get crop types for the productivity comparison
+        $cropTypes = \App\Models\CropType::all(); // Adjust this based on your model
+
+        return view('sector.crop_plans.rawwiiomisha',
+            compact(
+                'cropPlans',
+                'yearlyTotals',
+                'grandTotalArea',
+                'grandTotalYield',
+                'cropTypes'));
+    }
+
+
     public function kebelefertlizer()
     {
         $user = Auth::user();
@@ -272,6 +346,209 @@ class KebeleCropPlanController extends Controller
         $avgPerHectare = $totalArea > 0 ? $totalKg / $totalArea : 0;
 
         return view('sector.fertilizers.index', compact(
+            'groupedData',
+            'totalFertilizerByUnit',
+            'totalArea',
+            'avgPerHectare',
+            'cropPlans',
+            'yearTotals'
+        ));
+    }
+
+     public function fertlizerachivement()
+    {
+        $user = Auth::user();
+
+        $cropPlans = KebeleCropPlan::with(['cropType', 'crop'])
+            ->where('kebele_id', $user->kebele_id)
+            ->orderBy('year', 'desc')
+            ->orderBy('season')
+            ->orderBy('croptype_id')
+            ->orderBy('crop_id')
+            ->get();
+
+        // Group data by Year -> Season -> Crop Type
+        $groupedData = [];
+        $totalFertilizerByUnit = []; // Track totals by unit
+        $totalArea = 0;
+
+        // Calculate year totals first
+        $yearTotals = [];
+        $yearFertilizerByUnit = []; // Track year totals by unit
+
+        foreach ($cropPlans as $plan) {
+            $year = $plan->year;
+            $area = floatval($plan->area_to_plant);
+
+            if (!isset($yearTotals[$year])) {
+                $yearTotals[$year] = [
+                    'total_area' => 0,
+                    'fertilizer_by_unit' => []
+                ];
+            }
+            $yearTotals[$year]['total_area'] += $area;
+        }
+
+        // Fetch fertilizer names from database
+        try {
+            $fertilizerTypes = \App\Models\FertilizerType::pluck('name', 'id')->toArray();
+            $fertilizers = \App\Models\Fertilizer::pluck('name', 'id')->toArray();
+        } catch (\Exception $e) {
+            // Fallback if models don't exist
+            $fertilizerTypes = [];
+            $fertilizers = [];
+        }
+
+        foreach ($cropPlans as $plan) {
+            $year = $plan->year;
+            $season = $plan->season;
+            $cropType = $plan->cropType->name ?? 'Unknown Type';
+            $crop = $plan->crop->name ?? 'Unknown Crop';
+
+            // Create unique key for year and season combination
+            $yearSeasonKey = $year . ' - ' . $season;
+
+            // Initialize year-season if not exists
+            if (!isset($groupedData[$yearSeasonKey])) {
+                $groupedData[$yearSeasonKey] = [
+                    'year' => $year,
+                    'season' => $season,
+                    'total_area' => 0,
+                    'fertilizer_by_unit' => [], // Track fertilizer by unit
+                    'crop_types' => []
+                ];
+            }
+
+            // Initialize crop type if not exists
+            if (!isset($groupedData[$yearSeasonKey]['crop_types'][$cropType])) {
+                $groupedData[$yearSeasonKey]['crop_types'][$cropType] = [
+                    'total_area' => 0,
+                    'fertilizer_by_unit' => [], // Track fertilizer by unit
+                    'crops' => [],
+                    'fertilizers' => []
+                ];
+            }
+
+            // Add individual crop to the crop type
+            $cropKey = $crop . ' (Plan: ' . $plan->id . ')';
+
+            $groupedData[$yearSeasonKey]['crop_types'][$cropType]['crops'][$cropKey] = [
+                'crop_name' => $crop,
+                'plan_id' => $plan->id,
+                'area' => floatval($plan->area_to_plant),
+                'fertilizers' => [],
+                'fertilizer_by_unit' => [] // Track fertilizer by unit for each crop
+            ];
+
+            // Calculate fertilizer details for this plan
+            $fertilizerDetails = $plan->fertilizer_details ?? [];
+            $planFertilizerByUnit = []; // Track fertilizer by unit for this plan
+
+            if (is_array($fertilizerDetails)) {
+                foreach ($fertilizerDetails as $fert) {
+                    $fertilizerTypeId = $fert['fertilizer_type_id'] ?? null;
+                    $fertilizerId = $fert['fertilizer_id'] ?? null;
+                    $amount = floatval($fert['amount'] ?? 0);
+                    $unit = $fert['unit'] ?? 'kg';
+
+                    // Get actual fertilizer names
+                    $fertTypeName = $fertilizerTypes[$fertilizerTypeId] ?? "Type #{$fertilizerTypeId}";
+                    $fertName = $fertilizers[$fertilizerId] ?? "Fertilizer #{$fertilizerId}";
+
+                    // Create a unique key for this fertilizer combination
+                    $fertKey = $fertilizerTypeId . '_' . $fertilizerId . '_' . $unit;
+
+                    // Add to crop's fertilizer summary
+                    if (!isset($groupedData[$yearSeasonKey]['crop_types'][$cropType]['crops'][$cropKey]['fertilizers'][$fertKey])) {
+                        $groupedData[$yearSeasonKey]['crop_types'][$cropType]['crops'][$cropKey]['fertilizers'][$fertKey] = [
+                            'fertilizer_type_id' => $fertilizerTypeId,
+                            'fertilizer_id' => $fertilizerId,
+                            'amount' => 0,
+                            'unit' => $unit,
+                            'fertilizer_name' => $fertName,
+                            'fertilizer_type_name' => $fertTypeName
+                        ];
+                    }
+
+                    $groupedData[$yearSeasonKey]['crop_types'][$cropType]['crops'][$cropKey]['fertilizers'][$fertKey]['amount'] += $amount;
+
+                    // Add to crop's fertilizer by unit
+                    if (!isset($groupedData[$yearSeasonKey]['crop_types'][$cropType]['crops'][$cropKey]['fertilizer_by_unit'][$unit])) {
+                        $groupedData[$yearSeasonKey]['crop_types'][$cropType]['crops'][$cropKey]['fertilizer_by_unit'][$unit] = 0;
+                    }
+                    $groupedData[$yearSeasonKey]['crop_types'][$cropType]['crops'][$cropKey]['fertilizer_by_unit'][$unit] += $amount;
+
+                    // Add to crop type's fertilizer summary
+                    if (!isset($groupedData[$yearSeasonKey]['crop_types'][$cropType]['fertilizers'][$fertKey])) {
+                        $groupedData[$yearSeasonKey]['crop_types'][$cropType]['fertilizers'][$fertKey] = [
+                            'fertilizer_type_id' => $fertilizerTypeId,
+                            'fertilizer_id' => $fertilizerId,
+                            'amount' => 0,
+                            'unit' => $unit,
+                            'fertilizer_name' => $fertName,
+                            'fertilizer_type_name' => $fertTypeName
+                        ];
+                    }
+
+                    $groupedData[$yearSeasonKey]['crop_types'][$cropType]['fertilizers'][$fertKey]['amount'] += $amount;
+
+                    // Add to crop type's fertilizer by unit
+                    if (!isset($groupedData[$yearSeasonKey]['crop_types'][$cropType]['fertilizer_by_unit'][$unit])) {
+                        $groupedData[$yearSeasonKey]['crop_types'][$cropType]['fertilizer_by_unit'][$unit] = 0;
+                    }
+                    $groupedData[$yearSeasonKey]['crop_types'][$cropType]['fertilizer_by_unit'][$unit] += $amount;
+
+                    // Add to year-season's fertilizer by unit
+                    if (!isset($groupedData[$yearSeasonKey]['fertilizer_by_unit'][$unit])) {
+                        $groupedData[$yearSeasonKey]['fertilizer_by_unit'][$unit] = 0;
+                    }
+                    $groupedData[$yearSeasonKey]['fertilizer_by_unit'][$unit] += $amount;
+
+                    // Add to year's fertilizer by unit
+                    if (!isset($yearTotals[$year]['fertilizer_by_unit'][$unit])) {
+                        $yearTotals[$year]['fertilizer_by_unit'][$unit] = 0;
+                    }
+                    $yearTotals[$year]['fertilizer_by_unit'][$unit] += $amount;
+
+                    // Add to grand total by unit
+                    if (!isset($totalFertilizerByUnit[$unit])) {
+                        $totalFertilizerByUnit[$unit] = 0;
+                    }
+                    $totalFertilizerByUnit[$unit] += $amount;
+
+                    // Track for this plan
+                    if (!isset($planFertilizerByUnit[$unit])) {
+                        $planFertilizerByUnit[$unit] = 0;
+                    }
+                    $planFertilizerByUnit[$unit] += $amount;
+                }
+            }
+
+            // Update totals
+            $area = floatval($plan->area_to_plant);
+
+            // Update crop type totals
+            $groupedData[$yearSeasonKey]['crop_types'][$cropType]['total_area'] += $area;
+
+            // Update year-season totals
+            $groupedData[$yearSeasonKey]['total_area'] += $area;
+
+            // Update grand totals
+            $totalArea += $area;
+        }
+
+        // Add year totals to grouped data for display
+        foreach ($groupedData as $yearSeasonKey => $yearSeasonData) {
+            $year = $yearSeasonData['year'];
+            $groupedData[$yearSeasonKey]['year_total_area'] = $yearTotals[$year]['total_area'] ?? 0;
+            $groupedData[$yearSeasonKey]['year_fertilizer_by_unit'] = $yearTotals[$year]['fertilizer_by_unit'] ?? [];
+        }
+
+        // Calculate averages (using kg for consistency, or you can calculate per unit)
+        $totalKg = $totalFertilizerByUnit['kg'] ?? 0;
+        $avgPerHectare = $totalArea > 0 ? $totalKg / $totalArea : 0;
+
+        return view('sector.fertilizers.fertlizerachivement', compact(
             'groupedData',
             'totalFertilizerByUnit',
             'totalArea',
@@ -489,6 +766,26 @@ class KebeleCropPlanController extends Controller
     }
 
 
+     public function achivement($id)
+    {
+        $user = Auth::user();
+
+        // Retrieve the plan; ensure user can only edit plans in their sector
+        $plan = KebeleCropPlan::where('id', $id)
+            ->where('kebele_id', $user->kebele_id)
+            ->firstOrFail();
+
+        $cropTypes = CropType::with('crops')->get();
+
+        // Transform the single plan data for the table structure
+        $transformedPlans = $this->transformPlanDataForTable($plan);
+
+        return view('sector.crop_plans.achivement', compact('plan', 'cropTypes', 'transformedPlans'));
+    }
+
+    
+
+
     private function transformPlanDataForTable($plan)
     {
         // Extract timeline data from plan division details
@@ -653,6 +950,23 @@ class KebeleCropPlanController extends Controller
 
 
 // production division
+
+    public function productionaachivement($id)
+    {
+        $user = Auth::user();
+
+        // Retrieve the plan; ensure user can only edit plans in their sector
+        $plan = KebeleCropPlan::where('id', $id)
+            ->where('kebele_id', $user->kebele_id)
+            ->firstOrFail();
+
+        $cropTypes = CropType::with('crops')->get();
+
+        // Transform the single plan data for production planning table structure
+        $transformedPlans = $this->transformPlanDataForProductionTable($plan);
+
+        return view('sector.crop_plans.productionaachivement', compact('plan', 'cropTypes', 'transformedPlans'));
+    }
 
     public function productionactivityplan($id)
     {
@@ -1747,6 +2061,25 @@ class KebeleCropPlanController extends Controller
 
         return view('sector.fertilizers.fertilizerplan', compact('plan', 'fertilizerTypes', 'transformedFertilizerPlans'));
     }
+
+     public function fertilizerachivement($id)
+    {
+        $user = Auth::user();
+
+        // Retrieve the plan; ensure user can only edit plans in their sector
+        $plan = KebeleCropPlan::where('id', $id)
+            ->where('kebele_id', $user->kebele_id)
+            ->firstOrFail();
+
+        $fertilizerTypes = FertilizerType::with('fertilizers')->get();
+
+        // Transform the single plan data for fertilizer distribution table
+        $transformedFertilizerPlans = $this->transformFertilizerPlanDataForTable($plan);
+
+        return view('sector.fertilizers.fertilizerachivement', compact('plan', 'fertilizerTypes', 'transformedFertilizerPlans'));
+    }
+
+    
 
     private function transformFertilizerPlanDataForTable($plan)
     {

@@ -66,12 +66,20 @@
                  <li>
                     <span class="caret"><i class="fa-solid fa-folder folder-icon"></i><span class="sidebar-text">{{ __('Raawwii') }}</span></span>
                    <ul>
+                   
                                         <li><i class="fa-regular fa-file file-icon"></i><a
-                                                href="{{ url('raawwii-woligala') }}"><span class="sidebar-text">{{ __('Hojjatamaa Jira') }}</span></a></li>
-                                        
-                                        
+                                                href="{{ url('sector/crop-rawwiiqonnaa') }}"><span class="sidebar-text">{{ __('Rawwii Qophii Qonnaa') }}</span></a></li> 
 
-                                        
+                                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                                href="{{ url('sector/crop-rawwiiomisha') }}"><span class="sidebar-text">{{ __('Rawwii Oomisha') }}</span></a></li> 
+
+                                                
+                                        <li><i class="fa-regular fa-file file-icon"></i><a
+                                                href="{{ url('sector/fertilizer-achivements') }}"><span class="sidebar-text">{{ __('Rawwii Callaguddiftuu') }}</span></a></li> 
+
+                                            
+                                               
+                                                                                      
                                     </ul>
                 </li>
 

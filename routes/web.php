@@ -408,7 +408,10 @@ Route::delete('/enterprise-work/{id}', [EnterpriseWorkController::class, 'destro
         Route::get('/profile/security/{uuid}', [UserController::class, 'changePasswordForm'])->name('users.password');
 
         Route::get('crop-plans', [KebeleCropPlanController::class, 'index'])->name('crop-plans.index');
+        Route::get('crop-rawwiiqonnaa', [KebeleCropPlanController::class, 'rawwiiqonnaa'])->name('crop-plans.rawwiiqonnaa');
+        Route::get('crop-rawwiiomisha', [KebeleCropPlanController::class, 'rawwiiomisha'])->name('crop-plans.rawwiiomisha');
         Route::get('crop-fertilizer', [KebeleCropPlanController::class, 'kebelefertlizer'])->name('fertlizer-plans.index');
+        Route::get('fertilizer-achivements', [KebeleCropPlanController::class, 'fertlizerachivement'])->name('fertlizer-plans.achivement');
         Route::get('crop-plans/create', [KebeleCropPlanController::class, 'create'])->name('crop-plans.create');
         Route::post('crop-plans/store', [KebeleCropPlanController::class, 'store'])->name('crop-plans.store');
         Route::get('crop-plans/{id}/edit', [KebeleCropPlanController::class, 'edit'])->name('crop-plans.editcrop');
@@ -416,7 +419,9 @@ Route::delete('/enterprise-work/{id}', [EnterpriseWorkController::class, 'destro
 
 
         Route::get('activityplan-plans/{id}', [KebeleCropPlanController::class, 'activityplan'])->name('crop-plans.activityplan');
+        Route::get('achivement-land-plans/{id}', [KebeleCropPlanController::class, 'achivement'])->name('crop-plans.achivement');
         Route::get('production/activityplan-plans/{id}', [KebeleCropPlanController::class, 'productionactivityplan'])->name('crop-plans.productionactivityplan');
+        Route::get('production/achivement-plans/{id}', [KebeleCropPlanController::class, 'productionaachivement'])->name('crop-plans.productionachivement');
 
         Route::get('crop-plans/{id}/edit/fertilizer', [KebeleCropPlanController::class, 'editfertilizer'])->name('crop-plans.editfertilizer');
         Route::delete('crop-plans/{id}', [KebeleCropPlanController::class, 'destroy'])->name('crop-plans.destroy');
@@ -430,6 +435,7 @@ Route::delete('/enterprise-work/{id}', [EnterpriseWorkController::class, 'destro
 
           // Fertilizer distribution routes
         Route::get('/fertilizer-plans/{id}/edit', [KebeleCropPlanController::class, 'fertilizerPlan'])->name('fertilizer-plans.edit');
+        Route::get('/fertilizer-achivement/{id}/edit', [KebeleCropPlanController::class, 'fertilizerachivement'])->name('fertilizer-achivement.edit');
         Route::put('/fertilizer-plans/{id}', [KebeleCropPlanController::class, 'updateFertilizerDistribution'])->name('fertilizer-plans.update');
             // OR if you want CSV
             Route::get('/crop-plans/export/csv', [KebeleCropPlanController::class, 'exportCsv'])->name('crop-plans.export.csv');
