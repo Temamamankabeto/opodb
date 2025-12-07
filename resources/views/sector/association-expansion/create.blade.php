@@ -81,27 +81,27 @@
                                             <div class="col-12 type-1-fields" style="display: none;">
                                                 <div class="row g-2">
                                                     <div class="col-12">
-                                                        <label class="form-label small">Number of Number <span class="text-danger">*</span></label>
+                                                        <label class="form-label small">Woldaa <span class="text-danger">*</span></label>
                                                         <input type="number" class="form-control association-number-of-number"
                                                             placeholder="0" min="0" disabled>
                                                     </div>
                                                     <div class="col-12">
-                                                        <label class="form-label small">Number of Members <span class="text-danger">*</span></label>
+                                                        <label class="form-label small">Miseensa<span class="text-danger">*</span></label>
                                                         <input type="number" class="form-control association-members"
                                                             placeholder="0" min="0" disabled>
                                                     </div>
                                                     <div class="col-12">
-                                                        <label class="form-label small">Total Capital (ETB) <span class="text-danger">*</span></label>
+                                                        <label class="form-label small">Kaappitaala (ETB) <span class="text-danger">*</span></label>
                                                         <input type="number" step="0.01" class="form-control association-capital"
                                                             placeholder="0.00" min="0" disabled>
                                                     </div>
                                                     <div class="col-12">
-                                                        <label class="form-label small">Fertilizer Loans Taken (ETB) <span class="text-danger">*</span></label>
+                                                        <label class="form-label small">Liqii Xaaóo Fudhatame (ETB) <span class="text-danger">*</span></label>
                                                         <input type="number" step="0.01" class="form-control association-loans-taken"
                                                             placeholder="0.00" min="0" disabled>
                                                     </div>
                                                     <div class="col-12">
-                                                        <label class="form-label small">Fertilizer Loan Repayment (ETB) <span class="text-danger">*</span></label>
+                                                        <label class="form-label small">Liqii Xaaóo kaaffalame (ETB) <span class="text-danger">*</span></label>
                                                         <input type="number" step="0.01" class="form-control association-loan-repayment"
                                                             placeholder="0.00" min="0" disabled>
                                                     </div>
@@ -112,7 +112,7 @@
                                             <div class="col-12 other-type-fields" style="display: none;">
                                                 <div class="row g-2">
                                                     <div class="col-12">
-                                                        <label class="form-label small">Number of Number <span class="text-danger">*</span></label>
+                                                        <label class="form-label small">Woldaalee <span class="text-danger">*</span></label>
                                                         <input type="number" class="form-control association-number-of-number"
                                                             placeholder="0" min="0" disabled>
                                                     </div>

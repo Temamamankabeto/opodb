@@ -1,7 +1,7 @@
 <x-layout>
     <div class="container-fluid py-4">
         <h2 class="mb-4 text-primary fw-bold">
-            <i class="bi bi-graph-up-arrow me-2"></i>Association Expansion Plans
+            <i class="bi bi-graph-up-arrow me-2"></i>Farmers Cooprative Plan
         </h2>
 
         {{-- Flash message --}}
@@ -16,7 +16,7 @@
         <div class="card mb-4 shadow-sm border-0 rounded-3">
             <div class="card-body d-flex justify-content-between align-items-center">
                 <div>
-                    <h5 class="fw-bold text-primary mb-1">Total Association Expansion Plans</h5>
+                    <h5 class="fw-bold text-primary mb-1">Total Farmers Cooprative Plan</h5>
                     <p class="mb-0 text-muted">{{ $plans->count() }} Records across
                         {{ $plans->groupBy('year')->count() }} years</p>
                 </div>
