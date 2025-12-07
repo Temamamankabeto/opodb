@@ -139,12 +139,12 @@ Route::middleware([SecurityHeaders::class])->group(function () {
             Route::post('/livestock_product/update/{id}', [LivestockProductController::class, 'update'])->name('livestock_product.update');
             Route::get('/livestock_product/delete/{id}', [LivestockProductController::class, 'destroy'])->name('livestock_product.delete');
 
-            Route::get('/naturals', [NaturalResourceController::class, 'index'])->name('naturals.index');
-            Route::get('/naturals/create', [NaturalResourceController::class, 'create'])->name('naturals.create');
-            Route::post('/naturals/store', [NaturalResourceController::class, 'store'])->name('naturals.store');
-            Route::get('/naturals/edit/{id}', [NaturalResourceController::class, 'edit'])->name('naturals.edit');
-            Route::post('/naturals/update/{id}', [NaturalResourceController::class, 'update'])->name('natural.update');
-            Route::get('/naturals/delete/{id}', [NaturalResourceController::class, 'destroy'])->name('naturals.delete');
+       Route::get('/naturals', [NaturalResourceController::class, 'index'])->name('naturals.index');
+Route::get('/naturals/create', [NaturalResourceController::class, 'create'])->name('naturals.create');
+Route::post('/naturals/store', [NaturalResourceController::class, 'store'])->name('naturals.store');
+Route::get('/naturals/edit/{id}', [NaturalResourceController::class, 'edit'])->name('naturals.edit');
+Route::put('/naturals/update/{id}', [NaturalResourceController::class, 'update'])->name('naturals.update'); // Changed to PUT
+Route::delete('/naturals/delete/{id}', [NaturalResourceController::class, 'destroy'])->name('naturals.destroy'); // Changed to DELETE
 
             Route::get('/institutions', [InstitutionController::class, 'index'])->name('institutions.index');
 Route::get('/institutions/create', [InstitutionController::class, 'create'])->name('institutions.create');

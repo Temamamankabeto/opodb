@@ -1,115 +1,138 @@
 <x-layout>
-    <div class="container py-4">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h3 class="mb-0">
-                <i class="bi bi-plus-circle text-success me-2"></i>Natural Resource Plan
-            </h3>
-            <div class="badge bg-light text-dark fs-6">
-                <i class="bi bi-info-circle me-1"></i>
-                All fields marked with <span class="text-danger">*</span> are required
-            </div>
-        </div>
-
-        @if ($errors->any())
-            <div class="alert alert-danger">
-                <ul class="mb-0">
-                    @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
-        @endif
-
-        <form action="{{ route('sector.natural-plans.store') }}" method="POST" id="mainForm">
-            @csrf
-
-            <!-- Year Selection -->
-            <div class="card border-0 shadow-sm mb-4">
-                <div class="card-header bg-primary text-white py-3">
-                    <h5 class="mb-0"><i class="bi bi-calendar3 me-2"></i>Year Selection</h5>
+    @section('title', 'Natural Resource Plan')
+    
+    <div class="content-header">
+        <!-- Content Header -->
+        <section class="content-header">
+            <div class="container-fluid">
+                <div class="row mb-2">
+                    <div class="col-sm-6">
+                        <h1>
+                            <i class="fas fa-tree text-success mr-2"></i>
+                            Natural Resource Plan
+                        </h1>
+                    </div>
+                    <div class="col-sm-6">
+                        
+                    </div>
                 </div>
-                <div class="card-body p-4">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <label class="form-label fw-semibold">Year <span class="text-danger">*</span></label>
-                            <select name="year" class="form-select" id="yearSelect" required>
-                                <option value="">-- Select Year --</option>
-                                @foreach ($years as $year)
-                                    <option value="{{ $year }}" {{ old('year') == $year ? 'selected' : '' }}>
-                                        {{ $year }} EC
-                                    </option>
-                                @endforeach
-                            </select>
-                            @error('year')
-                                <div class="text-danger small mt-1">{{ $message }}</div>
-                            @enderror
+            </div>
+        </section>
+
+        <!-- Main content -->
+        <section class="content">
+            <div class="container-fluid">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h3 class="mb-0">
+                        <i class="fas fa-plus-circle text-success mr-2"></i>Natural Resource Plan
+                    </h3>
+                    <div class="badge bg-light text-dark fs-6">
+                        <i class="fas fa-info-circle mr-1"></i>
+                        All fields marked with <span class="text-danger">*</span> are required
+                    </div>
+                </div>
+
+                @if ($errors->any())
+                    <div class="alert alert-danger">
+                        <ul class="mb-0">
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
+
+                <form action="{{ route('sector.natural-plans.store') }}" method="POST" id="mainForm">
+                    @csrf
+
+                    <!-- Year Selection -->
+                    <div class="card mb-4">
+                        <div class="card-header bg-primary text-white py-3">
+                            <h5 class="mb-0"><i class="fas fa-calendar-alt mr-2"></i>Year Selection</h5>
                         </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Natural Resources -->
-            <div class="card border-0 shadow-sm mb-4">
-                <div class="card-header bg-success text-white py-3">
-                    <h5 class="mb-0"><i class="bi bi-tree me-2"></i>Natural Resources</h5>
-                </div>
-                <div class="card-body p-4">
-                    <div class="alert alert-info py-2 mb-3">
-                        <i class="bi bi-info-circle me-2"></i>
-                        Select at least one resource and enter its amount and unit.
-                    </div>
-                    <div class="row g-3" id="resourcesContainer">
-                        @foreach ($natural as $resource)
-                            <div class="col-md-6">
-                                <div class="card border resource-item">
-                                    <div class="card-body">
-                                        <div class="form-check mb-3">
-                                            <input class="form-check-input resource-checkbox" type="checkbox"
-                                                value="{{ $resource->name }}" 
-                                                id="resource-{{ $resource->id }}"
-                                                data-resource-id="{{ $resource->id }}">
-                                            <label class="form-check-label fw-semibold"
-                                                for="resource-{{ $resource->id }}">
-                                                {{ $resource->name }}
-                                            </label>
-                                        </div>
-
-                                        <div class="resource-fields" style="display: none;">
-                                            <label class="form-label small">Amount <span class="text-danger">*</span></label>
-                                            <input type="number" step="0.01" class="form-control resource-amount"
-                                                placeholder="0.00" min="0" disabled>
-
-                                            <label class="form-label small mt-2">Unit <span class="text-danger">*</span></label>
-                                            <select class="form-select resource-unit" disabled>
-                                                <option value="">-- Select Unit --</option>
-                                                <option value="M">M</option>
-                                                <option value="M2">M2</option>
-                                                <option value="hec">hec</option>
-                                                <option value="Lakk">Lakk</option>
-                                                 
-                                            </select>
-                                        </div>
-                                    </div>
+                        <div class="card-body p-4">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <label class="form-label font-weight-semibold">Year <span class="text-danger">*</span></label>
+                                    <select name="year" class="form-control" id="yearSelect" required>
+                                        <option value="">-- Select Year --</option>
+                                        @foreach ($years as $year)
+                                            <option value="{{ $year }}" {{ old('year') == $year ? 'selected' : '' }}>
+                                                {{ $year }} EC
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    @error('year')
+                                        <div class="text-danger small mt-1">{{ $message }}</div>
+                                    @enderror
                                 </div>
                             </div>
-                        @endforeach
+                        </div>
                     </div>
-                    @error('natural_data')
-                        <div class="text-danger small mt-2">{{ $message }}</div>
-                    @enderror
-                    <input type="hidden" name="natural_data" id="natural_data">
-                </div>
-            </div>
 
-            <div class="d-flex justify-content-end gap-3 border-top pt-4">
-                <a href="{{ route('sector.natural-plans.index') }}" class="btn btn-outline-secondary">
-                    <i class="bi bi-arrow-left me-2"></i>Cancel
-                </a>
-                <button type="submit" class="btn btn-success px-4" id="submitBtn" disabled>
-                    <i class="bi bi-save me-2"></i>Save Plan
-                </button>
+                    <!-- Natural Resources -->
+                    <div class="card mb-4">
+                        <div class="card-header bg-success text-white py-3">
+                            <h5 class="mb-0"><i class="fas fa-tree mr-2"></i>Natural Resources</h5>
+                        </div>
+                        <div class="card-body p-4">
+                            <div class="alert alert-info py-2 mb-3">
+                                <i class="fas fa-info-circle mr-2"></i>
+                                Select at least one resource and enter its amount and unit.
+                            </div>
+                            <div class="row g-3" id="resourcesContainer">
+                                @foreach ($natural as $resource)
+                                    <div class="col-md-6">
+                                        <div class="card border resource-item">
+                                            <div class="card-body">
+                                                <div class="form-check mb-3">
+                                                    <input class="form-check-input resource-checkbox" type="checkbox"
+                                                        value="{{ $resource->name }}" 
+                                                        id="resource-{{ $resource->id }}"
+                                                        data-resource-id="{{ $resource->id }}">
+                                                    <label class="form-check-label font-weight-semibold"
+                                                        for="resource-{{ $resource->id }}">
+                                                        {{ $resource->name }}
+                                                    </label>
+                                                </div>
+
+                                                <div class="resource-fields" style="display: none;">
+                                                    <label class="form-label small">Amount <span class="text-danger">*</span></label>
+                                                    <input type="number" step="0.01" class="form-control resource-amount"
+                                                        placeholder="0.00" min="0" disabled>
+
+                                                    <label class="form-label small mt-2">Unit <span class="text-danger">*</span></label>
+                                                    <select class="form-control resource-unit" disabled>
+                                                        <option value="">-- Select Unit --</option>
+                                                        <option value="M">M</option>
+                                                        <option value="M2">M2</option>
+                                                        <option value="hec">hec</option>
+                                                        <option value="Lakk">Lakk</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+                            @error('natural_data')
+                                <div class="text-danger small mt-2">{{ $message }}</div>
+                            @enderror
+                            <input type="hidden" name="natural_data" id="natural_data">
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-end gap-3 border-top pt-4">
+                        <a href="{{ route('sector.natural-plans.index') }}" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left mr-2"></i>Cancel
+                        </a>
+                        <button type="submit" class="btn btn-success px-4" id="submitBtn" disabled>
+                            <i class="fas fa-save mr-2"></i>Save Plan
+                        </button>
+                    </div>
+                </form>
             </div>
-        </form>
+        </section>
     </div>
 
     <script>
@@ -242,6 +265,27 @@
         .form-check-input:checked ~ .form-check-label {
             color: #198754;
             font-weight: bold;
+        }
+        
+        .content-wrapper {
+            background-color: #f4f6f9;
+        }
+        
+        .card {
+            border: 0;
+            box-shadow: 0 0 1px rgba(0,0,0,.125), 0 1px 3px rgba(0,0,0,.2);
+        }
+        
+        .card-header {
+            border-bottom: 1px solid rgba(0,0,0,.125);
+        }
+        
+        .btn-outline-secondary {
+            border-color: #6c757d;
+        }
+        
+        .gap-3 {
+            gap: 1rem;
         }
     </style>
 </x-layout>
