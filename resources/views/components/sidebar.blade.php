@@ -33,7 +33,7 @@
                       <li class="nav-item">
                           <a href="{{url('admin/naturals')}}" class="nav-link">
                               <i class="far fa-circle nav-icon"></i>
-                              <p>Natural Activity v1</p>
+                              <p>Natural Activity</p>
                           </a>
                       </li>
                       {{-- <li class="nav-item">
@@ -51,7 +51,7 @@
                   </ul>
               </li>
 
-              <!-- Widgets -->
+              {{-- <!-- Widgets -->
               <li class="nav-item">
                   <a href="pages/widgets.html" class="nav-link nav-modern-link">
                       <i class="nav-icon fas fa-th"></i>
@@ -93,7 +93,7 @@
                       <li class="nav-item"><a href="pages/charts/inline.html" class="nav-link"><i class="far fa-circle nav-icon"></i><p>Inline</p></a></li>
                       <li class="nav-item"><a href="pages/charts/uplot.html" class="nav-link"><i class="far fa-circle nav-icon"></i><p>uPlot</p></a></li>
                   </ul>
-              </li>
+              </li> --}}
 
 
             @endif
