@@ -14,7 +14,7 @@ class AssociationExpansionPlanController extends Controller
     public function index()
     {
         $plans = AssociationExpansionPlan::with(['association', 'sector', 'kebele', 'woreda', 'zone', 'region', 'createdBy'])
-            ->where('sector_id', Auth::user()->sector_id)
+            ->where('kebele_id', Auth::user()->kebele_id)
             ->orderBy('year', 'desc')
             ->get()
             ->map(function ($plan) {
@@ -97,7 +97,7 @@ class AssociationExpansionPlanController extends Controller
         // Prevent duplicate year for same kebele and sector
         $yearExists = AssociationExpansionPlan::where('year', $request->year)
             ->where('kebele_id', $user->kebele_id)
-            ->where('sector_id', $user->sector_id)
+            // ->where('sector_id', $user->sector_id)
             ->exists();
 
         if ($yearExists) {
