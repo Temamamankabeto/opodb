@@ -122,12 +122,12 @@
         </li>
 
 
-         <!-- Misooma Beeyladaa  -->
+         <!-- Qabeeny uumamaa  -->
         <li class="nav-item">
             <a href="#" class="nav-link">
                 <i class="fas fa-seedling nav-icon"></i>
                 <p>
-                    {{ __('Misooma Qabeeny Uumamaa') }}
+                    {{ __('Qabeeny Uumamaa') }}
                     <i class="fas fa-angle-left right"></i>
                 </p>
             </a>
@@ -173,7 +173,7 @@
         </li>
 
 
-
+{{-- Baballina Woldaalee  --}}
         <li class="nav-item">
             <a href="#" class="nav-link">
                 <i class="fas fa-seedling nav-icon"></i>
@@ -222,6 +222,61 @@
 
             </ul>
         </li>
+
+
+{{-- Baballina Woldaalee  --}}
+        <li class="nav-item">
+            <a href="#" class="nav-link">
+                <i class="fas fa-seedling nav-icon"></i>
+                <p>
+                    {{ __('Ijaarsa Dhaabbilee') }}
+                    <i class="fas fa-angle-left right"></i>
+                </p>
+            </a>
+
+            <ul class="nav nav-treeview">
+
+                <li class="nav-item">
+                    <a href="{{ url('sector/building-community-institution-plans') }}" class="nav-link">
+                        <i class="fas fa-leaf nav-icon"></i>
+                        <p>{{ __('Dhaabbilee Hawaasaa') }}</p>
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a href="{{ url('sector/building-power-institution-plans') }}" class="nav-link">
+                        <i class="fas fa-flask nav-icon"></i>
+                        <p>{{ __('Dhaabbilee Anniisaa') }}</p>
+                    </a>
+                </li>
+
+                {{-- <li class="nav-item">
+                    <a href="{{ url('sector/mechanizations') }}" class="nav-link">
+                        <i class="fas fa-cogs nav-icon"></i>
+                        <p>{{ __('Makaanaayizeeshinii') }}</p>
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a href="{{ url('sector/gabbina-biyyee') }}" class="nav-link">
+                        <i class="fas fa-mountain nav-icon"></i>
+                        <p>{{ __('Gabbina Biyyoo') }}</p>
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a href="{{ url('sector/seedling-preparations') }}" class="nav-link">
+                        <i class="fas fa-tree nav-icon"></i>
+                        <p>{{ __('Biqiltuuwwan') }}</p>
+                    </a>
+                </li> --}}
+
+            </ul>
+        </li>
+        
+
+
+
 
     </ul>
 </li>

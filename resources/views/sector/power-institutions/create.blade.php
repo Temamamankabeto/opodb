@@ -1,269 +1,310 @@
 <x-layout>
-    <div class="container py-5">
-        <h2 class="mb-4">
-            <i class="bi bi-building text-primary me-2"></i>
-            Create Building Power Institution Plan
-        </h2>
-
-        @if ($errors->any())
-            <div class="alert alert-danger">
-                <ul class="mb-0">
-                    @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
-        @endif
-
-        <form action="{{ route('sector.building-power-institution-plans.store') }}" method="POST" id="mainForm">
-            @csrf
-
-            <!-- Year Selection -->
-            <div class="card border-0 shadow-sm mb-4">
-                <div class="card-header bg-primary text-white py-3">
-                    <h5 class="mb-0"><i class="bi bi-calendar3 me-2"></i>Year Selection</h5>
+    <div class="content-header">
+        <section class="content">
+            <div class="container-fluid">
+                <div class="row mb-3">
+                    <div class="col-12">
+                        <h2 class="mb-0">
+                            <i class="fas fa-building text-primary mr-2"></i>
+                            Create Building Power Institution Plan
+                        </h2>
+                    </div>
                 </div>
-                <div class="card-body p-4">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <label class="form-label fw-semibold">Year <span class="text-danger">*</span></label>
-                            <select name="year" class="form-select" id="yearSelect" required>
-                                <option value="">-- Select Year --</option>
-                                @foreach ($years as $year)
-                                    <option value="{{ $year }}" {{ old('year') == $year ? 'selected' : '' }}>
-                                        {{ $year }} EC
-                                    </option>
-                                @endforeach
-                            </select>
-                            @error('year')
-                                <div class="text-danger small mt-1">{{ $message }}</div>
-                            @enderror
+
+                @if ($errors->any())
+                    <div class="alert alert-danger alert-dismissible">
+                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                        <h5><i class="icon fas fa-ban"></i> Validation Error!</h5>
+                        <ul class="mb-0">
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
+
+                <form action="{{ route('sector.building-power-institution-plans.store') }}" method="POST" id="mainForm">
+                    @csrf
+
+                    <!-- Year Selection -->
+                    <div class="card card-primary mb-3">
+                        <div class="card-header">
+                            <h3 class="card-title"><i class="fas fa-calendar-alt mr-2"></i>Year Selection</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="font-weight-bold">Year <span class="text-danger">*</span></label>
+                                        <select name="year" class="form-control" id="yearSelect" required>
+                                            <option value="">-- Select Year --</option>
+                                            @foreach ($years as $year)
+                                                <option value="{{ $year }}" {{ old('year') == $year ? 'selected' : '' }}>
+                                                    {{ $year }} EC
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                        @error('year')
+                                            <div class="text-danger small mt-1">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                </div>
-            </div>
 
-            <!-- Existing Plans Alert -->
-            <div class="alert alert-warning" id="existingPlansAlert" style="display: none;">
-                <i class="bi bi-exclamation-triangle me-2"></i>
-                <span id="existingPlansMessage"></span>
-                <a href="{{ route('sector.building-power-institution-plans.index') }}" class="alert-link ms-2">
-                    View existing plans
-                </a>
-            </div>
-
-            <!-- New Building Data -->
-            <div class="card border-0 shadow-sm mb-4" id="newBuildingCard">
-                <div class="card-header bg-info text-white py-3 d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0"><i class="bi bi-plus-circle me-2"></i>New Building Construction</h5>
-                    <span class="badge bg-warning" id="newBuildingStatus" style="display: none;">
-                        <i class="bi bi-info-circle me-1"></i>
-                        <span id="newBuildingStatusText"></span>
-                    </span>
-                </div>
-                <div class="card-body p-4">
-                    <div class="alert alert-info py-2 mb-3">
-                        <i class="bi bi-info-circle me-2"></i>
-                        Select institutions for new building construction. Institutions that already have data for the
-                        selected year are disabled.
+                    <!-- Existing Plans Alert -->
+                    <div class="alert alert-warning alert-dismissible" id="existingPlansAlert" style="display: none;">
+                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                        <h5><i class="icon fas fa-exclamation-triangle"></i> Existing Plans Found</h5>
+                        <p class="mb-1" id="existingPlansMessage"></p>
+                        <a href="{{ route('sector.building-power-institution-plans.index') }}" class="font-weight-bold">
+                            View existing plans
+                        </a>
                     </div>
 
-                    <div class="row g-3" id="newBuildingsContainer">
-                        @foreach ($institutions as $institution)
-                            <div class="col-md-6">
-                                <div class="card border new-building-item">
-                                    <div class="card-body">
-                                        <div class="form-check mb-3">
-                                            <input class="form-check-input new-building-checkbox" type="checkbox"
-                                                value="{{ $institution->id }}" id="new-building-{{ $institution->id }}"
-                                                data-institution-name="{{ $institution->name }}">
-                                            <label class="form-check-label fw-semibold"
-                                                for="new-building-{{ $institution->id }}">
-                                                {{ $institution->name }}
-                                            </label>
-                                            @if ($institution->description)
-                                                <div class="form-text small text-muted">{{ $institution->description }}
-                                                </div>
-                                            @endif
-                                        </div>
+                    <!-- New Building Data -->
+                    <div class="card card-info mb-3" id="newBuildingCard">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <i class="fas fa-plus-circle mr-2"></i>New Building Construction
+                                <span class="badge bg-warning ml-2" id="newBuildingStatus" style="display: none;">
+                                    <i class="fas fa-info-circle mr-1"></i>
+                                    <span id="newBuildingStatusText"></span>
+                                </span>
+                            </h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="alert alert-info py-2 mb-3">
+                                <i class="fas fa-info-circle mr-2"></i>
+                                Select institutions for new building construction. Institutions that already have data for the selected year are disabled.
+                            </div>
 
-                                        <div class="new-building-fields" style="display: none;">
-                                            <div class="row g-2">
-                                                <div class="col-12">
-                                                    <label class="form-label small fw-semibold text-primary">
-                                                        <i class="bi bi-building me-1"></i>
-                                                        Building: {{ $institution->name }}
+                            <div class="row" id="newBuildingsContainer">
+                                @foreach ($institutions as $institution)
+                                    <div class="col-md-6 mb-3">
+                                        <div class="card border new-building-item">
+                                            <div class="card-body">
+                                                <div class="form-check mb-3">
+                                                    <input class="form-check-input new-building-checkbox" type="checkbox"
+                                                        value="{{ $institution->id }}" id="new-building-{{ $institution->id }}"
+                                                        data-institution-name="{{ $institution->name }}">
+                                                    <label class="form-check-label font-weight-bold"
+                                                        for="new-building-{{ $institution->id }}">
+                                                        {{ $institution->name }}
                                                     </label>
+                                                    @if ($institution->description)
+                                                        <div class="form-text small text-muted">{{ $institution->description }}
+                                                        </div>
+                                                    @endif
                                                 </div>
 
-                                                <!-- Public Section -->
-                                                <div class="col-12 border-bottom pb-2 mb-2">
-                                                    <h6 class="text-success mb-2">Public</h6>
-                                                    <div class="row g-2">
-                                                        <div class="col-md-4">
-                                                            <label class="form-label small">Number of Buildings <span
-                                                                    class="text-danger">*</span></label>
-                                                            <input type="number"
-                                                                class="form-control new-building-public-number"
-                                                                placeholder="0" min="0" disabled>
-                                                        </div>
-                                                        <div class="col-md-4">
-                                                            <label class="form-label small">Cost per Building (ETB)
-                                                                <span class="text-danger">*</span></label>
-                                                            <input type="number" step="0.01"
-                                                                class="form-control new-building-public-cost"
-                                                                placeholder="0.00" min="0" disabled>
-                                                        </div>
-                                                        <div class="col-md-4">
-                                                            <label class="form-label small">Total Cost (ETB)</label>
-                                                            <input type="text"
-                                                                class="form-control new-building-public-total-cost"
-                                                                placeholder="0.00" readonly
-                                                                style="background-color: #f8f9fa; font-size: 0.8rem;">
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                <!-- Private Section -->
-                                                <div class="col-12 border-bottom pb-2 mb-2">
-                                                    <h6 class="text-warning mb-2">Private</h6>
-                                                    <div class="row g-2">
-                                                        <div class="col-md-4">
-                                                            <label class="form-label small">Number of Buildings <span
-                                                                    class="text-danger">*</span></label>
-                                                            <input type="number"
-                                                                class="form-control new-building-private-number"
-                                                                placeholder="0" min="0" disabled>
-                                                        </div>
-                                                        <div class="col-md-4">
-                                                            <label class="form-label small">Cost per Building (ETB)
-                                                                <span class="text-danger">*</span></label>
-                                                            <input type="number" step="0.01"
-                                                                class="form-control new-building-private-cost"
-                                                                placeholder="0.00" min="0" disabled>
-                                                        </div>
-                                                        <div class="col-md-4">
-                                                            <label class="form-label small">Total Cost (ETB)</label>
-                                                            <input type="text"
-                                                                class="form-control new-building-private-total-cost"
-                                                                placeholder="0.00" readonly
-                                                                style="background-color: #f8f9fa; font-size: 0.8rem;">
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                <!-- Totals Section -->
-                                                <div class="col-12 bg-light p-2 rounded mb-2">
-                                                    <div class="row g-2">
-                                                        <div class="col-md-4">
-                                                            <label class="form-label small fw-semibold">Total
-                                                                Buildings</label>
-                                                            <input type="text"
-                                                                class="form-control new-building-total-number"
-                                                                placeholder="0" readonly
-                                                                style="background-color: #e9ecef; font-size: 0.8rem;">
-                                                        </div>
-                                                        <div class="col-md-4">
-                                                            <label class="form-label small fw-semibold">Average Cost
-                                                                (ETB)
+                                                <div class="new-building-fields" style="display: none;">
+                                                    <div class="row">
+                                                        <div class="col-12">
+                                                            <label class="small font-weight-bold text-primary">
+                                                                <i class="fas fa-building mr-1"></i>
+                                                                Building: {{ $institution->name }}
                                                             </label>
-                                                            <input type="text"
-                                                                class="form-control new-building-average-cost"
-                                                                placeholder="0.00" readonly
-                                                                style="background-color: #e9ecef; font-size: 0.8rem;">
                                                         </div>
-                                                        <div class="col-md-4">
-                                                            <label class="form-label small fw-semibold">Grand Total
-                                                                (ETB)</label>
-                                                            <input type="text"
-                                                                class="form-control new-building-grand-total"
-                                                                placeholder="0.00" readonly
-                                                                style="background-color: #e9ecef; font-size: 0.8rem;">
+
+                                                        <!-- Public Section -->
+                                                        <div class="col-12 border-bottom pb-2 mb-2">
+                                                            <h6 class="text-success mb-2">Public</h6>
+                                                            <div class="row">
+                                                                <div class="col-md-4">
+                                                                    <div class="form-group mb-2">
+                                                                        <label class="small">Number of Buildings <span
+                                                                                class="text-danger">*</span></label>
+                                                                        <input type="number"
+                                                                            class="form-control new-building-public-number"
+                                                                            placeholder="0" min="0" disabled>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-md-4">
+                                                                    <div class="form-group mb-2">
+                                                                        <label class="small">Cost per Building (ETB)
+                                                                            <span class="text-danger">*</span></label>
+                                                                        <input type="number" step="0.01"
+                                                                            class="form-control new-building-public-cost"
+                                                                            placeholder="0.00" min="0" disabled>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-md-4">
+                                                                    <div class="form-group mb-2">
+                                                                        <label class="small">Total Cost (ETB)</label>
+                                                                        <input type="text"
+                                                                            class="form-control new-building-public-total-cost"
+                                                                            placeholder="0.00" readonly
+                                                                            style="background-color: #f8f9fa;">
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <!-- Private Section -->
+                                                        <div class="col-12 border-bottom pb-2 mb-2">
+                                                            <h6 class="text-warning mb-2">Private</h6>
+                                                            <div class="row">
+                                                                <div class="col-md-4">
+                                                                    <div class="form-group mb-2">
+                                                                        <label class="small">Number of Buildings <span
+                                                                                class="text-danger">*</span></label>
+                                                                        <input type="number"
+                                                                            class="form-control new-building-private-number"
+                                                                            placeholder="0" min="0" disabled>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-md-4">
+                                                                    <div class="form-group mb-2">
+                                                                        <label class="small">Cost per Building (ETB)
+                                                                            <span class="text-danger">*</span></label>
+                                                                        <input type="number" step="0.01"
+                                                                            class="form-control new-building-private-cost"
+                                                                            placeholder="0.00" min="0" disabled>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-md-4">
+                                                                    <div class="form-group mb-2">
+                                                                        <label class="small">Total Cost (ETB)</label>
+                                                                        <input type="text"
+                                                                            class="form-control new-building-private-total-cost"
+                                                                            placeholder="0.00" readonly
+                                                                            style="background-color: #f8f9fa;">
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <!-- Totals Section -->
+                                                        <div class="col-12 bg-light p-2 rounded mb-2">
+                                                            <div class="row">
+                                                                <div class="col-md-4">
+                                                                    <div class="form-group mb-0">
+                                                                        <label class="small font-weight-bold">Total
+                                                                            Buildings</label>
+                                                                        <input type="text"
+                                                                            class="form-control new-building-total-number"
+                                                                            placeholder="0" readonly
+                                                                            style="background-color: #e9ecef;">
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-md-4">
+                                                                    <div class="form-group mb-0">
+                                                                        <label class="small font-weight-bold">Average Cost
+                                                                            (ETB)
+                                                                        </label>
+                                                                        <input type="text"
+                                                                            class="form-control new-building-average-cost"
+                                                                            placeholder="0.00" readonly
+                                                                            style="background-color: #e9ecef;">
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-md-4">
+                                                                    <div class="form-group mb-0">
+                                                                        <label class="small font-weight-bold">Grand Total
+                                                                            (ETB)</label>
+                                                                        <input type="text"
+                                                                            class="form-control new-building-grand-total"
+                                                                            placeholder="0.00" readonly
+                                                                            style="background-color: #e9ecef;">
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="col-12">
+                                                            <div class="form-group">
+                                                                <label class="small">Project Description <span
+                                                                        class="text-danger">*</span></label>
+                                                                <textarea class="form-control new-building-description" rows="2"
+                                                                    placeholder="Describe the construction project..." style="font-size: 0.8rem;" disabled></textarea>
+                                                            </div>
                                                         </div>
                                                     </div>
-                                                </div>
-
-                                                <div class="col-12">
-                                                    <label class="form-label small">Project Description <span
-                                                            class="text-danger">*</span></label>
-                                                    <textarea class="form-control new-building-description" rows="2"
-                                                        placeholder="Describe the construction project..." style="font-size: 0.8rem;" disabled></textarea>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
+                                @endforeach
+                            </div>
+
+                            @if ($institutions->isEmpty())
+                                <div class="alert alert-warning">
+                                    <i class="fas fa-exclamation-triangle mr-2"></i>
+                                    No institutions found.
+                                </div>
+                            @endif
+
+                            @error('new_building_data')
+                                <div class="text-danger small mt-2">{{ $message }}</div>
+                            @enderror
+                            <input type="hidden" name="new_building_data" id="new_building_data">
+                        </div>
+                    </div>
+
+                    <!-- Summary Card -->
+                    <div class="card card-secondary mb-3">
+                        <div class="card-header">
+                            <h3 class="card-title"><i class="fas fa-calculator mr-2"></i>Financial Summary</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="row text-center">
+                                <div class="col-md-4">
+                                    <div class="border rounded p-3 bg-light">
+                                        <h6 class="text-success mb-1">Public Total</h6>
+                                        <h4 class="text-success mb-0" id="publicTotal">0.00 ETB</h4>
+                                        <small class="text-muted" id="publicCount">0 projects</small>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="border rounded p-3 bg-light">
+                                        <h6 class="text-warning mb-1">Private Total</h6>
+                                        <h4 class="text-warning mb-0" id="privateTotal">0.00 ETB</h4>
+                                        <small class="text-muted" id="privateCount">0 projects</small>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="border rounded p-3 bg-light">
+                                        <h6 class="text-info mb-1">New Construction</h6>
+                                        <h4 class="text-info mb-0" id="newBuildingsTotal">0.00 ETB</h4>
+                                        <small class="text-muted" id="newBuildingsCount">0 buildings</small>
+                                    </div>
                                 </div>
                             </div>
-                        @endforeach
-                    </div>
-
-                    @if ($institutions->isEmpty())
-                        <div class="alert alert-warning">
-                            <i class="bi bi-exclamation-triangle me-2"></i>
-                            No institutions found.
-                        </div>
-                    @endif
-
-                    @error('new_building_data')
-                        <div class="text-danger small mt-2">{{ $message }}</div>
-                    @enderror
-                    <input type="hidden" name="new_building_data" id="new_building_data">
-                </div>
-            </div>
-
-            <!-- Summary Card -->
-            <div class="card border-0 shadow-sm mb-4">
-                <div class="card-header bg-secondary text-white py-3">
-                    <h5 class="mb-0"><i class="bi bi-calculator me-2"></i>Financial Summary</h5>
-                </div>
-                <div class="card-body p-4">
-                    <div class="row text-center">
-                        <div class="col-md-4">
-                            <div class="border rounded p-3 bg-light">
-                                <h6 class="text-success mb-1">Public Total</h6>
-                                <h4 class="text-success mb-0" id="publicTotal">0.00 ETB</h4>
-                                <small class="text-muted" id="publicCount">0 projects</small>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="border rounded p-3 bg-light">
-                                <h6 class="text-warning mb-1">Private Total</h6>
-                                <h4 class="text-warning mb-0" id="privateTotal">0.00 ETB</h4>
-                                <small class="text-muted" id="privateCount">0 projects</small>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="border rounded p-3 bg-light">
-                                <h6 class="text-info mb-1">New Construction</h6>
-                                <h4 class="text-info mb-0" id="newBuildingsTotal">0.00 ETB</h4>
-                                <small class="text-muted" id="newBuildingsCount">0 buildings</small>
+                            <div class="row mt-4">
+                                <div class="col-12">
+                                    <div class="border rounded p-3 bg-success text-white text-center">
+                                        <h5 class="mb-1">Grand Total</h5>
+                                        <h2 class="mb-0" id="grandTotal">0.00 ETB</h2>
+                                        <small id="totalProjects">0 total projects</small>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
-                    <div class="row mt-4">
+
+                    <div class="row">
                         <div class="col-12">
-                            <div class="border rounded p-3 bg-success text-white text-center">
-                                <h5 class="mb-1">Grand Total</h5>
-                                <h2 class="mb-0" id="grandTotal">0.00 ETB</h2>
-                                <small id="totalProjects">0 total projects</small>
+                            <div class="card">
+                                <div class="card-footer clearfix">
+                                    <a href="{{ route('sector.building-power-institution-plans.index') }}"
+                                        class="btn btn-default float-left">
+                                        <i class="fas fa-arrow-left mr-2"></i>Cancel
+                                    </a>
+                                    <button type="submit" class="btn btn-primary float-right" id="submitBtn" disabled>
+                                        <i class="fas fa-save mr-2"></i>Save Building Plan
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
+                </form>
             </div>
-
-            <div class="d-flex justify-content-end gap-3 border-top pt-4">
-                <a href="{{ route('sector.building-power-institution-plans.index') }}"
-                    class="btn btn-outline-secondary">
-                    <i class="bi bi-arrow-left me-2"></i>Cancel
-                </a>
-                <button type="submit" class="btn btn-primary px-4" id="submitBtn" disabled>
-                    <i class="bi bi-save me-2"></i>Save Building Plan
-                </button>
-            </div>
-        </form>
+        </section>
     </div>
 
+    <!-- KEEP ALL ORIGINAL JAVASCRIPT EXACTLY AS IS -->
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const yearSelect = document.getElementById('yearSelect');
@@ -398,7 +439,7 @@
                             label.setAttribute('data-original-text', label.textContent);
                         }
                         label.innerHTML =
-                            `${label.getAttribute('data-original-text')} <span class="badge bg-secondary ms-1" style="font-size: 0.6rem;">${badgeText}</span>`;
+                            `${label.getAttribute('data-original-text')} <span class="badge bg-secondary ml-1" style="font-size: 0.6rem;">${badgeText}</span>`;
                     } else {
                         checkbox.disabled = false;
                         checkbox.parentElement.style.opacity = '1';
@@ -880,6 +921,21 @@
 
         .bg-light {
             background-color: #f8f9fa !important;
+        }
+
+        /* Fix for AdminLTE spacing */
+        .card-body {
+            padding: 1.25rem;
+        }
+
+        .card-footer {
+            padding: 0.75rem 1.25rem;
+            background-color: #f8f9fa;
+            border-top: 1px solid #dee2e6;
+        }
+
+        .card {
+            margin-bottom: 1rem;
         }
     </style>
 </x-layout>

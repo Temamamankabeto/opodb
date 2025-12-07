@@ -13,7 +13,7 @@ class BuildingCommunityInstitutionPlanController extends Controller
     public function index()
     {
         $plans = BuildingInstitutionPlan::with(['institution', 'sector', 'kebele', 'woreda', 'zone', 'region', 'createdBy'])
-            ->where('sector_id', Auth::user()->sector_id)
+            ->where('kebele_id', Auth::user()->kebele_id)
             ->orderBy('year', 'desc')
             ->get()
             ->map(function ($plan) {
@@ -144,7 +144,7 @@ public function store(Request $request)
         $existingPlan = BuildingInstitutionPlan::where('year', $request->year)
             ->where('institution_id', $institution->id)
             ->where('kebele_id', $user->kebele_id)
-            ->where('sector_id', $user->sector_id)
+            // ->where('sector_id', $user->sector_id)
             ->first();
 
         if ($existingPlan) {
@@ -172,7 +172,7 @@ public function store(Request $request)
             'institution_id' => $institution->id,
             'new_building_data' => $institutionNewBuildings,
             'improvement_data' => $institutionImprovements,
-            'sector_id' => $user->sector_id,
+            // 'sector_id' => $user->sector_id,
             'kebele_id' => $user->kebele_id,
             'woreda_id' => $user->woreda_id,
             'zone_id' => $user->zone_id,
@@ -261,7 +261,7 @@ public function store(Request $request)
 
     public function edit($id)
     {
-        $plan = BuildingInstitutionPlan::where('sector_id', Auth::user()->sector_id)
+        $plan = BuildingInstitutionPlan::where('kebele_id', Auth::user()->kebele_id)
             ->findOrFail($id);
 
         // Fetch institutions where institution_type_id = 1

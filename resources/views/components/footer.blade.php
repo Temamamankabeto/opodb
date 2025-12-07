@@ -1,9 +1,9 @@
  <!-- /.content-wrapper -->
   <footer class="main-footer">
-    <strong>Copyright &copy; 2014-2021 <a href="#">OPO</a>.</strong>
-    All rights reserved.
+    <strong>Mirga garagalchuu Ykn Woraabuu seeraan Daangeffamaadha 2018 <a href="#">W/Perezedaantii Mootummaa Naannoo Oromiyaa</a>.</strong>
+   Mirgi Qopheessaa Seeraan Kan Eegame.
     <div class="float-right d-none d-sm-inline-block">
-      <b>Version</b> 3.2.0
+      <b>Gosa</b> 1.0
     </div>
   </footer>
 

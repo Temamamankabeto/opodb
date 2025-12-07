@@ -6,7 +6,7 @@
         <div class="alert alert-success">{{ session('success') }}</div>
     @endif
 
-    <a href="{{ route('sector.association_types.create') }}" class="btn btn-success mb-3">
+    <a href="{{ route('association_types.create') }}" class="btn btn-success mb-3">
         <i class="bi bi-plus-circle"></i> Add New
     </a>
 
@@ -26,10 +26,10 @@
                             <td>{{ $i + 1 }}</td>
                             <td>{{ $type->name }}</td>
                             <td>
-                                <a href="{{ route('sector.association_types.edit', $type->id) }}" class="btn btn-warning btn-sm">
+                                <a href="{{ route('association_types.edit', $type->id) }}" class="btn btn-warning btn-sm">
                                     Edit
                                 </a>
-                                <form action="{{ route('sector.association_types.destroy', $type->id) }}" method="POST" class="d-inline"
+                                <form action="{{ route('association_types.destroy', $type->id) }}" method="POST" class="d-inline"
                                     onsubmit="return confirm('Delete this type?')">
                                     @csrf
                                     @method('DELETE')

@@ -146,6 +146,15 @@ Route::get('/naturals/edit/{id}', [NaturalResourceController::class, 'edit'])->n
 Route::put('/naturals/update/{id}', [NaturalResourceController::class, 'update'])->name('naturals.update'); // Changed to PUT
 Route::delete('/naturals/delete/{id}', [NaturalResourceController::class, 'destroy'])->name('naturals.destroy'); // Changed to DELETE
 
+
+            Route::get('/association-types', [AssociationTypeController::class, 'index'])->name('association_types.index');
+            Route::get('/association-types/create', [AssociationTypeController::class, 'create'])->name('association_types.create');
+            Route::post('/association-types/store', [AssociationTypeController::class, 'store'])->name('association_types.store');
+            Route::get('/association-types/edit/{id}', [AssociationTypeController::class, 'edit'])->name('association_types.edit');
+            Route::put('/association-types/update/{id}', [AssociationTypeController::class, 'update'])->name('association_types.update');
+            Route::delete('/association-types/delete/{id}', [AssociationTypeController::class, 'destroy'])->name('association_types.destroy');
+
+
             Route::get('/institutions', [InstitutionController::class, 'index'])->name('institutions.index');
 Route::get('/institutions/create', [InstitutionController::class, 'create'])->name('institutions.create');
 Route::post('/institutions/store', [InstitutionController::class, 'store'])->name('institutions.store');
@@ -547,6 +556,7 @@ Route::delete('/enterprise-work/{id}', [EnterpriseWorkController::class, 'destro
             Route::put('/environmental-plans/{id}', [EnvironmentalProtectionPlanController::class, 'update'])->name('environmental-plans.update');
             Route::delete('/environmental-plans/{id}', [EnvironmentalProtectionPlanController::class, 'destroy'])->name('environmental-plans.destroy');
 
+            
             Route::get('/natural-plans', [NaturalResourcePlanController::class, 'index'])->name('natural-plans.index');
                 Route::get('/natural-plans/create', [NaturalResourcePlanController::class, 'create'])->name('natural-plans.create');
                 Route::post('/natural-plans/store', [NaturalResourcePlanController::class, 'store'])->name('natural-plans.store');
@@ -563,13 +573,7 @@ Route::delete('/enterprise-work/{id}', [EnterpriseWorkController::class, 'destro
             Route::put('/association-expansion-plans/{id}', [AssociationExpansionPlanController::class, 'update'])->name('association-expansion-plans.update');
                     Route::delete('/association-expansion-plans/{id}', [AssociationExpansionPlanController::class, 'destroy'])->name('association-expansion-plans.destroy');
 
-            Route::get('/association-types', [AssociationTypeController::class, 'index'])->name('association_types.index');
-            Route::get('/association-types/create', [AssociationTypeController::class, 'create'])->name('association_types.create');
-            Route::post('/association-types/store', [AssociationTypeController::class, 'store'])->name('association_types.store');
-            Route::get('/association-types/edit/{id}', [AssociationTypeController::class, 'edit'])->name('association_types.edit');
-            Route::put('/association-types/update/{id}', [AssociationTypeController::class, 'update'])->name('association_types.update');
-            Route::delete('/association-types/delete/{id}', [AssociationTypeController::class, 'destroy'])->name('association_types.destroy');
-
+           
 
 
         // Building Community Institution Plan Routes

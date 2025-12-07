@@ -36,18 +36,18 @@
                               <p>Natural Activity</p>
                           </a>
                       </li>
-                      {{-- <li class="nav-item">
-                          <a href="./index2.html" class="nav-link">
+                      <li class="nav-item">
+                          <a href=" {{url('admin/association-types')}}" class="nav-link">
                               <i class="far fa-circle nav-icon"></i>
-                              <p>Dashboard v2</p>
+                              <p>Akaakuu Woldaalee</p>
                           </a>
                       </li>
                       <li class="nav-item">
-                          <a href="./index3.html" class="nav-link">
+                          <a href="{{url('admin/institutions')}}" class="nav-link">
                               <i class="far fa-circle nav-icon"></i>
-                              <p>Dashboard v3</p>
+                              <p>Dhaabbilee</p>
                           </a>
-                      </li> --}}
+                      </li>
                   </ul>
               </li>
 

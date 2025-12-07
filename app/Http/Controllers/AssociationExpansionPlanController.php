@@ -35,14 +35,19 @@ class AssociationExpansionPlanController extends Controller
         return view('sector.association-expansion.create', compact('associations', 'years'));
     }
 
-    public function store(Request $request)
-    {
-        // Validate basic fields and ensure expansion_data is a string (JSON)
-        $validated = $request->validate([
-            'year' => 'required|string',
-            'expansion_data' => 'required|string',
-        ]);
+   public function store(Request $request)
+{
+    // Validate only year is required
+    $validated = $request->validate([
+        'year' => 'required|string',
+        'expansion_data' => 'nullable|string', // Changed to nullable
+    ]);
 
+    // Check if expansion_data is provided
+    if (empty($request->expansion_data)) {
+        // Create a plan with empty expansion data
+        $expansionData = [];
+    } else {
         // Decode JSON data
         $expansionData = json_decode($request->expansion_data, true);
 
@@ -50,7 +55,7 @@ class AssociationExpansionPlanController extends Controller
             return back()->withErrors(['expansion_data' => 'Invalid expansion data format.'])->withInput();
         }
 
-        // Custom validation for expansion data
+        // Custom validation for expansion data - only if provided
         $errors = [];
         foreach ($expansionData as $index => $data) {
             // Common validation for all types
@@ -64,67 +69,67 @@ class AssociationExpansionPlanController extends Controller
                 $errors["expansion_data.{$index}.association_type"] = "Association type is required.";
             }
 
-            // Common validation: number_of_number is required for ALL types
-            if (empty($data['number_of_number']) || !is_numeric($data['number_of_number'])) {
-                $errors["expansion_data.{$index}.number_of_number"] = "Number of number is required.";
+            // Only validate number_of_number if it's provided (not required)
+            if (isset($data['number_of_number'])) {
+                if (!is_numeric($data['number_of_number'])) {
+                    $errors["expansion_data.{$index}.number_of_number"] = "Number of number must be numeric.";
+                }
             }
 
-            // Conditional validation based on association type
+            // Conditional validation based on association type - only if fields are provided
             if ($data['association_type_id'] == 1) {
-                // Type 1: Validate ALL additional fields
-                if (empty($data['number_of_members']) || !is_numeric($data['number_of_members'])) {
-                    $errors["expansion_data.{$index}.number_of_members"] = "Number of members is required for this association type.";
+                // Type 1: Validate fields only if they are provided
+                if (isset($data['number_of_members']) && !is_numeric($data['number_of_members'])) {
+                    $errors["expansion_data.{$index}.number_of_members"] = "Number of members must be numeric.";
                 }
-                if (empty($data['total_capital']) || !is_numeric($data['total_capital'])) {
-                    $errors["expansion_data.{$index}.total_capital"] = "Total capital is required for this association type.";
+                if (isset($data['total_capital']) && !is_numeric($data['total_capital'])) {
+                    $errors["expansion_data.{$index}.total_capital"] = "Total capital must be numeric.";
                 }
-                if (empty($data['fertilizer_loans_taken']) || !is_numeric($data['fertilizer_loans_taken'])) {
-                    $errors["expansion_data.{$index}.fertilizer_loans_taken"] = "Fertilizer loans taken is required for this association type.";
+                if (isset($data['fertilizer_loans_taken']) && !is_numeric($data['fertilizer_loans_taken'])) {
+                    $errors["expansion_data.{$index}.fertilizer_loans_taken"] = "Fertilizer loans taken must be numeric.";
                 }
-                if (empty($data['fertilizer_loan_repayment']) || !is_numeric($data['fertilizer_loan_repayment'])) {
-                    $errors["expansion_data.{$index}.fertilizer_loan_repayment"] = "Fertilizer loan repayment is required for this association type.";
+                if (isset($data['fertilizer_loan_repayment']) && !is_numeric($data['fertilizer_loan_repayment'])) {
+                    $errors["expansion_data.{$index}.fertilizer_loan_repayment"] = "Fertilizer loan repayment must be numeric.";
                 }
             }
-            // For other types, only number_of_number is required (already validated above)
         }
 
         if (!empty($errors)) {
             return back()->withErrors($errors)->withInput();
         }
-
-        $user = Auth::user();
-
-        // Prevent duplicate year for same kebele and sector
-        $yearExists = AssociationExpansionPlan::where('year', $request->year)
-            ->where('kebele_id', $user->kebele_id)
-            // ->where('sector_id', $user->sector_id)
-            ->exists();
-
-        if ($yearExists) {
-            return back()->withErrors([
-                'year' => "An association expansion plan already exists for year {$request->year} in your kebele and sector. Please edit the existing plan instead of creating a new one."
-            ])->withInput();
-        }
-
-        // Create expansion plan
-        AssociationExpansionPlan::create([
-            'year' => $request->year,
-            'expansion_data' => $expansionData,
-            // 'sector_id' => $user->sector_id,
-            'kebele_id' => $user->kebele_id,
-            'woreda_id' => $user->woreda_id,
-            'zone_id' => $user->zone_id,
-            'region_id' => $user->region_id,
-            'created_by' => $user->id,
-        ]);
-
-        return redirect()->route('sector.association-expansion-plans.index')
-            ->with('success', 'Association expansion plan created successfully!');
     }
+
+    $user = Auth::user();
+
+    // Prevent duplicate year for same kebele and sector
+    $yearExists = AssociationExpansionPlan::where('year', $request->year)
+        ->where('kebele_id', $user->kebele_id)
+        ->exists();
+
+    if ($yearExists) {
+        return back()->withErrors([
+            'year' => "An association expansion plan already exists for year {$request->year} in your kebele. Please edit the existing plan instead of creating a new one."
+        ])->withInput();
+    }
+
+    // Create expansion plan with or without data
+    AssociationExpansionPlan::create([
+        'year' => $request->year,
+        'expansion_data' => $expansionData,
+        'kebele_id' => $user->kebele_id,
+        'woreda_id' => $user->woreda_id,
+        'zone_id' => $user->zone_id,
+        'region_id' => $user->region_id,
+        'created_by' => $user->id,
+    ]);
+
+    return redirect()->route('sector.association-expansion-plans.index')
+        ->with('success', 'Association expansion plan created successfully!');
+}
 
     public function edit($id)
     {
-        $plan = AssociationExpansionPlan::where('sector_id', Auth::user()->sector_id)
+        $plan = AssociationExpansionPlan::where('kebele_id', Auth::user()->kebele_id)
             ->findOrFail($id);
 
         $associations = AssociationType::all();

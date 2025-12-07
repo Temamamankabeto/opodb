@@ -2,13 +2,22 @@
 .sidebar {
     background-color: #fff;
     color: #000;
-    width: 260px;
+    width: 320px; /* Increased from 260px to 320px */
+    min-width: 320px; /* Ensure minimum width */
+    max-width: 350px; /* Maximum width */
     height: 100vh;
     box-shadow: 5px 0 15px rgba(0, 0, 0, 0.1);
     position: fixed;
     top: 0;
     left: 0;
     overflow-y: auto;
+    z-index: 1030;
+    transition: width 0.3s ease;
+}
+
+/* Expanded Sidebar */
+.sidebar.expanded {
+    width: 350px; /* When explicitly expanded */
 }
 
 /* Nav List */
@@ -16,11 +25,13 @@
     list-style: none;
     margin: 0;
     padding: 0;
+    width: 100%;
 }
 
 /* Nav Item */
 .sidebar .nav-item {
     border-bottom: 1px solid #e0e0e0;
+    width: 100%;
 }
 
 /* Nav Link */
@@ -28,25 +39,41 @@
     display: flex;
     align-items: center;
     color: #000;
-    padding: 15px 25px;
+    padding: 15px 20px; /* Adjusted padding */
     text-decoration: none;
     font-size: 0.95rem;
     font-weight: 500;
     transition: all 0.3s ease;
+    width: 100%;
+    white-space: nowrap; /* Prevent text wrapping */
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 /* Icons */
 .sidebar .menu-icon {
     font-size: 1.2rem;
-    margin-right: 10px;
+    margin-right: 15px; /* Increased from 10px to 15px */
     color: #000;
     transition: color 0.3s ease;
+    min-width: 24px; /* Fixed icon width */
+    text-align: center;
 }
 
 /* Menu Arrow */
 .sidebar .menu-arrow {
     margin-left: auto;
     transition: transform 0.3s ease;
+    min-width: 16px; /* Fixed arrow width */
+}
+
+/* Menu Text */
+.sidebar .menu-text {
+    flex: 1;
+    min-width: 0; /* Allows text to shrink */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 /* Active / Hover */
@@ -64,35 +91,218 @@
 .sidebar .sub-menu {
     background-color: #f8f9fa;
     padding-left: 0;
+    width: 100%;
 }
 
 .sidebar .sub-menu .nav-link {
-    padding: 12px 25px 12px 50px;
+    padding: 12px 20px 12px 60px; /* Increased left padding from 50px to 60px */
     color: #333;
     font-size: 0.9rem;
     transition: all 0.2s ease;
+    width: 100%;
 }
 
 .sidebar .sub-menu .nav-link:hover {
     background-color: #e0e0e0;
     color: #000;
-    padding-left: 55px;
+    padding-left: 65px; /* Increased from 55px to 65px */
 }
 
 /* Expanded Collapse */
 .sidebar .collapse.show {
     background-color: #f5f5f5;
+    width: 100%;
 }
 
 .sidebar .menu-arrow[aria-expanded="true"] {
     transform: rotate(180deg);
 }
 
+/* Badges in sidebar */
+.sidebar .badge {
+    margin-left: auto;
+    font-size: 0.7rem;
+    padding: 0.25rem 0.5rem;
+    min-width: 20px;
+    text-align: center;
+}
+
+/* User info section */
+.sidebar .user-panel {
+    padding: 20px;
+    border-bottom: 1px solid #e0e0e0;
+    width: 100%;
+}
+
+.sidebar .user-info {
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+.sidebar .user-image {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin-right: 15px;
+    object-fit: cover;
+}
+
+.sidebar .user-details {
+    flex: 1;
+    min-width: 0;
+}
+
+.sidebar .user-name {
+    font-weight: 600;
+    font-size: 1rem;
+    margin-bottom: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.sidebar .user-role {
+    font-size: 0.8rem;
+    color: #666;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Logo/Brand area */
+.sidebar .brand-link {
+    display: flex;
+    align-items: center;
+    padding: 20px;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #000;
+    text-decoration: none;
+    border-bottom: 1px solid #e0e0e0;
+    width: 100%;
+}
+
+.sidebar .brand-logo {
+    width: 40px;
+    height: 40px;
+    margin-right: 15px;
+    object-fit: contain;
+}
+
+.sidebar .brand-text {
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
 /* Scrollbar */
 .sidebar::-webkit-scrollbar {
-    width: 6px;
+    width: 8px; /* Increased from 6px to 8px */
+}
+.sidebar::-webkit-scrollbar-track {
+    background: #f1f1f1;
 }
 .sidebar::-webkit-scrollbar-thumb {
     background-color: #ccc;
-    border-radius: 3px;
+    border-radius: 4px;
+}
+.sidebar::-webkit-scrollbar-thumb:hover {
+    background-color: #aaa;
+}
+
+/* Active menu item */
+.sidebar .nav-item.active > .nav-link {
+    background-color: #000;
+    color: #fff;
+}
+
+.sidebar .nav-item.active > .nav-link .menu-icon {
+    color: #f39c12;
+}
+
+/* Sidebar toggle button */
+.sidebar-toggle {
+    position: fixed;
+    top: 15px;
+    left: 335px; /* Adjusted for new width */
+    z-index: 1031;
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 0 4px 4px 0;
+    padding: 10px;
+    cursor: pointer;
+    transition: left 0.3s ease;
+}
+
+.sidebar.expanded + .sidebar-toggle {
+    left: 365px; /* When sidebar is expanded */
+}
+
+/* Main content adjustment for wider sidebar */
+.main-content {
+    margin-left: 320px; /* Increased from 260px */
+    transition: margin-left 0.3s ease;
+}
+
+.sidebar.expanded ~ .main-content {
+    margin-left: 350px;
+}
+
+.sidebar.collapsed ~ .main-content {
+    margin-left: 0;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .sidebar {
+        width: 280px;
+        min-width: 280px;
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+    }
+    
+    .sidebar.show {
+        transform: translateX(0);
+    }
+    
+    .sidebar.expanded {
+        width: 300px;
+    }
+    
+    .main-content {
+        margin-left: 0 !important;
+    }
+    
+    .sidebar-toggle {
+        left: 15px;
+        top: 15px;
+    }
+    
+    .sidebar.show + .sidebar-toggle {
+        left: 295px;
+    }
+    
+    .sidebar.expanded.show + .sidebar-toggle {
+        left: 315px;
+    }
+}
+
+/* Long text handling */
+.sidebar .nav-link .menu-text {
+    max-width: 180px; /* Increased from ~150px */
+}
+
+.sidebar.expanded .nav-link .menu-text {
+    max-width: 210px; /* More space in expanded mode */
+}
+
+/* Nested sub-menus */
+.sidebar .sub-menu .sub-menu .nav-link {
+    padding-left: 80px; /* For deeper nesting */
+}
+
+.sidebar .sub-menu .sub-menu .nav-link:hover {
+    padding-left: 85px;
 }

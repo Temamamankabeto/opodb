@@ -41,13 +41,13 @@ class AssociationTypeController extends Controller
         $type = AssociationType::findOrFail($id);
         $request->validate(['name' => 'required|unique:association_types,name,' . $id]);
         $type->update($request->only('name'));
-        return redirect()->route('sector.association_types.index')->with('success', 'Association type updated successfully!');
+        return redirect()->route('association_types.index')->with('success', 'Association type updated successfully!');
     }
 
     // Delete type
     public function destroy($id)
     {
         AssociationType::destroy($id);
-        return redirect()->route('sector.association_types.index')->with('success', 'Association type deleted successfully!');
+        return redirect()->route('association_types.index')->with('success', 'Association type deleted successfully!');
     }
 }
