@@ -172,6 +172,57 @@
             </ul>
         </li>
 
+
+
+        <li class="nav-item">
+            <a href="#" class="nav-link">
+                <i class="fas fa-seedling nav-icon"></i>
+                <p>
+                    {{ __('Woldaalee Gamtaa') }}
+                    <i class="fas fa-angle-left right"></i>
+                </p>
+            </a>
+
+            <ul class="nav nav-treeview">
+
+                <li class="nav-item">
+                    <a href="{{ url('sector/association-expansion-plans') }}" class="nav-link">
+                        <i class="fas fa-leaf nav-icon"></i>
+                        <p>{{ __('Babal`ina Woldaalee') }}</p>
+                    </a>
+                </li>
+
+                {{-- <li class="nav-item">
+                    <a href="{{ url('sector/crop-fertilizer') }}" class="nav-link">
+                        <i class="fas fa-flask nav-icon"></i>
+                        <p>{{ __('Calla Guddiftuu') }}</p>
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a href="{{ url('sector/mechanizations') }}" class="nav-link">
+                        <i class="fas fa-cogs nav-icon"></i>
+                        <p>{{ __('Makaanaayizeeshinii') }}</p>
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a href="{{ url('sector/gabbina-biyyee') }}" class="nav-link">
+                        <i class="fas fa-mountain nav-icon"></i>
+                        <p>{{ __('Gabbina Biyyoo') }}</p>
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a href="{{ url('sector/seedling-preparations') }}" class="nav-link">
+                        <i class="fas fa-tree nav-icon"></i>
+                        <p>{{ __('Biqiltuuwwan') }}</p>
+                    </a>
+                </li> --}}
+
+            </ul>
+        </li>
+
     </ul>
 </li>
 
