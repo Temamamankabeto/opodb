@@ -1,380 +1,435 @@
-<x-layout>
-    <div class="container-fluid py-3 py-md-4 crop-plan-edit-container">
-        <!-- Header Section -->
-        <div class="row justify-content-center mb-4 mb-md-5">
-            <div class="col-12 col-lg-10">
-                <div class="page-header text-center">
-                    <div class="header-icon mb-2 mb-md-3">
-                        <i class="mdi mdi-sprout-edit display-4 text-warning"></i>
-                    </div>
-                    <h1 class="display-6 fw-bold text-warning mb-2">Edit Land Preparation Plan</h1>
-                    <p class="lead text-muted d-none d-md-block">Update land preparation schedule for {{ Auth::user()->kebele->name }} Kebele</p>
-                    <p class="text-muted d-md-none">Update land preparation schedule</p>
-                    <div class="header-divider">
-                        <div class="divider-line"></div>
-                        <div class="divider-icon">
-                            <i class="mdi mdi-leaf"></i>
-                        </div>
-                        <div class="divider-line"></div>
-                    </div>
-                </div>
+ 
+<x-layout> 
+    <div class="content-header">
+        <!-- Content Header -->
+        <section class="content-header">
+            <div class="container-fluid">
+                
             </div>
-        </div>
+        </section>
 
-        {{-- Validation Errors --}}
-        @if ($errors->any())
-            <div class="row justify-content-center mb-3 mb-md-4">
-                <div class="col-12 col-lg-10">
-                    <div class="alert alert-danger alert-dismissible fade show custom-alert" role="alert">
-                        <div class="d-flex align-items-center">
-                            <i class="mdi mdi-alert-circle-outline me-2 fs-5"></i>
-                            <div class="flex-grow-1">
-                                <h6 class="alert-heading mb-2">Please fix the following errors:</h6>
-                                <ul class="mb-0 ps-3">
+        <!-- Main content -->
+        <section class="content">
+            <div class="container-fluid">
+                {{-- Validation Errors --}}
+                @if ($errors->any())
+                    <div class="row mb-3">
+                        <div class="col-12">
+                            <div class="alert alert-danger alert-dismissible">
+                                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                                <h5><i class="icon fas fa-ban"></i> {{ __('Validation Error!') }}</h5>
+                                <ul class="mb-0">
                                     @foreach ($errors->all() as $error)
                                         <li>{{ $error }}</li>
                                     @endforeach
                                 </ul>
                             </div>
                         </div>
-                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                     </div>
-                </div>
-            </div>
-        @endif
+                @endif
 
-        <div class="row justify-content-center">
-            <div class="col-12 col-lg-10">
-                <div class="card form-card border-0 shadow-lg">
-                    <div class="card-header bg-gradient-warning text-white py-3 py-md-4">
-                        <h4 class="mb-0 fs-5 fs-md-4">
-                            <i class="mdi mdi-calendar-edit me-2"></i>
-                            Edit Land Preparation Planning
-                        </h4>
-                    </div>
-                    <div class="card-body p-3 p-md-5">
-                        <form action="{{ route('sector.crop-plans.update', $plan->id) }}" method="POST" id="cropPlanForm">
-                            @csrf
-                            @method('PUT')
-
-                            <!-- Hidden fields for all required data -->
-                            <input type="hidden" name="croptype_id" value="{{ $plan->croptype_id }}">
-                            <input type="hidden" name="crop_id" value="{{ $plan->crop_id }}">
-                            <input type="hidden" name="area_to_plant" value="{{ $plan->area_to_plant }}">
-                            <input type="hidden" name="productivity" value="{{ $plan->productivity }}">
-                            <input type="hidden" name="year" value="{{ $plan->year }}">
-                            <input type="hidden" name="season" value="{{ $plan->season }}">
-                            <input type="hidden" name="seed_required" value="{{ $plan->seed_required }}">
-                            <input type="hidden" name="expected_yield" value="{{ $plan->expected_yield }}">
-
-                            <!-- Basic Information Display (Read-only) -->
-                            <div class="section-header mb-3 mb-md-4">
-                                <h5 class="section-title fs-6 fs-md-5">
-                                    <i class="mdi mdi-information-outline me-2 text-primary"></i>
-                                    Crop Plan Information
-                                </h5>
-                                <div class="section-divider"></div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="card card-warning">
+                            <div class="card-header">
+                                <h3 class="card-title"><i class="fas fa-calendar-edit mr-2"></i>{{ __('Land Preparation Planning') }}</h3>
                             </div>
+                            <!-- /.card-header -->
+                            <!-- form start -->
+                            <form action="{{ route('sector.crop-plans.update', $plan->id) }}" method="POST" id="cropPlanForm">
+                                @csrf
+                                @method('PUT')
 
-                            <div class="row g-2 g-md-4 mb-3 mb-md-4">
-                                <div class="col-6 col-md-3">
-                                    <div class="info-card p-2 p-md-3 bg-light rounded">
-                                        <small class="text-muted">Crop Type</small>
-                                        <div class="fw-bold text-primary fs-6 fs-md-normal">{{ $plan->cropType->name ?? 'N/A' }}</div>
-                                    </div>
-                                </div>
-                                <div class="col-6 col-md-3">
-                                    <div class="info-card p-2 p-md-3 bg-light rounded">
-                                        <small class="text-muted">Crop</small>
-                                        <div class="fw-bold text-primary fs-6 fs-md-normal">{{ $plan->crop->name ?? 'N/A' }}</div>
-                                    </div>
-                                </div>
-                                <div class="col-6 col-md-2">
-                                    <div class="info-card p-2 p-md-3 bg-light rounded">
-                                        <small class="text-muted">Year</small>
-                                        <div class="fw-bold text-primary fs-6 fs-md-normal">{{ $plan->year }}</div>
-                                    </div>
-                                </div>
-                                <div class="col-6 col-md-2">
-                                    <div class="info-card p-2 p-md-3 bg-light rounded">
-                                        <small class="text-muted">Season</small>
-                                        <div class="fw-bold text-primary fs-6 fs-md-normal">{{ $plan->season }}</div>
-                                    </div>
-                                </div>
-                                <div class="col-6 col-md-2">
-                                    <div class="info-card p-2 p-md-3 bg-light rounded">
-                                        <small class="text-muted">Area</small>
-                                        <div class="fw-bold text-primary fs-6 fs-md-normal">{{ $plan->area_to_plant }} ha</div>
-                                    </div>
-                                </div>
-                            </div>
+                                <!-- Hidden fields for all required data -->
+                                <input type="hidden" name="croptype_id" value="{{ $plan->croptype_id }}">
+                                <input type="hidden" name="crop_id" value="{{ $plan->crop_id }}">
+                                <input type="hidden" name="area_to_plant" value="{{ $plan->area_to_plant }}">
+                                <input type="hidden" name="productivity" value="{{ $plan->productivity }}">
+                                <input type="hidden" name="year" value="{{ $plan->year }}">
+                                <input type="hidden" name="season" value="{{ $plan->season }}">
+                                <input type="hidden" name="seed_required" value="{{ $plan->seed_required }}">
+                                <input type="hidden" name="expected_yield" value="{{ $plan->expected_yield }}">
 
-                            <!-- Planning Summary -->
-                            <div class="section-header mt-4 mt-md-5 mb-3 mb-md-4">
-                                <h5 class="section-title fs-6 fs-md-5">
-                                    <i class="mdi mdi-chart-bar me-2 text-info"></i>
-                                    Planning Overview (Preparation Year: <span id="preparationYear">{{ $plan->year - 1 }}</span>)
-                                </h5>
-                                <div class="section-divider"></div>
-                            </div>
-
-                            <!-- Summary Cards -->
-                            <div class="row g-2 g-md-3 mb-4">
-                                <div class="col-6 col-md-4">
-                                    <div class="card summary-card border-0 shadow-sm">
-                                        <div class="card-body text-center">
-                                            <i class="mdi mdi-target display-6 text-primary mb-2"></i>
-                                            <div class="summary-value fs-4 fw-bold text-primary" id="totalAreaDisplay">{{ $plan->area_to_plant }}</div>
-                                            <div class="summary-label text-muted">Total Area (ha)</div>
+                                <div class="card-body">
+                                    <!-- Basic Information Display -->
+                                    <div class="row mb-4">
+                                        <div class="col-12">
+                                            <h5 class="text-primary mb-3">
+                                                <i class="fas fa-info-circle mr-1"></i>
+                                                {{ __('Crop Plan Information') }}
+                                            </h5>
+                                            <hr class="mt-0">
                                         </div>
-                                    </div>
-                                </div>
-                                <div class="col-6 col-md-4">
-                                    <div class="card summary-card border-0 shadow-sm">
-                                        <div class="card-body text-center">
-                                            <i class="mdi mdi-calendar-check display-6 text-warning mb-2"></i>
-                                            <div class="summary-value fs-4 fw-bold text-warning" id="plannedAreaSummary">0</div>
-                                            <div class="summary-label text-muted">Planned (ha)</div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-6 col-md-4">
-                                    <div class="card summary-card border-0 shadow-sm">
-                                        <div class="card-body text-center">
-                                            <i class="mdi mdi-progress-check display-6 text-info mb-2"></i>
-                                            <div class="summary-value fs-4 fw-bold text-info" id="completionPercentage">0%</div>
-                                            <div class="summary-label text-muted">Allocation</div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Land Preparation Planning Section -->
-                            <div class="section-header mt-4 mt-md-5 mb-3 mb-md-4">
-                                <h5 class="section-title fs-6 fs-md-5">
-                                    <i class="mdi mdi-calendar-multiple me-2 text-info"></i>
-                                    Land Preparation Planning
-                                </h5>
-                                <div class="section-divider"></div>
-                                <p class="text-muted mt-2 d-none d-md-block">
-                                    Plan land preparation activities for each week in the preparation year ({{ $plan->year - 1 }}).
-                                </p>
-                            </div>
-
-                            <div class="activity-planning-container">
-                                <!-- Preparation Year Section -->
-                                <div class="card mb-3 mb-md-4 border-0 shadow-sm">
-                                    <div class="card-header bg-light py-2 py-md-3">
-                                        <div class="d-flex justify-content-between align-items-center flex-column flex-md-row">
-                                            <h6 class="mb-1 mb-md-0 fs-6">
-                                                <i class="mdi mdi-calendar-range me-2 text-success"></i>
-                                                Preparation Year: {{ $plan->year - 1 }}
-                                            </h6>
-                                            <div class="mt-1 mt-md-0">
-                                                <span class="badge bg-success fs-6">Land Preparation Activities</span>
-                                            </div>
-                                        </div>
-                                        <small class="text-muted d-none d-md-block">All land preparation activities occur in the year before planting ({{ $plan->year - 1 }})</small>
-                                    </div>
-                                </div>
-
-                                <!-- Quarters Section -->
-                                <div class="card mb-3 mb-md-4 border-0 shadow-sm">
-                                    <div class="card-header bg-light py-2 py-md-3">
-                                        <div class="d-flex justify-content-between align-items-center flex-column flex-md-row">
-                                            <h6 class="mb-1 mb-md-0 fs-6">
-                                                <i class="mdi mdi-chart-pie me-2 text-primary"></i>
-                                                Select Quarters ({{ $plan->year - 1 }})
-                                            </h6>
-                                            <div class="mt-1 mt-md-0">
-                                                <button type="button" class="btn btn-outline-primary btn-xs btn-sm" onclick="selectAllQuarters()">
-                                                    <i class="mdi mdi-select-all me-1"></i> Select All
-                                                </button>
-                                                <button type="button" class="btn btn-outline-secondary btn-xs btn-sm ms-1" onclick="clearAllQuarters()">
-                                                    <i class="mdi mdi-select-off me-1"></i> Clear All
-                                                </button>
-                                            </div>
-                                        </div>
-                                        <small class="text-muted">Click on quarter cards to select/deselect multiple quarters</small>
-                                    </div>
-                                    <div class="card-body">
-                                        <div class="row g-2 g-md-3" id="quartersContainer">
-                                            <!-- Quarters will be populated here -->
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Months Section -->
-                                <div class="card mb-3 mb-md-4 border-0 shadow-sm" id="monthsSection" style="display: none;">
-                                    <div class="card-header bg-light py-2 py-md-3">
-                                        <div class="d-flex justify-content-between align-items-center flex-column flex-md-row">
-                                            <h6 class="mb-1 mb-md-0 fs-6">
-                                                <i class="mdi mdi-calendar-month me-2 text-info"></i>
-                                                Select Months ({{ $plan->year - 1 }})
-                                            </h6>
-                                            <div class="mt-1 mt-md-0">
-                                                <button type="button" class="btn btn-outline-info btn-xs btn-sm" onclick="selectAllMonths()">
-                                                    <i class="mdi mdi-select-all me-1"></i> Select All
-                                                </button>
-                                                <button type="button" class="btn btn-outline-secondary btn-xs btn-sm ms-1" onclick="clearAllMonths()">
-                                                    <i class="mdi mdi-select-off me-1"></i> Clear All
-                                                </button>
-                                            </div>
-                                        </div>
-                                        <small class="text-muted">Select months from the chosen quarters</small>
-                                    </div>
-                                    <div class="card-body">
-                                        <div class="row g-2 g-md-3" id="monthsContainer">
-                                            <!-- Months will be populated here -->
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Weeks Section -->
-                                <div class="card mb-3 mb-md-4 border-0 shadow-sm" id="weeksSection" style="display: none;">
-                                    <div class="card-header bg-light py-2 py-md-3">
-                                        <div class="d-flex justify-content-between align-items-center flex-column flex-md-row">
-                                            <h6 class="mb-1 mb-md-0 fs-6">
-                                                <i class="mdi mdi-calendar-week me-2 text-warning"></i>
-                                                Plan Distribution ({{ $plan->year - 1 }})
-                                            </h6>
-                                            <div class="mt-1 mt-md-0 text-center text-md-end">
-                                                <small class="text-muted me-2 d-none d-md-inline">Total: </small>
-                                                <span class="badge bg-primary fs-6" id="totalDistributedBadge">0 ha</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="card-body">
-                                        <div id="weeksContainer">
-                                            <!-- Weeks will be populated here -->
-                                        </div>
-                                        <div class="mt-2 mt-md-3 p-2 p-md-3 bg-light rounded">
-                                            <div class="row align-items-center">
-                                                <div class="col-md-8 mb-2 mb-md-0">
-                                                    <small class="text-muted">
-                                                        <i class="mdi mdi-information-outline me-1"></i>
-                                                        Enter planned area for each week. Total allocation will be calculated automatically.
-                                                    </small>
+                                        
+                                        <div class="col-md-3 col-sm-6">
+                                            <div class="info-box bg-light">
+                                                <span class="info-box-icon bg-primary"><i class="fas fa-seedling"></i></span>
+                                                <div class="info-box-content">
+                                                    <span class="info-box-text">{{ __('Crop Type') }}</span>
+                                                    <span class="info-box-number">{{ $plan->cropType->name ?? __('N/A') }}</span>
                                                 </div>
-                                                <div class="col-md-4 text-center text-md-end">
-                                                    <button type="button" class="btn btn-success btn-sm w-100 w-md-auto" onclick="saveAllDistributions()">
-                                                        <i class="mdi mdi-content-save-all me-1"></i> Save All
-                                                    </button>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="col-md-3 col-sm-6">
+                                            <div class="info-box bg-light">
+                                                <span class="info-box-icon bg-success"><i class="fas fa-leaf"></i></span>
+                                                <div class="info-box-content">
+                                                    <span class="info-box-text">{{ __('Crop') }}</span>
+                                                    <span class="info-box-number">{{ $plan->crop->name ?? __('N/A') }}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="col-md-2 col-sm-4">
+                                            <div class="info-box bg-light">
+                                                <span class="info-box-icon bg-info"><i class="fas fa-calendar-alt"></i></span>
+                                                <div class="info-box-content">
+                                                    <span class="info-box-text">{{ __('Year') }}</span>
+                                                    <span class="info-box-number">{{ $plan->year }}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="col-md-2 col-sm-4">
+                                            <div class="info-box bg-light">
+                                                <span class="info-box-icon bg-warning"><i class="fas fa-sun"></i></span>
+                                                <div class="info-box-content">
+                                                    <span class="info-box-text">{{ __('Season') }}</span>
+                                                    <span class="info-box-number">{{ $plan->season }}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="col-md-2 col-sm-4">
+                                            <div class="info-box bg-light">
+                                                <span class="info-box-icon bg-purple"><i class="fas fa-globe-americas"></i></span>
+                                                <div class="info-box-content">
+                                                    <span class="info-box-text">{{ __('Area') }}</span>
+                                                    <span class="info-box-number">{{ $plan->area_to_plant }} {{ __('ha') }}</span>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
 
-                                <!-- Summary Section -->
-                                <div class="card border-0 shadow-sm">
-                                    <div class="card-header bg-light py-2 py-md-3">
-                                        <div class="d-flex justify-content-between align-items-center flex-column flex-md-row">
-                                            <h6 class="mb-1 mb-md-0 fs-6">
-                                                <i class="mdi mdi-chart-bar me-2 text-success"></i>
-                                                Distribution Summary (Preparation Year: {{ $plan->year - 1 }})
-                                            </h6>
-                                            <div class="selected-summary mt-1 mt-md-0 text-center text-md-end">
-                                                <small class="text-muted me-2">Selected: </small>
-                                                <span class="badge bg-primary" id="selectedQuartersBadge">0 quarters</span>
-                                                <span class="badge bg-info mx-1" id="selectedMonthsBadge">0 months</span>
-                                                <span class="badge bg-warning" id="selectedWeeksBadge">0 weeks</span>
+                                    <!-- Planning Summary -->
+                                    <div class="row mb-4">
+                                        <div class="col-12">
+                                            <h5 class="text-info mb-3">
+                                                <i class="fas fa-chart-bar mr-1"></i>
+                                                {{ __('Planning Overview') }} ({{ __('Preparation Year') }}: <span id="preparationYear">{{ $plan->year - 1 }}</span>)
+                                            </h5>
+                                            <hr class="mt-0">
+                                        </div>
+
+                                        <!-- Summary Cards -->
+                                        <div class="col-md-4">
+                                            <div class="info-box shadow">
+                                                <span class="info-box-icon bg-primary"><i class="fas fa-bullseye"></i></span>
+                                                <div class="info-box-content">
+                                                    <span class="info-box-text">{{ __('Total Area') }}</span>
+                                                    <span class="info-box-number" id="totalAreaDisplay">{{ $plan->area_to_plant }} {{ __('ha') }}</span>
+                                                    <div class="progress">
+                                                        <div class="progress-bar bg-primary" style="width: 100%"></div>
+                                                    </div>
+                                                    <span class="progress-description">
+                                                        100% {{ __('Target') }}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="col-md-4">
+                                            <div class="info-box shadow">
+                                                <span class="info-box-icon bg-warning"><i class="fas fa-calendar-check"></i></span>
+                                                <div class="info-box-content">
+                                                    <span class="info-box-text">{{ __('Planned Area') }}</span>
+                                                    <span class="info-box-number" id="plannedAreaSummary">0 {{ __('ha') }}</span>
+                                                    <div class="progress">
+                                                        <div class="progress-bar bg-warning" id="plannedProgress" style="width: 0%"></div>
+                                                    </div>
+                                                    <span class="progress-description">
+                                                        <span id="completionPercentage">0%</span> {{ __('Allocation') }}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="col-md-4">
+                                            <div class="info-box shadow">
+                                                <span class="info-box-icon bg-info"><i class="fas fa-chart-pie"></i></span>
+                                                <div class="info-box-content">
+                                                    <span class="info-box-text">{{ __('Distribution') }}</span>
+                                                    <span class="info-box-number">
+                                                        <span id="selectedQuartersBadge">0</span>{{ __('Q') }} / <span id="selectedMonthsBadge">0</span>{{ __('M') }} / <span id="selectedWeeksBadge">0</span>{{ __('W') }}
+                                                    </span>
+                                                    <div class="progress">
+                                                        <div class="progress-bar bg-info" style="width: 100%"></div>
+                                                    </div>
+                                                    <span class="progress-description">
+                                                        {{ __('Quarters') }} / {{ __('Months') }} / {{ __('Weeks') }}
+                                                    </span>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="card-body">
-                                        <div class="table-responsive">
-                                            <table class="table table-sm table-hover">
-                                                <thead class="table-light">
-                                                <tr>
-                                                    <th class="d-none d-md-table-cell">Year</th>
-                                                    <th class="d-none d-md-table-cell">Quarter</th>
-                                                    <th>Month</th>
-                                                    <th>Week</th>
-                                                    <th class="d-none d-md-table-cell">Date Range</th>
-                                                    <th>Planned (ha)</th>
-                                                    <th>Status</th>
-                                                    <th>Action</th>
-                                                </tr>
-                                                </thead>
-                                                <tbody id="summaryTable">
-                                                <tr>
-                                                    <td colspan="8" class="text-center text-muted py-4">
-                                                        <i class="mdi mdi-calendar-blank me-2"></i>
-                                                        No distribution yet. Start by selecting quarters above.
-                                                    </td>
-                                                </tr>
-                                                </tbody>
-                                                <tfoot class="table-secondary">
-                                                <tr>
-                                                    <td colspan="5" class="text-end fw-bold d-none d-md-table-cell">Total:</td>
-                                                    <td colspan="3" class="text-center fw-bold d-md-none">Total:</td>
-                                                    <td class="fw-bold text-primary" id="summaryTotal">0 ha</td>
-                                                    <td colspan="2" class="fw-bold text-info" id="summaryCompletion">0%</td>
-                                                </tr>
-                                                </tfoot>
-                                            </table>
+
+                                    <!-- Land Preparation Planning Section -->
+                                    <div class="row mb-4">
+                                        <div class="col-12">
+                                            <h5 class="text-info mb-3">
+                                                <i class="fas fa-calendar-alt mr-1"></i>
+                                                {{ __('Land Preparation Planning') }}
+                                            </h5>
+                                            <hr class="mt-0">
+                                            <p class="text-muted">
+                                                {{ __('Plan land preparation activities for each week in the preparation year') }} ({{ $plan->year - 1 }}).
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <!-- Quarters Selection -->
+                                    <div class="card card-outline card-primary mb-3">
+                                        <div class="card-header">
+                                            <h3 class="card-title">
+                                                <i class="fas fa-calendar-range mr-2"></i>
+                                                {{ __('Select Quarters') }} ({{ $plan->year - 1 }})
+                                            </h3>
+                                            <div class="card-tools">
+                                                <button type="button" class="btn btn-tool" onclick="selectAllQuarters()" title="{{ __('Select All') }}">
+                                                    <i class="fas fa-check-square"></i>
+                                                </button>
+                                                <button type="button" class="btn btn-tool" onclick="clearAllQuarters()" title="{{ __('Clear All') }}">
+                                                    <i class="fas fa-square"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="row" id="quartersContainer">
+                                                <!-- Quarters will be populated here -->
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Months Section (Initially Hidden) -->
+                                    <div class="card card-outline card-info mb-3" id="monthsSection" style="display: none;">
+                                        <div class="card-header">
+                                            <h3 class="card-title">
+                                                <i class="fas fa-calendar-month mr-2"></i>
+                                                {{ __('Select Months') }} ({{ $plan->year - 1 }})
+                                            </h3>
+                                            <div class="card-tools">
+                                                <button type="button" class="btn btn-tool" onclick="selectAllMonths()" title="{{ __('Select All') }}">
+                                                    <i class="fas fa-check-square"></i>
+                                                </button>
+                                                <button type="button" class="btn btn-tool" onclick="clearAllMonths()" title="{{ __('Clear All') }}">
+                                                    <i class="fas fa-square"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="table-responsive">
+                                                <table class="table table-hover table-sm">
+                                                    <thead class="thead-light">
+                                                        <tr>
+                                                            <th width="50">
+                                                                <div class="custom-control custom-checkbox">
+                                                                    <input class="custom-control-input" type="checkbox" id="selectAllMonthsCheckbox">
+                                                                    <label for="selectAllMonthsCheckbox" class="custom-control-label"></label>
+                                                                </div>
+                                                            </th>
+                                                            <th>{{ __('Month') }}</th>
+                                                            <th>{{ __('Quarter') }}</th>
+                                                            <th>{{ __('Year') }}</th>
+                                                            <th>{{ __('Planned Area') }}</th>
+                                                            <th>{{ __('Status') }}</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody id="monthsTable">
+                                                        <!-- Months will be populated here -->
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Weeks Section (Initially Hidden) -->
+                                    <div class="card card-outline card-warning mb-3" id="weeksSection" style="display: none;">
+                                        <div class="card-header">
+                                            <h3 class="card-title">
+                                                <i class="fas fa-calendar-week mr-2"></i>
+                                                {{ __('Plan Distribution') }} ({{ $plan->year - 1 }})
+                                            </h3>
+                                            <div class="card-tools">
+                                                <span class="badge badge-primary" id="totalDistributedBadge">0 {{ __('ha') }}</span>
+                                            </div>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="table-responsive">
+                                                <table class="table table-bordered table-striped table-hover">
+                                                    <thead class="thead-dark">
+                                                        <tr>
+                                                            <th>{{ __('Week') }}</th>
+                                                            <th>{{ __('Month') }}</th>
+                                                            <th>{{ __('Quarter') }}</th>
+                                                            <th>{{ __('Date Range') }}</th>
+                                                            <th>{{ __('Year') }}</th>
+                                                            <th width="150">{{ __('Planned Area') }} ({{ __('ha') }})</th>
+                                                            <th width="80">{{ __('Status') }}</th>
+                                                            <th width="50">% {{ __('of Total') }}</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody id="weeksTable">
+                                                        <!-- Weeks will be populated here -->
+                                                    </tbody>
+                                                    <tfoot class="bg-light">
+                                                        <tr>
+                                                            <td colspan="5" class="text-right font-weight-bold">{{ __('Total Planned') }}:</td>
+                                                            <td class="font-weight-bold text-primary" id="weeksTotalPlanned">0 {{ __('ha') }}</td>
+                                                            <td colspan="2" class="font-weight-bold text-info" id="weeksTotalPercentage">0%</td>
+                                                        </tr>
+                                                    </tfoot>
+                                                </table>
+                                            </div>
+                                            <div class="callout callout-info mt-3">
+                                                <div class="row align-items-center">
+                                                    <div class="col-md-8">
+                                                        <h6><i class="fas fa-info-circle mr-2"></i>{{ __('Instructions') }}</h6>
+                                                        <p class="mb-0">{{ __('Enter planned area for each week in the input column. The system will automatically calculate the percentage of total area.') }}</p>
+                                                    </div>
+                                                    <div class="col-md-4 text-right">
+                                                        <button type="button" class="btn btn-success" onclick="saveAllDistributions()">
+                                                            <i class="fas fa-save mr-2"></i> {{ __('Save All Distributions') }}
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Summary Section -->
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h3 class="card-title">
+                                                <i class="fas fa-list-alt mr-2"></i>
+                                                {{ __('Distribution Summary') }} ({{ __('Preparation Year') }}: {{ $plan->year - 1 }})
+                                            </h3>
+                                        </div>
+                                        <div class="card-body p-0">
+                                            <div class="table-responsive">
+                                                <table class="table table-hover">
+                                                    <thead class="thead-light">
+                                                        <tr>
+                                                            <th>{{ __('Year') }}</th>
+                                                            <th>{{ __('Quarter') }}</th>
+                                                            <th>{{ __('Month') }}</th>
+                                                            <th>{{ __('Week') }}</th>
+                                                            <th>{{ __('Date Range') }}</th>
+                                                            <th>{{ __('Planned') }} ({{ __('ha') }})</th>
+                                                            <th>{{ __('Status') }}</th>
+                                                            <th>{{ __('Action') }}</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody id="summaryTable">
+                                                        <tr>
+                                                            <td colspan="8" class="text-center text-muted py-4">
+                                                                <i class="fas fa-calendar-alt mr-2"></i>
+                                                                {{ __('No distribution yet. Start by selecting quarters above.') }}
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                    <tfoot class="bg-gray">
+                                                        <tr>
+                                                            <td colspan="5" class="text-right font-weight-bold">{{ __('Total') }}:</td>
+                                                            <td class="font-weight-bold text-primary" id="summaryTotal">0 {{ __('ha') }}</td>
+                                                            <td colspan="2" class="font-weight-bold text-info" id="summaryCompletion">0%</td>
+                                                        </tr>
+                                                    </tfoot>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Hidden field to store structured planning data -->
+                                    <input type="hidden" name="plandivision_details" id="plandivisionDetails"
+                                           value="{{ json_encode($plan->plandivision_details ?? []) }}">
+                                </div>
+                                <!-- /.card-body -->
+                                
+                                <div class="card-footer">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <a href="{{ route('sector.crop-plans.index') }}" class="btn btn-default">
+                                                <i class="fas fa-arrow-left mr-2"></i> {{ __('Back to Plans') }}
+                                            </a>
+                                        </div>
+                                        <div class="col-md-6 text-right">
+                                            <button type="button" class="btn btn-danger" onclick="window.history.back()">
+                                                <i class="fas fa-times mr-2"></i> {{ __('Cancel') }}
+                                            </button>
+                                            <button type="submit" class="btn btn-warning ml-2" id="submitBtn">
+                                                <i class="fas fa-save mr-2"></i> {{ __('Update Plan') }}
+                                            </button>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-
-                            <!-- Hidden field to store structured planning data -->
-                            <input type="hidden" name="plandivision_details" id="plandivisionDetails"
-                                   value="{{ json_encode($plan->plandivision_details ?? []) }}">
-
-                            <!-- Form Actions -->
-                            <div class="form-actions mt-4 mt-md-5 pt-3 pt-md-4 border-top">
-                                <div class="d-flex justify-content-between align-items-center flex-column flex-md-row gap-3">
-                                    <a href="{{ route('sector.crop-plans.index') }}" class="btn btn-outline-secondary btn-lg w-100 w-md-auto order-2 order-md-1">
-                                        <i class="mdi mdi-arrow-left me-2"></i>
-                                        Back to Plans
-                                    </a>
-                                    <div class="d-flex gap-2 gap-md-3 w-100 w-md-auto order-1 order-md-2">
-                                        <a href="{{ route('sector.crop-plans.index') }}" class="btn btn-outline-danger btn-lg flex-fill">
-                                            <i class="mdi mdi-cancel me-2"></i>
-                                            Cancel
-                                        </a>
-                                        <button type="submit" class="btn btn-warning btn-lg flex-fill" id="submitBtn">
-                                            <i class="mdi mdi-content-save-outline me-2"></i>
-                                            Update Plan
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </form>
+                            </form>
+                        </div>
+                        <!-- /.card -->
                     </div>
                 </div>
             </div>
-        </div>
+        </section>
+        <!-- /.content -->
     </div>
 
+    {{-- JavaScript Section --}}
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
     <script>
+        // Update JavaScript messages with translations
+        const translations = {
+            not_planned: "{{ __('Not Planned') }}",
+            planned: "{{ __('Planned') }}",
+            partially_planned: "{{ __('Partially Planned') }}",
+            select_quarters_first: "{{ __('Please select quarters first') }}",
+            fix_validation_errors: "{{ __('Please fix the validation errors before submitting.') }}",
+            fix_validation_errors_save: "{{ __('Please fix validation errors before saving') }}",
+            all_distributions_saved: "{{ __('All distributions saved successfully!') }}",
+            distribution_removed: "{{ __('Distribution removed successfully!') }}",
+            all_quarters_selected: "{{ __('All quarters selected for preparation year') }}",
+            all_quarters_cleared: "{{ __('All quarters cleared') }}",
+            all_months_selected: "{{ __('All months in selected quarters selected for preparation year') }}",
+            all_months_cleared: "{{ __('All months cleared') }}",
+            no_months_available: "{{ __('No months available in selected quarters.') }}",
+            negative_value: "{{ __('Negative value') }}",
+            exceeds_total_area: "{{ __('Exceeds total area') }}",
+            ha: "{{ __('ha') }}",
+            q: "{{ __('Q') }}",
+            m: "{{ __('M') }}",
+            w: "{{ __('W') }}"
+        };
+
         let totalArea = parseFloat({{ $plan->area_to_plant }});
         let selectedQuarters = new Set();
         let selectedMonths = new Set();
         let weeklyDistributions = [];
-        let currentDisplayedMonths = new Set();
         const preparationYear = {{ $plan->year - 1 }};
 
         // Ethiopian Calendar Data
         const EC_MONTHS = [
-            { id: 1, name: "Meskerem", days: 30 },
-            { id: 2, name: "Tikimt", days: 30 },
-            { id: 3, name: "Hidar", days: 30 },
-            { id: 4, name: "Tahsas", days: 30 },
-            { id: 5, name: "Tir", days: 30 },
-            { id: 6, name: "Yekatit", days: 30 },
-            { id: 7, name: "Megabit", days: 30 },
-            { id: 8, name: "Miyazia", days: 30 },
-            { id: 9, name: "Ginbot", days: 30 },
-            { id: 10, name: "Sene", days: 30 },
-            { id: 11, name: "Hamle", days: 30 },
-            { id: 12, name: "Nehase", days: 30 },
-            { id: 13, name: "Pagumen", days: 5 }
+            { id: 1, name: "{{ __('Meskerem') }}", days: 30 },
+            { id: 2, name: "{{ __('Tikimt') }}", days: 30 },
+            { id: 3, name: "{{ __('Hidar') }}", days: 30 },
+            { id: 4, name: "{{ __('Tahsas') }}", days: 30 },
+            { id: 5, name: "{{ __('Tir') }}", days: 30 },
+            { id: 6, name: "{{ __('Yekatit') }}", days: 30 },
+            { id: 7, name: "{{ __('Megabit') }}", days: 30 },
+            { id: 8, name: "{{ __('Miyazia') }}", days: 30 },
+            { id: 9, name: "{{ __('Ginbot') }}", days: 30 },
+            { id: 10, name: "{{ __('Sene') }}", days: 30 },
+            { id: 11, name: "{{ __('Hamle') }}", days: 30 },
+            { id: 12, name: "{{ __('Nehase') }}", days: 30 },
+            { id: 13, name: "{{ __('Pagumen') }}", days: 5 }
         ];
 
         const EC_QUARTERS = {
@@ -386,15 +441,15 @@
 
         // Status calculation function
         function calculateStatus(planned) {
-            if (planned === 0) return 'Not Planned';
-            return 'Planned';
+            if (planned === 0) return translations.not_planned;
+            return translations.planned;
         }
 
         function getStatusClass(status) {
             switch(status) {
-                case 'Not Planned': return 'bg-secondary';
-                case 'Planned': return 'bg-success';
-                default: return 'bg-secondary';
+                case translations.not_planned: return 'badge-secondary';
+                case translations.planned: return 'badge-success';
+                default: return 'badge-secondary';
             }
         }
 
@@ -410,7 +465,7 @@
                 console.log('Form submitted, validating...');
                 if (!validateForm()) {
                     e.preventDefault();
-                    showAlert('Please fix the validation errors before submitting.', 'error');
+                    showAlert(translations.fix_validation_errors, 'error');
                 } else {
                     console.log('Form validation passed, submitting...');
                     saveJSON();
@@ -420,27 +475,7 @@
             renderQuarters();
             loadExistingDistribution();
             updateSummaryCards();
-
-            // Mobile touch improvements
-            improveMobileTouch();
         });
-
-        function improveMobileTouch() {
-            // Prevent zoom on input focus for better mobile experience
-            $('input, select, textarea').on('focus', function() {
-                $('meta[name=viewport]').attr('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0');
-            });
-
-            $('input, select, textarea').on('blur', function() {
-                $('meta[name=viewport]').attr('content', 'width=device-width, initial-scale=1.0');
-            });
-
-            // Better touch targets for mobile
-            if (window.innerWidth < 768) {
-                $('.btn').addClass('py-2');
-                $('.form-control').addClass('py-2');
-            }
-        }
 
         /* -------------------------------
            QUARTERS MANAGEMENT
@@ -455,58 +490,72 @@
                 const monthNames = EC_QUARTERS[q].map(m => EC_MONTHS[m-1].name).join(", ");
 
                 $("#quartersContainer").append(`
-                <div class="col-6 col-md-3 mb-2 mb-md-3">
-                    <div class="card quarter-card p-2 p-md-3 text-center ${isSelected ? 'card-selected' : ''}" data-q="${q}">
-                        <div class="form-check mb-1 mb-md-2">
-                            <input class="form-check-input quarter-checkbox" type="checkbox"
-                                   id="quarter${q}" ${isSelected ? 'checked' : ''}>
-                            <label class="form-check-label fw-bold fs-6 fs-md-5" for="quarter${q}">
-                                ${quarterName}
-                            </label>
+                <div class="col-md-3 col-sm-6 mb-3">
+                    <div class="card card-outline ${isSelected ? 'card-primary card-selected' : 'card-secondary'} h-100 quarter-card" data-quarter="${q}">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <div class="custom-control custom-checkbox">
+                                    <input class="custom-control-input quarter-checkbox" type="checkbox"
+                                           id="quarter${q}" ${isSelected ? 'checked' : ''}>
+                                    <label for="quarter${q}" class="custom-control-label font-weight-bold">
+                                        ${quarterName}
+                                    </label>
+                                </div>
+                            </h3>
                         </div>
-                        <small class="text-muted d-none d-md-block">${monthNames}</small>
-                        <small class="text-muted d-md-none">${EC_QUARTERS[q].length} months</small>
-                        <div class="mt-1 mt-md-2">
-                            <small class="text-primary">Planned: ${quarterData.planned.toFixed(2)} ha</small>
-                        </div>
-                        <div class="mt-1">
-                            <small class="text-info">Year: ${preparationYear}</small>
+                        <div class="card-body">
+                            <p class="text-muted mb-2">
+                                <small>${monthNames}</small>
+                            </p>
+                            <div class="row">
+                                <div class="col-12">
+                                    <small class="text-primary">
+                                        <i class="fas fa-seedling mr-1"></i>{{ __('Planned') }}: ${quarterData.planned.toFixed(2)} {{ __('ha') }}
+                                    </small>
+                                </div>
+                                <div class="col-12">
+                                    <small class="text-info">
+                                        <i class="fas fa-calendar mr-1"></i>{{ __('Year') }}: ${preparationYear}
+                                    </small>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
             `);
+
+                // Add event listener to quarter card
+                $(`#quarter${q}`).on('change', function() {
+                    handleQuarterChange(parseInt(q), $(this).is(':checked'));
+                });
             });
 
-            // Add event listeners
-            $('.quarter-checkbox').on('change', function() {
-                const quarterNum = parseInt($(this).closest('.quarter-card').data('q'));
-                const isChecked = $(this).is(':checked');
-
-                if (isChecked) {
-                    selectedQuarters.add(quarterNum);
-                    $(this).closest('.quarter-card').addClass('card-selected');
-                } else {
-                    selectedQuarters.delete(quarterNum);
-                    $(this).closest('.quarter-card').removeClass('card-selected');
-                    // Remove months from this quarter from selected months
-                    const quarterMonths = EC_QUARTERS[quarterNum];
-                    quarterMonths.forEach(month => {
-                        selectedMonths.delete(month);
-                        currentDisplayedMonths.delete(month);
-                    });
-                }
-
-                renderMonths();
-                updateBadges();
-            });
-
-            $(".quarter-card").click(function(e) {
+            // Add click event to whole quarter card
+            $('.quarter-card').click(function(e) {
                 if (!$(e.target).is('input') && !$(e.target).is('label')) {
                     const checkbox = $(this).find('.quarter-checkbox');
                     checkbox.prop('checked', !checkbox.prop('checked'));
                     checkbox.trigger('change');
                 }
             });
+        }
+
+        function handleQuarterChange(quarterNum, isChecked) {
+            if (isChecked) {
+                selectedQuarters.add(quarterNum);
+                $(`.quarter-card[data-quarter="${quarterNum}"]`).removeClass('card-secondary').addClass('card-primary card-selected');
+            } else {
+                selectedQuarters.delete(quarterNum);
+                $(`.quarter-card[data-quarter="${quarterNum}"]`).removeClass('card-primary card-selected').addClass('card-secondary');
+                // Remove months from this quarter from selected months
+                const quarterMonths = EC_QUARTERS[quarterNum];
+                quarterMonths.forEach(month => {
+                    selectedMonths.delete(month);
+                });
+            }
+
+            renderMonthsTable();
+            updateBadges();
         }
 
         function calculateQuarterData(quarter) {
@@ -520,30 +569,31 @@
 
         function selectAllQuarters() {
             Object.keys(EC_QUARTERS).forEach(q => {
-                selectedQuarters.add(parseInt(q));
+                if (!selectedQuarters.has(parseInt(q))) {
+                    selectedQuarters.add(parseInt(q));
+                }
             });
             renderQuarters();
-            renderMonths();
+            renderMonthsTable();
             updateBadges();
-            showAlert('All quarters selected for preparation year ' + preparationYear, 'success');
+            showAlert(translations.all_quarters_selected + ' ' + preparationYear, 'success');
         }
 
         function clearAllQuarters() {
             selectedQuarters.clear();
             selectedMonths.clear();
-            currentDisplayedMonths.clear();
             renderQuarters();
-            renderMonths();
+            $('#monthsSection').hide();
             $('#weeksSection').hide();
             updateBadges();
-            showAlert('All quarters cleared', 'info');
+            showAlert(translations.all_quarters_cleared, 'info');
         }
 
         /* -------------------------------
-           MONTHS MANAGEMENT
+           MONTHS TABLE MANAGEMENT
         ------------------------------- */
-        function renderMonths() {
-            $("#monthsContainer").empty();
+        function renderMonthsTable() {
+            $("#monthsTable").empty();
 
             if (selectedQuarters.size === 0) {
                 $("#monthsSection").hide();
@@ -562,58 +612,97 @@
             // Remove duplicates and sort
             allMonths = [...new Set(allMonths)].sort((a, b) => a - b);
 
+            if (allMonths.length === 0) {
+                $("#monthsTable").append(`
+                    <tr>
+                        <td colspan="6" class="text-center text-muted py-3">
+                            <i class="fas fa-calendar-alt mr-2"></i>
+                            ${translations.no_months_available}
+                        </td>
+                    </tr>
+                `);
+                return;
+            }
+
             allMonths.forEach(monthNum => {
                 const month = EC_MONTHS[monthNum - 1];
                 const monthData = calculateMonthData(monthNum);
                 const isSelected = selectedMonths.has(monthNum);
+                const quarterNum = findQuarter(monthNum);
+                const status = monthData.planned > 0 ? translations.partially_planned : translations.not_planned;
+                const statusClass = monthData.planned > 0 ? 'badge-warning' : 'badge-secondary';
 
-                $("#monthsContainer").append(`
-                <div class="col-6 col-md-4 mb-2 mb-md-3">
-                    <div class="card month-card p-2 p-md-3 text-center ${isSelected ? 'card-selected' : ''}" data-month="${monthNum}">
-                        <div class="form-check mb-1 mb-md-2">
-                            <input class="form-check-input month-checkbox" type="checkbox"
-                                   id="month${monthNum}" ${isSelected ? 'checked' : ''}>
-                            <label class="form-check-label fw-bold fs-6" for="month${monthNum}">
-                                ${month.name}
-                            </label>
-                        </div>
-                        <small class="text-muted">Q${findQuarter(monthNum)}</small>
-                        <div class="mt-1 mt-md-2">
-                            <small class="text-primary">Planned: ${monthData.planned.toFixed(2)} ha</small>
-                        </div>
-                        <div class="mt-1">
-                            <small class="text-info">Year: ${preparationYear}</small>
-                        </div>
-                    </div>
-                </div>
-            `);
+                $("#monthsTable").append(`
+                    <tr class="${isSelected ? 'table-info' : ''} month-row" data-month="${monthNum}">
+                        <td>
+                            <div class="custom-control custom-checkbox">
+                                <input class="custom-control-input month-checkbox" type="checkbox"
+                                       id="month${monthNum}" ${isSelected ? 'checked' : ''}>
+                                <label for="month${monthNum}" class="custom-control-label"></label>
+                            </div>
+                        </td>
+                        <td>
+                            <strong>${month.name}</strong>
+                        </td>
+                        <td>
+                            <span class="badge badge-primary">Q${quarterNum}</span>
+                        </td>
+                        <td>${preparationYear}</td>
+                        <td>
+                            <span class="text-primary font-weight-bold">${monthData.planned.toFixed(2)} {{ __('ha') }}</span>
+                        </td>
+                        <td>
+                            <span class="badge ${statusClass}">${status}</span>
+                        </td>
+                    </tr>
+                `);
+
+                // Add event listener to month checkbox
+                $(`#month${monthNum}`).on('change', function() {
+                    handleMonthChange(monthNum, $(this).is(':checked'));
+                });
             });
 
-            // Add event listeners
-            $('.month-checkbox').on('change', function() {
-                const monthNum = parseInt($(this).closest('.month-card').data('month'));
+            // Add select all functionality
+            $('#selectAllMonthsCheckbox').off('change').on('change', function() {
                 const isChecked = $(this).is(':checked');
-
-                if (isChecked) {
-                    selectedMonths.add(monthNum);
-                    $(this).closest('.month-card').addClass('card-selected');
-                } else {
-                    selectedMonths.delete(monthNum);
-                    $(this).closest('.month-card').removeClass('card-selected');
-                    currentDisplayedMonths.delete(monthNum);
-                }
-
-                renderWeeks();
-                updateBadges();
+                $('.month-checkbox').prop('checked', isChecked).trigger('change');
             });
 
-            $(".month-card").click(function(e) {
+            // Add click event to month rows
+            $('.month-row').click(function(e) {
                 if (!$(e.target).is('input') && !$(e.target).is('label')) {
                     const checkbox = $(this).find('.month-checkbox');
                     checkbox.prop('checked', !checkbox.prop('checked'));
                     checkbox.trigger('change');
                 }
             });
+
+            // Update select all checkbox state
+            updateSelectAllMonthsCheckbox();
+        }
+
+        function updateSelectAllMonthsCheckbox() {
+            const totalMonths = $('.month-checkbox').length;
+            const checkedMonths = $('.month-checkbox:checked').length;
+            const selectAllCheckbox = $('#selectAllMonthsCheckbox');
+            
+            selectAllCheckbox.prop('checked', totalMonths > 0 && totalMonths === checkedMonths);
+            selectAllCheckbox.prop('indeterminate', checkedMonths > 0 && checkedMonths < totalMonths);
+        }
+
+        function handleMonthChange(monthNum, isChecked) {
+            if (isChecked) {
+                selectedMonths.add(monthNum);
+                $(`.month-row[data-month="${monthNum}"]`).addClass('table-info');
+            } else {
+                selectedMonths.delete(monthNum);
+                $(`.month-row[data-month="${monthNum}"]`).removeClass('table-info');
+            }
+
+            updateSelectAllMonthsCheckbox();
+            renderWeeksTable();
+            updateBadges();
         }
 
         function calculateMonthData(monthNum) {
@@ -627,7 +716,7 @@
 
         function selectAllMonths() {
             if (selectedQuarters.size === 0) {
-                showAlert('Please select quarters first', 'warning');
+                showAlert(translations.select_quarters_first, 'warning');
                 return;
             }
 
@@ -638,29 +727,30 @@
             });
 
             allMonths.forEach(month => {
-                selectedMonths.add(month);
+                if (!selectedMonths.has(month)) {
+                    selectedMonths.add(month);
+                }
             });
 
-            renderMonths();
-            renderWeeks();
+            renderMonthsTable();
+            renderWeeksTable();
             updateBadges();
-            showAlert('All months in selected quarters selected for preparation year ' + preparationYear, 'success');
+            showAlert(translations.all_months_selected + ' ' + preparationYear, 'success');
         }
 
         function clearAllMonths() {
             selectedMonths.clear();
-            currentDisplayedMonths.clear();
-            renderMonths();
+            renderMonthsTable();
             $('#weeksSection').hide();
             updateBadges();
-            showAlert('All months cleared', 'info');
+            showAlert(translations.all_months_cleared, 'info');
         }
 
         /* -------------------------------
-           WEEKS MANAGEMENT
+           WEEKS TABLE MANAGEMENT
         ------------------------------- */
-        function renderWeeks() {
-            $("#weeksContainer").empty();
+        function renderWeeksTable() {
+            $("#weeksTable").empty();
 
             if (selectedMonths.size === 0) {
                 $("#weeksSection").hide();
@@ -668,115 +758,84 @@
             }
 
             $("#weeksSection").show();
-            currentDisplayedMonths = new Set([...selectedMonths]);
 
             // Group weeks by month for better organization
             const monthsArray = Array.from(selectedMonths).sort((a, b) => a - b);
+            let totalPlanned = 0;
 
             monthsArray.forEach(monthNum => {
                 const month = EC_MONTHS[monthNum - 1];
+                const quarterNum = findQuarter(monthNum);
                 const monthData = calculateMonthData(monthNum);
 
-                // Month header
-                $("#weeksContainer").append(`
-                <div class="month-section mb-3 mb-md-4 p-2 p-md-3 border rounded bg-light">
-                    <div class="d-flex justify-content-between align-items-center flex-column flex-md-row mb-2 mb-md-3">
-                        <h6 class="mb-1 mb-md-0 text-primary fs-6">
-                            <i class="mdi mdi-calendar-month me-2"></i>
-                            ${month.name} (Q${findQuarter(monthNum)}) - ${preparationYear}
-                        </h6>
-                        <div class="text-center text-md-end mt-1 mt-md-0">
-                            <span class="badge bg-primary me-1 me-md-2 mb-1 mb-md-0">
-                                Planned: ${monthData.planned.toFixed(2)} ha
-                            </span>
-                            <span class="badge bg-info">
-                                ${totalArea > 0 ? ((monthData.planned / totalArea * 100).toFixed(1)) : 0}%
-                            </span>
-                        </div>
-                    </div>
-                    <div class="weeks-grid" id="weeksGrid${monthNum}">
-                        <!-- Weeks for this month will be populated here -->
-                    </div>
-                </div>
-            `);
+                // Calculate weeks for this month
+                let weeks = [];
+                let start = 1;
+                while (start <= month.days) {
+                    let end = Math.min(start + 6, month.days);
+                    weeks.push({ start, end, weekNum: weeks.length + 1 });
+                    start += 7;
+                }
 
-                // Render weeks for this month
-                renderWeeksForMonth(monthNum);
+                weeks.forEach(week => {
+                    const existingDistribution = weeklyDistributions.find(dist =>
+                        dist.month === month.name && dist.week === `{{ __('Week') }} ${week.weekNum}`
+                    );
+                    
+                    const plannedArea = existingDistribution ? existingDistribution.planned_area : 0;
+                    const status = calculateStatus(plannedArea);
+                    const statusClass = getStatusClass(status);
+                    const percentage = totalArea > 0 ? (plannedArea / totalArea * 100) : 0;
+                    
+                    totalPlanned += plannedArea;
+
+                    $("#weeksTable").append(`
+                        <tr class="week-row" data-month="${monthNum}" data-week="${week.weekNum}">
+                            <td>
+                                <strong>{{ __('Week') }} ${week.weekNum}</strong>
+                            </td>
+                            <td>${month.name}</td>
+                            <td>
+                                <span class="badge badge-primary">Q${quarterNum}</span>
+                            </td>
+                            <td>
+                                <small class="text-muted">{{ __('Days') }} ${week.start}-${week.end}</small>
+                            </td>
+                            <td>${preparationYear}</td>
+                            <td>
+                                <div class="input-group input-group-sm">
+                                    <input type="number" step="0.01" min="0" max="${totalArea}"
+                                           class="form-control form-control-sm planned-input"
+                                           data-month="${monthNum}"
+                                           data-week="${week.weekNum}"
+                                           value="${plannedArea.toFixed(2)}"
+                                           placeholder="0.00">
+                                    <div class="input-group-append">
+                                        <span class="input-group-text">{{ __('ha') }}</span>
+                                    </div>
+                                </div>
+                                <div class="validation-feedback mt-1" style="font-size: 0.75rem;"></div>
+                            </td>
+                            <td>
+                                <span class="badge ${statusClass}">${status}</span>
+                            </td>
+                            <td class="text-center">
+                                <span class="text-info font-weight-bold">${percentage.toFixed(1)}%</span>
+                            </td>
+                        </tr>
+                    `);
+                });
             });
 
-            updateTotalDistributedBadge();
+            // Add input event listeners
             enhanceWeekInputValidation();
-        }
-
-        function renderWeeksForMonth(monthNum) {
-            const month = EC_MONTHS[monthNum - 1];
-            const weeksGrid = $(`#weeksGrid${monthNum}`);
-            weeksGrid.empty();
-
-            let weeks = [];
-            let start = 1;
-            while (start <= month.days) {
-                let end = Math.min(start + 6, month.days);
-                weeks.push({ start, end });
-                start += 7;
-            }
-
-            weeks.forEach((w, i) => {
-                const weekNumber = i + 1;
-                const existingDistribution = weeklyDistributions.find(dist =>
-                    dist.month === month.name && dist.week === `Week ${weekNumber}`
-                );
-                
-                const plannedArea = existingDistribution ? existingDistribution.planned_area : 0;
-                const status = calculateStatus(plannedArea);
-                const statusClass = getStatusClass(status);
-
-                weeksGrid.append(`
-                <div class="week-combined-row mb-3 p-2 border rounded bg-white">
-                    <div class="row align-items-center">
-                        <div class="col-12 col-md-3 mb-2 mb-md-0">
-                            <strong class="fs-6">Week ${weekNumber}</strong><br>
-                            <small class="text-muted">Days ${w.start}-${w.end}</small><br>
-                            <small class="text-info">Year: ${preparationYear}</small>
-                        </div>
-                        
-                        <!-- Planning Section -->
-                        <div class="col-12 col-md-5 mb-2 mb-md-0">
-                            <label class="form-label small fw-bold text-primary">Planned Area</label>
-                            <div class="input-group input-group-sm">
-                                <input type="number" step="0.01" min="0" max="${totalArea}"
-                                       class="form-control planned-input"
-                                       data-month="${monthNum}"
-                                       data-week="${weekNumber}"
-                                       value="${plannedArea}"
-                                       placeholder="0.00"
-                                       oninput="validatePlannedInput(this)">
-                                <span class="input-group-text">ha</span>
-                            </div>
-                            <div class="validation-feedback mt-1"></div>
-                        </div>
-                        
-                        <!-- Status -->
-                        <div class="col-12 col-md-4">
-                            <div class="row text-center">
-                                <div class="col-12">
-                                    <small class="text-muted d-block">Status</small>
-                                    <span class="badge ${statusClass} fs-6">${status}</span>
-                                </div>
-                            </div>
-                            <div class="progress mt-2" style="height: 6px;">
-                                <div class="progress-bar ${statusClass}" 
-                                     style="width: ${totalArea > 0 ? Math.min((plannedArea / totalArea * 100), 100) : 0}%">
-                                </div>
-                            </div>
-                            <small class="text-muted">
-                                ${totalArea > 0 ? ((plannedArea / totalArea * 100).toFixed(1)) : 0}%
-                            </small>
-                        </div>
-                    </div>
-                </div>
-            `);
-            });
+            
+            // Update footer totals
+            const totalPercentage = totalArea > 0 ? (totalPlanned / totalArea * 100) : 0;
+            $('#weeksTotalPlanned').text(totalPlanned.toFixed(2) + ' {{ __('ha') }}');
+            $('#weeksTotalPercentage').text(totalPercentage.toFixed(1) + '%');
+            
+            updateTotalDistributedBadge();
         }
 
         /* -------------------------------
@@ -784,20 +843,20 @@
         ------------------------------- */
         function validatePlannedInput(input) {
             const value = parseFloat($(input).val()) || 0;
-            const feedback = $(input).siblings('.validation-feedback');
+            const feedback = $(input).parent().siblings('.validation-feedback');
 
             $(input).removeClass('is-valid is-invalid');
             feedback.empty();
 
             if (value < 0) {
                 $(input).addClass('is-invalid');
-                feedback.html('<small class="text-danger"><i class="mdi mdi-alert-circle me-1"></i>Value cannot be negative</small>');
+                feedback.html('<small class="text-danger"><i class="fas fa-exclamation-circle mr-1"></i>' + translations.negative_value + '</small>');
                 return false;
             }
 
             if (value > totalArea) {
                 $(input).addClass('is-invalid');
-                feedback.html(`<small class="text-danger"><i class="mdi mdi-alert-circle me-1"></i>Exceeds total area (${totalArea.toFixed(2)} ha)</small>`);
+                feedback.html(`<small class="text-danger"><i class="fas fa-exclamation-circle mr-1"></i>${translations.exceeds_total_area} (${totalArea.toFixed(2)} {{ __('ha') }})</small>`);
                 return false;
             }
 
@@ -820,7 +879,7 @@
             
             // Find or create distribution
             let distribution = weeklyDistributions.find(dist =>
-                dist.month === month.name && dist.week === `Week ${weekNumber}`
+                dist.month === month.name && dist.week === `{{ __('Week') }} ${weekNumber}`
             );
 
             if (distribution) {
@@ -831,7 +890,7 @@
                     year: preparationYear,
                     quarter: quarter,
                     month: month.name,
-                    week: `Week ${weekNumber}`,
+                    week: `{{ __('Week') }} ${weekNumber}`,
                     range: weekData.range,
                     planned_area: plannedArea
                 };
@@ -844,7 +903,7 @@
             // Remove if area is 0
             if (plannedArea === 0) {
                 weeklyDistributions = weeklyDistributions.filter(dist =>
-                    !(dist.month === month.name && dist.week === `Week ${weekNumber}`)
+                    !(dist.month === month.name && dist.week === `{{ __('Week') }} ${weekNumber}`)
                 );
             }
 
@@ -853,29 +912,53 @@
             updateSummaryTable();
             updateSummaryCards();
             updateTotalDistributedBadge();
+            updateMonthTableData(monthNum);
         }
 
         function updateWeekUI(monthNum, weekNumber, plannedArea) {
             const status = calculateStatus(plannedArea);
             const statusClass = getStatusClass(status);
+            const percentage = totalArea > 0 ? (plannedArea / totalArea * 100) : 0;
             
-            const weekRow = $(`.planned-input[data-month="${monthNum}"][data-week="${weekNumber}"]`).closest('.week-combined-row');
+            const weekRow = $(`.week-row[data-month="${monthNum}"][data-week="${weekNumber}"]`);
             
-            weekRow.find('.badge').removeClass('bg-secondary bg-success');
+            weekRow.find('.badge').removeClass('badge-secondary badge-success');
             weekRow.find('.badge').addClass(statusClass).text(status);
             
-            weekRow.find('.progress-bar')
-                .removeClass('bg-secondary bg-success')
-                .addClass(statusClass)
-                .css('width', totalArea > 0 ? Math.min((plannedArea / totalArea * 100), 100) + '%' : '0%');
+            weekRow.find('.text-info').text(percentage.toFixed(1) + '%');
+        }
+
+        function updateMonthTableData(monthNum) {
+            const monthData = calculateMonthData(monthNum);
+            const monthName = EC_MONTHS[monthNum - 1].name;
             
-            weekRow.find('.text-muted').last().text(totalArea > 0 ? ((plannedArea / totalArea * 100).toFixed(1)) + '%' : '0%');
+            const monthRow = $(`.month-row[data-month="${monthNum}"]`);
+            monthRow.find('td:nth-child(5)').html(`<span class="text-primary font-weight-bold">${monthData.planned.toFixed(2)} {{ __('ha') }}</span>`);
+            
+            const status = monthData.planned > 0 ? translations.partially_planned : translations.not_planned;
+            const statusClass = monthData.planned > 0 ? 'badge-warning' : 'badge-secondary';
+            monthRow.find('td:nth-child(6)').html(`<span class="badge ${statusClass}">${status}</span>`);
         }
 
         function enhanceWeekInputValidation() {
             $('.planned-input').off('input').on('input', function() {
                 validatePlannedInput(this);
+                // Update weeks table footer
+                updateWeeksTableFooter();
             });
+        }
+
+        function updateWeeksTableFooter() {
+            let totalPlanned = 0;
+            
+            $('.planned-input').each(function() {
+                const value = parseFloat($(this).val()) || 0;
+                totalPlanned += value;
+            });
+            
+            const totalPercentage = totalArea > 0 ? (totalPlanned / totalArea * 100) : 0;
+            $('#weeksTotalPlanned').text(totalPlanned.toFixed(2) + ' {{ __('ha') }}');
+            $('#weeksTotalPercentage').text(totalPercentage.toFixed(1) + '%');
         }
 
         function saveAllDistributions() {
@@ -887,12 +970,12 @@
             });
 
             if (hasErrors) {
-                showAlert('Please fix validation errors before saving', 'error');
+                showAlert(translations.fix_validation_errors_save, 'error');
                 return;
             }
 
             saveJSON();
-            showAlert('All distributions saved successfully!', 'success');
+            showAlert(translations.all_distributions_saved, 'success');
         }
 
         /* -------------------------------
@@ -906,8 +989,8 @@
                 $("#summaryTable").append(`
                 <tr>
                     <td colspan="8" class="text-center text-muted py-4">
-                        <i class="mdi mdi-calendar-blank me-2"></i>
-                        No distribution yet. Start by selecting quarters above.
+                        <i class="fas fa-calendar-alt mr-2"></i>
+                        {{ __('No distribution yet. Start by selecting quarters above.') }}
                     </td>
                 </tr>
             `);
@@ -918,17 +1001,17 @@
 
                     $("#summaryTable").append(`
                     <tr>
-                        <td class="d-none d-md-table-cell">${dist.year || preparationYear}</td>
-                        <td class="d-none d-md-table-cell">${dist.quarter}</td>
+                        <td>${dist.year || preparationYear}</td>
+                        <td>${dist.quarter}</td>
                         <td>${dist.month}</td>
                         <td>${dist.week}</td>
-                        <td class="d-none d-md-table-cell">${dist.range}</td>
-                        <td class="fw-bold text-primary">${dist.planned_area.toFixed(2)} ha</td>
+                        <td>${dist.range}</td>
+                        <td class="font-weight-bold text-primary">${dist.planned_area.toFixed(2)} {{ __('ha') }}</td>
                         <td><span class="badge ${statusClass}">${dist.status}</span></td>
                         <td>
-                            <button class="btn btn-sm btn-outline-danger" onclick="removeDistribution(${i})">
-                                <i class="mdi mdi-delete"></i>
-                            </button>
+                            {{-- <button class="btn btn-sm btn-outline-danger" onclick="removeDistribution(${i})">
+                                <i class="fas fa-trash"></i>
+                            </button> --}}
                         </td>
                     </tr>
                 `);
@@ -936,7 +1019,7 @@
             }
 
             const overallCompletion = totalArea > 0 ? (totalPlanned / totalArea * 100) : 0;
-            $("#summaryTotal").text(totalPlanned.toFixed(2) + " ha");
+            $("#summaryTotal").text(totalPlanned.toFixed(2) + " {{ __('ha') }}");
             $("#summaryCompletion").text(overallCompletion.toFixed(1) + "%");
         }
 
@@ -944,8 +1027,9 @@
             const totalPlanned = weeklyDistributions.reduce((total, dist) => total + dist.planned_area, 0);
             const completion = totalArea > 0 ? (totalPlanned / totalArea * 100) : 0;
 
-            $('#plannedAreaSummary').text(totalPlanned.toFixed(2));
+            $('#plannedAreaSummary').text(totalPlanned.toFixed(2) + ' {{ __('ha') }}');
             $('#completionPercentage').text(completion.toFixed(1) + '%');
+            $('#plannedProgress').css('width', completion + '%');
         }
 
         function removeDistribution(index) {
@@ -953,8 +1037,8 @@
             updateSummaryTable();
             saveJSON();
             updateSummaryCards();
-            renderWeeks();
-            showAlert('Distribution removed successfully!', 'info');
+            renderWeeksTable();
+            showAlert(translations.distribution_removed, 'info');
         }
 
         function saveJSON() {
@@ -1010,12 +1094,12 @@
 
                 if (selectedQuarters.size > 0) {
                     $("#monthsSection").show();
-                    renderMonths();
+                    renderMonthsTable();
                 }
 
                 if (selectedMonths.size > 0) {
                     $("#weeksSection").show();
-                    renderWeeks();
+                    renderWeeksTable();
                 }
             }
         }
@@ -1025,13 +1109,13 @@
         ------------------------------- */
         function updateTotalDistributedBadge() {
             const totalPlanned = weeklyDistributions.reduce((total, dist) => total + dist.planned_area, 0);
-            $('#totalDistributedBadge').text(totalPlanned.toFixed(2) + ' ha');
+            $('#totalDistributedBadge').text(totalPlanned.toFixed(2) + ' {{ __('ha') }}');
         }
 
         function updateBadges() {
-            $("#selectedQuartersBadge").text(selectedQuarters.size + " quarters");
-            $("#selectedMonthsBadge").text(selectedMonths.size + " months");
-            $("#selectedWeeksBadge").text(weeklyDistributions.length + " weeks");
+            $("#selectedQuartersBadge").text(selectedQuarters.size);
+            $("#selectedMonthsBadge").text(selectedMonths.size);
+            $("#selectedWeeksBadge").text(weeklyDistributions.length);
         }
 
         function findQuarter(monthId) {
@@ -1052,7 +1136,7 @@
             // Check for individual input errors
             $('.planned-input').each(function() {
                 if ($(this).hasClass('is-invalid')) {
-                    errors.push('Some distributions have validation errors');
+                    errors.push('{{ __('Some distributions have validation errors') }}');
                     isValid = false;
                     return false; // break the loop
                 }
@@ -1071,315 +1155,262 @@
             $('.validation-error-alert').remove();
 
             const errorHtml = `
-            <div class="row justify-content-center mb-3 mb-md-4 validation-error-alert">
-                <div class="col-12 col-lg-10">
-                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                        <div class="d-flex align-items-center">
-                            <i class="mdi mdi-alert-circle-outline me-2 fs-5"></i>
-                            <div class="flex-grow-1">
-                                <h6 class="alert-heading mb-2">Please fix the following errors:</h6>
-                                <ul class="mb-0 ps-3">
-                                    ${errors.map(error => `<li>${error}</li>`).join('')}
-                                </ul>
-                            </div>
-                        </div>
-                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            <div class="row mb-3 validation-error-alert">
+                <div class="col-12">
+                    <div class="alert alert-danger alert-dismissible">
+                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                        <h5><i class="icon fas fa-ban"></i> {{ __('Validation Error!') }}</h5>
+                        <ul class="mb-0">
+                            ${errors.map(error => `<li>${error}</li>`).join('')}
+                        </ul>
                     </div>
                 </div>
             </div>
         `;
 
-            $('.page-header').after(errorHtml);
-
-            // Scroll to errors
-            $('html, body').animate({
-                scrollTop: $('.validation-error-alert').offset().top - 100
-            }, 500);
+            $('.content-header').after(errorHtml);
         }
 
         function showAlert(message, type = 'info') {
-            const alertClass = {
-                'success': 'alert-success',
-                'error': 'alert-danger',
-                'warning': 'alert-warning',
-                'info': 'alert-info'
-            }[type] || 'alert-info';
-
-            // Create toast notification
-            const toastId = 'toast-' + Date.now();
-            const toastHtml = `
-            <div id="${toastId}" class="toast align-items-center text-white bg-${type === 'error' ? 'danger' : type === 'warning' ? 'warning' : 'success'} border-0 position-fixed top-0 end-0 m-3" role="alert">
-                <div class="d-flex">
-                    <div class="toast-body">
-                        <i class="mdi mdi-${type === 'success' ? 'check-circle' : type === 'error' ? 'alert-circle' : 'information'} me-2"></i>
-                        ${message}
+            const toast = $(`
+                <div class="toast align-items-center text-white bg-${type === 'error' ? 'danger' : type === 'warning' ? 'warning' : 'success'} border-0 position-fixed bottom-0 end-0 m-3" role="alert" style="z-index: 9999;">
+                    <div class="d-flex">
+                        <div class="toast-body">
+                            <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'} mr-2"></i>
+                            ${message}
+                        </div>
+                        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" style="opacity: 1;"></button>
                     </div>
-                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
                 </div>
-            </div>
-        `;
+            `);
 
-            $('body').append(toastHtml);
-            const toast = new bootstrap.Toast(document.getElementById(toastId));
-            toast.show();
-
-            // Remove toast after hide
-            document.getElementById(toastId).addEventListener('hidden.bs.toast', function() {
-                this.remove();
-            });
+            $('body').append(toast);
+            
+            // Simple show/hide instead of Bootstrap toast
+            toast.fadeIn();
+            setTimeout(() => {
+                toast.fadeOut(400, function() {
+                    $(this).remove();
+                });
+            }, 3000);
         }
     </script>
 
-    <style>
-        .crop-plan-edit-container {
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-            min-height: 100vh;
+  <style>
+    /* Card selection styles */
+    .card-selected {
+        box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25) !important;
+    }
+
+    /* Progress bar colors */
+    .bg-purple {
+        background-color: #6f42c1 !important;
+    }
+
+    /* Info box hover effects */
+    .info-box:hover {
+        transform: translateY(-2px);
+        transition: transform 0.3s ease;
+    }
+
+    /* Card hover effects */
+    .card-outline:hover:not(.card-selected) {
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Quarter and month card hover */
+    .quarter-card, .month-row {
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .quarter-card:hover:not(.card-selected) {
+        border-color: #007bff !important;
+    }
+
+    .month-row:hover {
+        background-color: rgba(0, 123, 255, 0.05) !important;
+    }
+
+    /* Custom checkbox styling */
+    .custom-control-input:checked ~ .custom-control-label::before {
+        border-color: #007bff;
+        background-color: #007bff;
+    }
+
+    /* Week table row styling */
+    .week-row input.form-control-sm {
+        min-width: 100px;
+    }
+
+    /* Validation feedback */
+    .validation-feedback {
+        min-height: 20px;
+    }
+
+    /* Toast positioning */
+    .toast {
+        display: none;
+        min-width: 300px;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        .card-title {
+            font-size: 0.9rem;
         }
-
-        .form-card {
-            border-radius: 15px;
-            overflow: hidden;
+        
+        .info-box-number {
+            font-size: 1.2rem;
         }
-
-        .bg-gradient-warning {
-            background: linear-gradient(135deg, #ffa726 0%, #fb8c00 100%) !important;
+        
+        .table-responsive {
+            font-size: 0.85rem;
         }
-
-        .page-header .header-icon {
-            animation: float 3s ease-in-out infinite;
+        
+        .week-row td {
+            padding: 0.5rem !important;
         }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-5px); }
+        
+        .planned-input {
+            font-size: 0.8rem !important;
         }
+    }
 
-        .header-divider {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 1rem 0;
-        }
+    /* Table styling */
+    .table-hover tbody tr:hover {
+        background-color: rgba(0, 0, 0, 0.075);
+    }
 
-        .divider-line {
-            flex: 1;
-            height: 2px;
-            background: linear-gradient(90deg, transparent, #dee2e6, transparent);
-        }
+    .table-info {
+        background-color: rgba(0, 123, 255, 0.15) !important;
+    }
 
-        .divider-icon {
-            margin: 0 1rem;
-            color: #ffa726;
-            font-size: 1.5rem;
-        }
+    /* Input validation states */
+    .planned-input.is-valid {
+        border-color: #28a745;
+    }
 
-        .section-header {
-            position: relative;
-        }
+    .planned-input.is-invalid {
+        border-color: #dc3545;
+    }
 
-        .section-title {
-            color: #2c3e50;
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-        }
-
-        .section-divider {
-            height: 3px;
-            background: linear-gradient(90deg, #ffa726, #fb8c00);
-            border-radius: 2px;
-            width: 60px;
-        }
-
-        .info-card {
-            border-left: 4px solid #007bff;
-            min-height: 80px;
-        }
-
-        .summary-card {
-            padding: 1.5rem;
-            border-radius: 10px;
-            text-align: center;
-            transition: transform 0.3s ease;
-        }
-
-        .summary-card:hover {
-            transform: translateY(-5px);
-        }
-
-        .summary-value {
-            margin: 0.5rem 0;
-        }
-
-        .summary-label {
-            font-weight: 600;
-            margin-bottom: 0.25rem;
-        }
-
-        /* Quarter and Month Card Styles */
-        .quarter-card, .month-card {
-            transition: all 0.3s ease;
-            border: 2px solid #e9ecef;
-            cursor: pointer;
-            min-height: 120px;
-        }
-
-        .quarter-card:hover, .month-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            border-color: #007bff;
-        }
-
-        .card-selected {
-            border-color: #007bff !important;
-            background-color: #f8f9ff !important;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(0,123,255,0.15) !important;
-        }
-
-        .quarter-checkbox, .month-checkbox {
-            transform: scale(1.2);
-        }
-
-        /* Combined week row styling */
-        .week-combined-row {
-            transition: all 0.3s ease;
-            border-left: 4px solid #007bff;
-        }
-
-        .week-combined-row:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-        }
-
-        .planned-input:focus {
-            border-color: #007bff;
-            box-shadow: 0 0 0 0.2rem rgba(0,123,255,0.25);
-        }
-
-        .month-section {
-            border-left: 4px solid #007bff !important;
-        }
-
-        .btn-xs {
-            padding: 0.25rem 0.5rem;
-            font-size: 0.75rem;
-        }
-
-        /* Status badge colors */
-        .badge.bg-success {
-            background-color: #198754 !important;
-        }
-
-        .badge.bg-secondary {
-            background-color: #6c757d !important;
-        }
-
-        /* Progress bar colors */
-        .progress-bar.bg-success { background-color: #198754 !important; }
-        .progress-bar.bg-secondary { background-color: #6c757d !important; }
-
-        /* Mobile-first responsive adjustments */
-        @media (max-width: 576px) {
-            .container-fluid {
-                padding-left: 10px;
-                padding-right: 10px;
-            }
-
-            .card-body {
-                padding: 1.5rem !important;
-            }
-
-            .form-actions {
-                margin-left: -1.5rem;
-                margin-right: -1.5rem;
-                padding-left: 1.5rem;
-                padding-right: 1.5rem;
-            }
-
-            .activity-planning-container {
-                padding: 10px;
-            }
-
-            .info-card {
-                min-height: 70px;
-            }
-
-            .quarter-card, .month-card {
-                min-height: 100px;
-            }
-
-            .btn-lg {
-                padding: 0.75rem 1rem;
-                font-size: 0.9rem;
-            }
-
-            .week-combined-row .col-md-3,
-            .week-combined-row .col-md-5,
-            .week-combined-row .col-md-4 {
-                margin-bottom: 1rem;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .card-body {
-                padding: 2rem !important;
-            }
-
-            .form-actions {
-                margin-left: -2rem;
-                margin-right: -2rem;
-                padding-left: 2rem;
-                padding-right: 2rem;
-            }
-
-            .form-actions .d-flex {
-                flex-direction: column;
-                gap: 1rem;
-            }
-
-            .form-actions .btn {
-                width: 100%;
-            }
-
-            .activity-planning-container {
-                padding: 15px;
-            }
-
-            .quarter-card .col-md-3,
-            .month-card .col-md-4 {
-                width: 100%;
-            }
-
-            /* Improve touch targets for mobile */
-            .btn {
-                padding: 0.75rem 1rem;
-            }
-
-            .form-control {
-                padding: 0.75rem;
-            }
-
-            /* Better spacing for mobile */
-            .row.g-2 {
-                margin: -5px;
-            }
-
-            .row.g-2 > [class*="col-"] {
-                padding: 5px;
-            }
-        }
-
-        /* Validation styles */
-        .validation-feedback {
-            min-height: 20px;
-        }
-
-        .planned-input.is-valid {
-            border-color: #28a745;
-        }
-
-        .planned-input.is-invalid {
-            border-color: #dc3545;
-        }
-    </style>
+    /* Table Header Styles - WHITESMOKE with BLACK TEXT - ONLY FOR ACTUAL TABLE HEADERS */
+    /* Target ONLY table headers inside table elements */
+    table.table thead {
+        background-color: whitesmoke !important;
+    }
+    
+    table.table thead th,
+    .table thead th {
+        background-color: whitesmoke !important;
+        border-color: #dee2e6 !important;
+        font-weight: 600;
+        color: #000000 !important; /* BLACK TEXT */
+        padding: 12px 8px;
+    }
+    
+    /* Specific table header styles - only for tables */
+    table.table thead.thead-light {
+        background-color: whitesmoke !important;
+    }
+    
+    table.table thead.thead-light th,
+    .table thead.thead-light th {
+        background-color: whitesmoke !important;
+        border-color: #dee2e6;
+        color: #000000 !important; /* BLACK TEXT */
+    }
+    
+    /* Keep .thead-dark as is for dark headers */
+    table.table thead.thead-dark {
+        background-color: #343a40 !important;
+    }
+    
+    table.table thead.thead-dark th,
+    .table thead.thead-dark th {
+        background-color: #343a40 !important;
+        border-color: #454d55;
+        color: white !important; /* Keep white text for dark headers */
+    }
+    
+    /* EXCLUDE card headers from table header styles */
+    .card-header,
+    .card-header h3,
+    .card-header .card-title,
+    .card-header .card-tools,
+    .card-header .badge {
+        /* Reset any inherited table styles */
+        color: inherit !important;
+        background-color: transparent !important;
+        border-color: transparent !important;
+    }
+    
+    /* Table footer styling */
+    table.table tfoot.bg-gray,
+    .table tfoot.bg-gray {
+        background-color: #f8f9fa !important;
+    }
+    
+    table.table tfoot.bg-light,
+    .table tfoot.bg-light {
+        background-color: #f8f9fa !important;
+    }
+    
+    /* Zebra striping for better readability - ONLY for tables */
+    table.table.table-striped tbody tr:nth-of-type(odd),
+    .table.table-striped tbody tr:nth-of-type(odd) {
+        background-color: rgba(0, 0, 0, 0.02);
+    }
+    
+    table.table.table-striped tbody tr:nth-of-type(even),
+    .table.table-striped tbody tr:nth-of-type(even) {
+        background-color: white;
+    }
+    
+    /* Selected row highlighting - ONLY for tables */
+    table.table tbody tr.month-row.table-info,
+    .table tbody tr.month-row.table-info {
+        background-color: rgba(23, 162, 184, 0.15) !important;
+    }
+    
+    /* Card header backgrounds - these are NOT tables */
+    .card-header {
+        background-color: rgba(0, 0, 0, 0.03);
+        border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+        color: #495057 !important; /* Default AdminLTE card header color */
+    }
+    
+    /* Hover effects on table rows - ONLY for tables */
+    table.table.table-hover tbody tr:hover,
+    .table.table-hover tbody tr:hover {
+        background-color: rgba(0, 123, 255, 0.1);
+    }
+    
+    /* Ensure we're only targeting TABLE elements */
+    table {
+        /* Any table-specific styles go here */
+    }
+    
+    /* Reset card titles to their original colors */
+    .card-title {
+        color: #495057 !important;
+    }
+    
+    .card-warning .card-header .card-title {
+        color: #1F2D3D !important; /* Dark color for warning card headers */
+    }
+    
+    .card-primary .card-header .card-title {
+        color: white !important; /* White text for primary card headers */
+    }
+    
+    .card-info .card-header .card-title {
+        color: white !important; /* White text for info card headers */
+    }
+    
+    .card-outline .card-header .card-title {
+        color: #495057 !important; /* Default dark color for outline cards */
+    }
+</style>
 </x-layout>

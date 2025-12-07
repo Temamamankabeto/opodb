@@ -1,0 +1,183 @@
+/* Sidebar Gradient Background */
+.modern-sidebar {
+    background: linear-gradient(180deg, #f3f3f9, #dadaee); /* solid gradient */
+    border-right: 1px solid #2d2d3a;
+}
+
+/* Brand Area */
+.brand-custom {
+    background: #e1e2eb; /* solid color, not transparent */
+    padding: 15px 20px;
+    display: flex;
+    align-items: center;
+    font-size: 17px;
+    border-bottom: 1px solid #b9b9d1;
+}
+
+.brand-custom:hover {
+    background: #d4d5ea; /* slightly darker on hover */
+}
+
+/* Sidebar Link (Modern) */
+.nav-modern-link {
+    border-radius: 8px;
+    margin: 3px 8px;
+    transition: 0.25s;
+}
+
+/* Hover Effect */
+.nav-modern-link:hover {
+    background: #e6e6ea !important; /* solid hover color */
+    transform: translateX(3px);
+}
+
+/* Active Link */
+.nav-modern-link.active {
+    background: #4c70ff !important;
+    color: white;
+    font-weight: 600;
+}
+
+/* Treeview spacing */
+.nav-treeview .nav-link {
+    margin-left: 25px;
+}
+
+/* Icons Modern Look */
+.nav-icon {
+    font-size: 16px;
+    opacity: 0.9;
+}
+
+
+/* crop index */
+        /* Custom styles that integrate with AdminLTE */
+        .crop-plans-container {
+            background: var(--adminlte-light, #f4f6f9);
+            min-height: calc(100vh - var(--adminlte-navbar-height, 56px));
+        }
+        
+        .main-header {
+            position: sticky;
+            top: 0;
+            z-index: 1029;
+        }
+        
+        .crop-table-wrapper {
+            position: relative;
+            max-height: 70vh;
+            overflow: auto;
+            border: 1px solid var(--adminlte-border-color, #dee2e6);
+            border-radius: var(--adminlte-border-radius, 0.25rem);
+        }
+        
+        .crop-table-wrapper .table th {
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            background: var(--adminlte-dark, #343a40);
+            color: white;
+            vertical-align: middle;
+        }
+        
+        .year-group, .type-group, .season-group {
+            border-right: 2px solid #dee2e6;
+            vertical-align: middle !important;
+            background: var(--adminlte-gray-lightest, #f8f9fa);
+        }
+        
+        .crop-icon {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, #e8f5e8 0%, #c8e6c9 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .trend-up { color: var(--adminlte-success, #28a745) !important; }
+        .trend-down { color: var(--adminlte-danger, #dc3545) !important; }
+        .trend-neutral { color: var(--adminlte-warning, #ffc107) !important; }
+        
+        .action-group {
+            min-width: 140px;
+        }
+        
+        .performance-card {
+            border-radius: var(--adminlte-border-radius, 0.25rem);
+            transition: transform 0.3s ease;
+        }
+        
+        .performance-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        /* AdminLTE overrides for better integration */
+        .card {
+            box-shadow: 0 0 1px rgba(0,0,0,.125),0 1px 3px rgba(0,0,0,.2);
+        }
+        
+        .card-header {
+            background: var(--adminlte-dark, #343a40);
+            color: white;
+        }
+        
+        .btn-add-plan {
+            background: linear-gradient(135deg, var(--adminlte-success, #28a745) 0%, #1e7e34 100%);
+            border: none;
+        }
+        
+        .btn-add-plan:hover {
+            background: linear-gradient(135deg, #1e7e34 0%, #145523 100%);
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .crop-table-wrapper {
+                font-size: 0.75rem;
+            }
+            
+            .table-responsive {
+                border: none;
+            }
+            
+            .action-group .btn {
+                font-size: 0.7rem;
+                padding: 0.25rem 0.5rem;
+            }
+        }
+        
+        /* Print styles */
+        @media print {
+            .btn-add-plan, .search-container, .action-group {
+                display: none !important;
+            }
+            
+            .crop-table-wrapper {
+                max-height: none;
+                overflow: visible;
+            }
+        }
+        
+        /* Add these for better DataTable scrolling */
+        .dataTables_wrapper .dataTables_scroll {
+            border: 1px solid #dee2e6;
+            border-radius: 0.25rem;
+        }
+        
+        .dataTables_scrollHead {
+            background: var(--adminlte-dark, #343a40);
+        }
+        
+        .dataTables_scrollHead th {
+            background: var(--adminlte-dark, #343a40) !important;
+            color: white !important;
+            border-bottom: none !important;
+        }
+        
+        .dataTables_scrollBody {
+            max-height: 600px !important;
+        }
+    

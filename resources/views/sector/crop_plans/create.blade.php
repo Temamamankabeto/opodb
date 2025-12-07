@@ -1,251 +1,166 @@
 <x-layout>
-    <div class="container-fluid py-4 crop-plan-create-container">
-        <!-- Header Section -->
-        <div class="row justify-content-center mb-5">
-            <div class="col-lg-10">
-                <div class="page-header text-center">
-                    <div class="header-icon mb-3">
-                        <i class="mdi mdi-sprout-outline display-4 text-success"></i>
-                    </div>
-                    <h1 class="display-6 fw-bold text-success mb-2">Create New Crop Plan</h1>
-                    <p class="lead text-muted">Add agricultural production plan for {{ Auth::user()->kebele->name }} Kebele</p>
-                    <div class="header-divider">
-                        <div class="divider-line"></div>
-                        <div class="divider-icon">
-                            <i class="mdi mdi-leaf"></i>
-                        </div>
-                        <div class="divider-line"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
 
-        {{-- Validation Errors --}}
-        @if ($errors->any())
-            <div class="row justify-content-center mb-4">
-                <div class="col-lg-10">
-                    <div class="alert alert-danger alert-dismissible fade show custom-alert" role="alert">
-                        <div class="d-flex align-items-center">
-                            <i class="mdi mdi-alert-circle-outline me-2 fs-5"></i>
-                            <div class="flex-grow-1">
-                                <h6 class="alert-heading mb-2">Please fix the following errors:</h6>
-                                <ul class="mb-0 ps-3">
-                                    @foreach ($errors->all() as $error)
-                                        <li>{{ $error }}</li>
-                                    @endforeach
-                                </ul>
-                            </div>
-                        </div>
-                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                    </div>
-                </div>
-            </div>
-        @endif
-
-        <div class="row justify-content-center">
-            <div class="col-lg-10">
-                <div class="card form-card border-0 shadow-lg">
-                    <div class="card-header bg-gradient-primary text-white py-4">
-                        <h4 class="mb-0">
-                            <i class="mdi mdi-file-document-outline me-2"></i>
-                            Crop Plan Details
-                        </h4>
-                    </div>
-                    <div class="card-body p-5">
-                        <form action="{{ route('sector.crop-plans.store') }}" method="POST" id="cropPlanForm">
-                            @csrf
-
-                            <!-- Basic Information Section -->
-                            <div class="section-header mb-4">
-                                <h5 class="section-title">
-                                    <i class="mdi mdi-information-outline me-2 text-primary"></i>
-                                    Basic Information
-                                </h5>
-                                <div class="section-divider"></div>
-                            </div>
-
-                            <div class="row g-4">
-                                {{-- Year Selection --}}
-                                <div class="col-md-6 col-lg-4">
-                                    <div class="form-floating">
-                                        <select name="year" id="year" class="form-select form-select-lg" required>
-                                            <option value="">Select Year</option>
-                                            @foreach($years as $year)
-                                                <option value="{{ $year }}" {{ old('year') == $year ? 'selected' : '' }}>
-                                                    {{ $year }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                        <label for="year" class="form-label">
-                                            <i class="mdi mdi-calendar me-1 text-muted"></i>
-                                            Planning Year
-                                        </label>
-                                    </div>
-                                </div>
-
-                                {{-- Crop Type --}}
-                                <div class="col-md-6 col-lg-4">
-                                    <div class="form-floating">
-                                        <select name="croptype_id" id="croptype_id" class="form-select form-select-lg" required>
-                                            <option value="">Select Crop Type</option>
-                                            {{-- Crop types will be loaded dynamically --}}
-                                        </select>
-                                        <label for="croptype_id" class="form-label">
-                                            <i class="mdi mdi-seed-outline me-1 text-muted"></i>
-                                            Crop Type
-                                        </label>
-                                    </div>
-                                    <div id="croptype_loading" class="d-none mt-2">
-                                        <small class="text-muted">
-                                            <i class="mdi mdi-loading mdi-spin me-1"></i>
-                                            Loading crop types...
-                                        </small>
-                                    </div>
-                                    <div id="croptype_error" class="d-none mt-2">
-                                        <small class="text-danger">
-                                            <i class="mdi mdi-alert-circle-outline me-1"></i>
-                                            Failed to load crop types
-                                        </small>
-                                    </div>
-                                </div>
-
-                                {{-- Crop Selection --}}
-                                <div class="col-md-6 col-lg-4">
-                                    <div class="form-floating">
-                                        <select name="crop_id" id="crop_id" class="form-select form-select-lg" required disabled>
-                                            <option value="">Select Crop</option>
-                                            {{-- Crops will be loaded dynamically --}}
-                                        </select>
-                                        <label for="crop_id" class="form-label">
-                                            <i class="mdi mdi-sprout me-1 text-muted"></i>
-                                            Crop Variety
-                                        </label>
-                                    </div>
-                                    <div id="crop_loading" class="d-none mt-2">
-                                        <small class="text-muted">
-                                            <i class="mdi mdi-loading mdi-spin me-1"></i>
-                                            Loading crops...
-                                        </small>
-                                    </div>
-                                    <div id="crop_error" class="d-none mt-2">
-                                        <small class="text-danger">
-                                            <i class="mdi mdi-alert-circle-outline me-1"></i>
-                                            Failed to load crops
-                                        </small>
-                                    </div>
-                                </div>
-
-                                {{-- Season Selection --}}
-                                <div class="col-md-6 col-lg-4">
-                                    <div class="form-floating">
-                                        <select name="season" id="season" class="form-select form-select-lg" required>
-                                            <option value="">Select Season</option>
-                                            <option value="Ganna" {{ old('season') == 'Ganna' ? 'selected' : '' }}>Ganna</option>
-                                            <option value="Bona" {{ old('season') == 'Bona' ? 'selected' : '' }}>Bona</option>
-                                            <option value="Arfaasaa" {{ old('season') == 'Arfaasaa' ? 'selected' : '' }}>Arfaasaa</option>
-                                        </select>
-                                        <label for="season" class="form-label">
-                                            <i class="mdi mdi-weather-sunny me-1 text-muted"></i>
-                                            Growing Season
-                                        </label>
-                                    </div>
-                                </div>
-
-                                {{-- Area to Plant --}}
-                                <div class="col-md-6 col-lg-4">
-                                    <div class="form-floating">
-                                        <input type="number" step="0.01" name="area_to_plant" id="area_to_plant"
-                                            class="form-control form-control-lg" value="{{ old('area_to_plant') }}"
-                                            placeholder="Area in hectares" required>
-                                        <label for="area_to_plant" class="form-label">
-                                            <i class="mdi mdi-earth me-1 text-muted"></i>
-                                            Planting Area (hectares)
-                                        </label>
-                                    </div>
-                                </div>
-
-                                {{-- Seed Required --}}
-                                <div class="col-md-6 col-lg-4">
-                                    <div class="form-floating">
-                                        <input type="number" step="0.01" name="seed_required" id="seed_required"
-                                            class="form-control form-control-lg" value="{{ old('seed_required') }}"
-                                            placeholder="Seed quantity" required>
-                                        <label for="seed_required" class="form-label">
-                                            <i class="mdi mdi-seed me-1 text-muted"></i>
-                                            Seed Required (kg)
-                                        </label>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Productivity & Yield Section -->
-                            <div class="section-header mt-5 mb-4">
-                                <h5 class="section-title">
-                                    <i class="mdi mdi-chart-line me-2 text-success"></i>
-                                    Yield Estimation
-                                </h5>
-                                <div class="section-divider"></div>
-                            </div>
-
-                            <div class="row g-4">
-                                {{-- Productivity --}}
-                                <div class="col-md-6">
-                                    <div class="form-floating">
-                                        <input type="number" step="0.01" name="productivity" id="productivity"
-                                            class="form-control form-control-lg" value="{{ old('productivity') }}"
-                                            placeholder="Productivity rate" required>
-                                        <label for="productivity" class="form-label">
-                                            <i class="mdi mdi-trending-up me-1 text-muted"></i>
-                                            Productivity (qt/hectare)
-                                        </label>
-                                    </div>
-                                    <div class="form-text text-muted mt-2">
-                                        <i class="mdi mdi-information-outline me-1"></i>
-                                        Expected yield per hectare in quintals
-                                    </div>
-                                </div>
-
-                                {{-- Expected Yield --}}
-                                <div class="col-md-6">
-                                    <div class="form-floating">
-                                        <input type="number" step="0.01" id="expected_yield"
-                                            class="form-control form-control-lg bg-light" readonly>
-                                        <label for="expected_yield" class="form-label">
-                                            <i class="mdi mdi-scale me-1 text-muted"></i>
-                                            Total Expected Yield (qt)
-                                        </label>
-                                    </div>
-                                    <div class="yield-preview mt-3 p-3 rounded bg-success bg-opacity-10">
-                                        <div class="d-flex align-items-center">
-                                            <i class="mdi mdi-calculator text-success me-2"></i>
-                                            <span class="fw-semibold">Calculation:</span>
-                                            <span class="ms-2" id="yieldCalculation">Area × Productivity = Yield</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                
-
-                            <!-- Form Actions -->
-                            <div class="form-actions mt-5 pt-4 border-top">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <a href="{{ route('sector.crop-plans.index') }}" class="btn btn-outline-secondary btn-lg">
-                                        <i class="mdi mdi-arrow-left me-2"></i>
-                                        Back to Plans
-                                    </a>
-                                    <button type="submit" class="btn btn-success btn-lg px-5" id="submitBtn">
-                                        <i class="mdi mdi-content-save-outline me-2"></i>
-                                        Save Crop Plan
-                                    </button>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-                </div>
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2 text-center">
+            <div class="col-sm-12">
+                <h6 class="text-muted mb-0 fas fa-seedling">
+                    {{ __('Agricultural yearly plan for') }}
+                </h6>
             </div>
         </div>
     </div>
+</section>
+
+<section class="content">
+
+    {{-- Validation Errors --}}
+    @if ($errors->any())
+        <div class="alert alert-danger alert-dismissible fade show">
+            <h5><i class="icon fas fa-ban"></i> {{ __('Please fix the following errors:') }}</h5>
+            <ul class="pl-4">
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+            <button type="button" class="close" data-dismiss="alert">×</button>
+        </div>
+    @endif
+
+    <div class="card card-primary card-outline shadow">
+        <div class="card-header bg-primary">
+            <h3 class="card-title text-white">
+                <i class="fas fa-edit mr-2"></i> {{ __('Crop Plan Details') }}
+            </h3>
+        </div>
+
+        <form action="{{ route('sector.crop-plans.store') }}" method="POST" id="cropPlanForm">
+            @csrf
+
+            <div class="card-body">
+
+                <!-- Basic Information -->
+                <div class="callout callout-info">
+                    <h5><i class="fas fa-info-circle"></i> {{ __('Basic Information') }}</h5>
+                </div>
+
+                <div class="row">
+
+                    <!-- Year -->
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label>{{ __('Planning Year') }}</label>
+                            <select name="year" id="year" class="form-control" required>
+                                <option value="">{{ __('Select Year') }}</option>
+                                @foreach($years as $year)
+                                    <option value="{{ $year }}" {{ old('year') == $year ? 'selected' : '' }}>
+                                        {{ $year }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Crop Type -->
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label>{{ __('Crop Type') }}</label>
+                            <select name="croptype_id" id="croptype_id" class="form-control" required>
+                                <option value="">{{ __('Select Crop Type') }}</option>
+                            </select>
+                            <small id="croptype_loading" class="text-muted d-none">
+                                <i class="fas fa-spinner fa-spin"></i> {{ __('Loading crop types...') }}
+                            </small>
+                            <small id="croptype_error" class="text-danger d-none"></small>
+                        </div>
+                    </div>
+
+                    <!-- Crop -->
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label>{{ __('Crop Variety') }}</label>
+                            <select name="crop_id" id="crop_id" class="form-control" required disabled>
+                                <option value="">{{ __('Select Crop') }}</option>
+                            </select>
+                            <small id="crop_loading" class="text-muted d-none">
+                                <i class="fas fa-spinner fa-spin"></i> {{ __('Loading crops...') }}
+                            </small>
+                            <small id="crop_error" class="text-danger d-none"></small>
+                        </div>
+                    </div>
+
+                    <!-- Season -->
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label>{{ __('Growing Season') }}</label>
+                            <select name="season" id="season" class="form-control" required>
+                                <option value="">{{ __('Select Season') }}</option>
+                                <option value="Ganna">{{ __('Ganna') }}</option>
+                                <option value="Bona">{{ __('Bona') }}</option>
+                                <option value="Arfaasaa">{{ __('Arfaasaa') }}</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Area -->
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label>{{ __('Planting Area (hectares)') }}</label>
+                            <input type="number" step="0.01" name="area_to_plant" id="area_to_plant"
+                                   class="form-control" required>
+                        </div>
+                    </div>
+
+                    <!-- Seed Required -->
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label>{{ __('Seed Required (kg)') }}</label>
+                            <input type="number" step="0.01" name="seed_required" id="seed_required"
+                                   class="form-control" required>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Yield Section -->
+                <div class="callout callout-success mt-4">
+                    <h5><i class="fas fa-chart-line"></i> {{ __('Yield Estimation') }}</h5>
+                </div>
+
+                <div class="row">
+                    <!-- Productivity -->
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>{{ __('Productivity (qt/hectare)') }}</label>
+                            <input type="number" step="0.01" name="productivity" id="productivity"
+                                   class="form-control" required>
+                        </div>
+                    </div>
+
+                    <!-- Expected Yield -->
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>{{ __('Total Expected Yield (qt)') }}</label>
+                            <input type="number" step="0.01" id="expected_yield"
+                                   class="form-control bg-light" readonly>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="card-footer text-right">
+                <a href="{{ route('sector.crop-plans.index') }}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i> {{ __('Back') }}
+                </a>
+                <button type="submit" class="btn btn-success" id="submitBtn">
+                    <i class="fas fa-save"></i> {{ __('Save Crop Plan') }}
+                </button>
+            </div>
+
+        </form>
+    </div>
+
+</section>
 
     {{-- JavaScript Section --}}
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -516,209 +431,5 @@
         });
     </script>
 
-    <style>
-        /* Your existing CSS styles remain the same */
-        .crop-plan-create-container {
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-            min-height: 100vh;
-        }
-
-        .form-card {
-            border-radius: 20px;
-            overflow: hidden;
-        }
-
-        .bg-gradient-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
-        }
-
-
-
-     .crop-plan-create-container {
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-            min-height: 100vh;
-        }
-
-        .form-card {
-            border-radius: 20px;
-            overflow: hidden;
-        }
-
-        .bg-gradient-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
-        }
-
-        .page-header .header-icon {
-            animation: float 3s ease-in-out infinite;
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
-        }
-
-        .header-divider {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 1rem 0;
-        }
-
-        .divider-line {
-            flex: 1;
-            height: 2px;
-            background: linear-gradient(90deg, transparent, #dee2e6, transparent);
-        }
-
-        .divider-icon {
-            margin: 0 1rem;
-            color: #28a745;
-            font-size: 1.5rem;
-        }
-
-        .section-header {
-            position: relative;
-        }
-
-        .section-title {
-            color: #2c3e50;
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-        }
-
-        .section-divider {
-            height: 3px;
-            background: linear-gradient(90deg, #667eea, #764ba2);
-            border-radius: 2px;
-            width: 60px;
-        }
-
-        .form-floating > .form-control:focus,
-        .form-floating > .form-control:not(:placeholder-shown) {
-            padding-top: 1.625rem;
-            padding-bottom: 0.625rem;
-        }
-
-        .form-control-lg {
-            border-radius: 12px;
-            border: 2px solid #e9ecef;
-            transition: all 0.3s ease;
-        }
-
-        .form-control-lg:focus {
-            border-color: #667eea;
-            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
-            transform: translateY(-2px);
-        }
-
-        .fertilizer-type-card {
-            transition: all 0.3s ease;
-            border: 2px solid transparent;
-        }
-
-        .fertilizer-type-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
-        }
-
-        .fertilizer-type-card.active-fertilizer {
-            border-color: #28a745;
-            background: linear-gradient(135deg, #f8fff9 0%, #e8f5e8 100%);
-        }
-
-        .fertilizer-item {
-            transition: all 0.3s ease;
-            border: 1px solid #dee2e6;
-        }
-
-        .fertilizer-item:hover {
-            border-color: #28a745;
-        }
-
-        .fertilizer-item.selected-fertilizer {
-            border-color: #28a745;
-            background: linear-gradient(135deg, #e8f5e8 0%, #d4edda 100%);
-        }
-
-        .highlight-field {
-            animation: highlight 2s ease;
-            background-color: #fff3cd !important;
-        }
-
-        @keyframes highlight {
-            0% { background-color: #fff3cd; }
-            100% { background-color: white; }
-        }
-
-        .calculated-field {
-            background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%) !important;
-            color: #155724;
-            font-weight: 600;
-        }
-
-        .yield-preview {
-            border-left: 4px solid #28a745;
-        }
-
-        .custom-alert {
-            border-radius: 12px;
-            border: none;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-        }
-
-        .form-actions {
-            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-            margin-left: -2.5rem;
-            margin-right: -2.5rem;
-            padding-left: 2.5rem;
-            padding-right: 2.5rem;
-        }
-
-        .btn-success {
-            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
-            border: none;
-            border-radius: 12px;
-            font-weight: 600;
-            transition: all 0.3s ease;
-        }
-
-        .btn-success:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(40, 167, 69, 0.3);
-        }
-
-        .btn-outline-secondary {
-            border-radius: 12px;
-            font-weight: 600;
-            transition: all 0.3s ease;
-        }
-
-        .amount-input, .unit-select {
-            border-radius: 8px;
-            border: 1px solid #dee2e6;
-        }
-
-        .amount-input:focus, .unit-select:focus {
-            border-color: #667eea;
-            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
-        }
-
-        /* Responsive adjustments */
-        @media (max-width: 768px) {
-            .card-body {
-                padding: 2rem !important;
-            }
-            
-            .form-actions {
-                margin-left: -2rem;
-                margin-right: -2rem;
-                padding-left: 2rem;
-                padding-right: 2rem;
-            }
-            
-            .fertilizer-item .row > div {
-                margin-bottom: 0.5rem;
-            }
-        }
-    </style>
+ 
 </x-layout>

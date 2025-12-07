@@ -1,413 +1,442 @@
 <x-layout>
-    <div class="container-fluid py-3 py-md-4 compost-plan-container">
-        <!-- Header Section -->
-        <div class="row justify-content-center mb-4 mb-md-5">
-            <div class="col-12 col-lg-10">
-                <div class="page-header text-center">
-                    <div class="header-icon mb-2 mb-md-3">
-                        <i class="mdi mdi-recycle display-4 text-success"></i>
+    <div class="content-header">
+        <!-- Content Header -->
+        <section class="content-header">
+            <div class="container-fluid">
+                <div class="row mb-2">
+                    <div class="col-sm-6">
+                        <h1 class="m-0">{{ __('Edit Compost Distribution Schedule') }}</h1>
                     </div>
-                    <h1 class="display-6 fw-bold text-success mb-2">Edit Compost Distribution Schedule</h1>
-                    <p class="lead text-muted d-none d-md-block">Update compost distribution schedule for {{ $gabbinaBiyyee->compost_type }}</p>
-                    <p class="text-muted d-md-none">Update compost distribution schedule</p>
-                    <div class="header-divider">
-                        <div class="divider-line"></div>
-                        <div class="divider-icon">
-                            <i class="mdi mdi-recycle"></i>
-                        </div>
-                        <div class="divider-line"></div>
+                    <div class="col-sm-6">
+                        <ol class="breadcrumb float-sm-right">
+                            <li class="breadcrumb-item"><a href="{{ route('sector.gabbina_biyyee.index') }}">{{ __('Compost Plans') }}</a></li>
+                            <li class="breadcrumb-item active">{{ __('Edit Schedule') }}</li>
+                        </ol>
                     </div>
                 </div>
             </div>
-        </div>
+        </section>
 
-        {{-- Validation Errors --}}
-        @if ($errors->any())
-            <div class="row justify-content-center mb-3 mb-md-4">
-                <div class="col-12 col-lg-10">
-                    <div class="alert alert-danger alert-dismissible fade show custom-alert" role="alert">
-                        <div class="d-flex align-items-center">
-                            <i class="mdi mdi-alert-circle-outline me-2 fs-5"></i>
-                            <div class="flex-grow-1">
-                                <h6 class="alert-heading mb-2">Please fix the following errors:</h6>
-                                <ul class="mb-0 ps-3">
+        <!-- Main content -->
+        <section class="content">
+            <div class="container-fluid">
+                {{-- Validation Errors --}}
+                @if ($errors->any())
+                    <div class="row mb-3">
+                        <div class="col-12">
+                            <div class="alert alert-danger alert-dismissible">
+                                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                                <h5><i class="icon fas fa-ban"></i> {{ __('Validation Error!') }}</h5>
+                                <ul class="mb-0">
                                     @foreach ($errors->all() as $error)
                                         <li>{{ $error }}</li>
                                     @endforeach
                                 </ul>
                             </div>
                         </div>
-                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                     </div>
-                </div>
-            </div>
-        @endif
+                @endif
 
-        <div class="row justify-content-center">
-            <div class="col-12 col-lg-10">
-                <div class="card form-card border-0 shadow-lg">
-                    <div class="card-header bg-gradient-success text-white py-3 py-md-4">
-                        <h4 class="mb-0 fs-5 fs-md-4">
-                            <i class="mdi mdi-calendar-edit me-2"></i>
-                            Edit Compost Distribution Schedule
-                        </h4>
-                    </div>
-                    <div class="card-body p-3 p-md-5">
-                        <form action="{{ route('sector.compost-plans.update', $gabbinaBiyyee->id) }}" method="POST"
-                            id="compostPlanForm">
-                            @csrf
-                            @method('PUT')
-
-                            <!-- Compost Information Display (Read-only) -->
-                            <div class="section-header mb-3 mb-md-4">
-                                <h5 class="section-title fs-6 fs-md-5">
-                                    <i class="mdi mdi-information-outline me-2 text-success"></i>
-                                    Compost Information
-                                </h5>
-                                <div class="section-divider"></div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="card card-success">
+                            <div class="card-header">
+                                <h3 class="card-title"><i class="fas fa-recycle mr-2"></i>{{ __('Compost Distribution Schedule') }}</h3>
                             </div>
+                            <!-- /.card-header -->
+                            <!-- form start -->
+                            <form action="{{ route('sector.compost-plans.update', $gabbinaBiyyee->id) }}" method="POST" id="compostPlanForm">
+                                @csrf
+                                @method('PUT')
 
-                            <div class="row g-2 g-md-4 mb-3 mb-md-4">
-                                <div class="col-6 col-md-4">
-                                    <div class="info-card p-2 p-md-3 bg-light rounded">
-                                        <small class="text-muted">Compost Type</small>
-                                        <div class="fw-bold text-success fs-6 fs-md-normal">
-                                            {{ $gabbinaBiyyee->compost_type }}</div>
-                                    </div>
-                                </div>
-                                <div class="col-6 col-md-4">
-                                    <div class="info-card p-2 p-md-3 bg-light rounded">
-                                        <small class="text-muted">Year</small>
-                                        <div class="fw-bold text-success fs-6 fs-md-normal">{{ $gabbinaBiyyee->year }}</div>
-                                    </div>
-                                </div>
-                                <div class="col-6 col-md-2">
-                                    <div class="info-card p-2 p-md-3 bg-light rounded">
-                                        <small class="text-muted">Application Year</small>
-                                        <div class="fw-bold text-success fs-6 fs-md-normal">{{ $gabbinaBiyyee->year }}</div>
-                                    </div>
-                                </div>
-                                <div class="col-6 col-md-2">
-                                    <div class="info-card p-2 p-md-3 bg-light rounded">
-                                        <small class="text-muted">Unit</small>
-                                        <div class="fw-bold text-success fs-6 fs-md-normal">{{ $gabbinaBiyyee->unit }}</div>
-                                    </div>
-                                </div>
-                            </div>
+                                <!-- Hidden field to store structured compost distribution data -->
+                                <input type="hidden" name="compost_distribution_details" id="compostDistributionDetails"
+                                       value="{{ json_encode($gabbinaBiyyee->compost_distribution_details ?? []) }}">
 
-                            <!-- Quantity Information Display -->
-                            <div class="row g-2 g-md-4 mb-3 mb-md-4">
-                                <div class="col-6 col-md-4">
-                                    <div class="info-card p-2 p-md-3 bg-light rounded">
-                                        <small class="text-muted">Common Quantity</small>
-                                        <div class="fw-bold text-success fs-6 fs-md-normal">
-                                            {{ $gabbinaBiyyee->common ? number_format($gabbinaBiyyee->common, 2) : '0.00' }}
-                                            {{ $gabbinaBiyyee->unit }}
+                                <div class="card-body">
+                                    <!-- Basic Information Display -->
+                                    <div class="row mb-4">
+                                        <div class="col-12">
+                                            <h5 class="text-success mb-3">
+                                                <i class="fas fa-info-circle mr-1"></i>
+                                                {{ __('Compost Information') }}
+                                            </h5>
+                                            <hr class="mt-0">
                                         </div>
-                                    </div>
-                                </div>
-                                <div class="col-6 col-md-4">
-                                    <div class="info-card p-2 p-md-3 bg-light rounded">
-                                        <small class="text-muted">Individual Quantity</small>
-                                        <div class="fw-bold text-success fs-6 fs-md-normal">
-                                            {{ $gabbinaBiyyee->individual ? number_format($gabbinaBiyyee->individual, 2) : '0.00' }}
-                                            {{ $gabbinaBiyyee->unit }}
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-6 col-md-4">
-                                    <div class="info-card p-2 p-md-3 bg-light rounded">
-                                        <small class="text-muted">Total Available Quantity</small>
-                                        <div class="fw-bold text-success fs-6 fs-md-normal" id="availableQuantity">
-                                            {{ $gabbinaBiyyee->total ? number_format($gabbinaBiyyee->total, 2) : '0.00' }} {{ $gabbinaBiyyee->unit }}
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-6 col-md-4">
-                                    <div class="info-card p-2 p-md-3 bg-light rounded">
-                                        <small class="text-muted">Remaining Quantity</small>
-                                        <div class="fw-bold text-success fs-6 fs-md-normal" id="remainingQuantity">
-                                            {{ $gabbinaBiyyee->total ? number_format($gabbinaBiyyee->total, 2) : '0.00' }} {{ $gabbinaBiyyee->unit }}
-                                        </div>
-                                    </div>
-                                </div>
-                                @if($gabbinaBiyyee->land_area)
-                                <div class="col-6 col-md-4">
-                                    <div class="info-card p-2 p-md-3 bg-light rounded">
-                                        <small class="text-muted">Land Area</small>
-                                        <div class="fw-bold text-success fs-6 fs-md-normal">
-                                            {{ number_format($gabbinaBiyyee->land_area, 2) }} ha
-                                        </div>
-                                    </div>
-                                </div>
-                                @endif
-                            </div>
-
-                            <!-- Compost Scheduling Section -->
-                            <div class="section-header mt-4 mt-md-5 mb-3 mb-md-4">
-                                <h5 class="section-title fs-6 fs-md-5">
-                                    <i class="mdi mdi-calendar-multiple me-2 text-info"></i>
-                                    Compost Distribution Schedule (Application Year: <span
-                                        id="applicationYear">{{ $gabbinaBiyyee->year }}</span>)
-                                </h5>
-                                <div class="section-divider"></div>
-                                <p class="text-muted mt-2 d-none d-md-block">
-                                    Schedule compost distribution across quarters, months, and weeks
-                                    for the planning year ({{ $gabbinaBiyyee->year }}).
-                                </p>
-                                <p class="text-muted mt-1 d-md-none small">
-                                    Schedule compost distribution for application year.
-                                </p>
-                            </div>
-
-                            <div class="compost-scheduling-container">
-                                <!-- Application Year Section -->
-                                <div class="card mb-3 mb-md-4 border-0 shadow-sm">
-                                    <div class="card-header bg-light py-2 py-md-3">
-                                        <div
-                                            class="d-flex justify-content-between align-items-center flex-column flex-md-row">
-                                            <h6 class="mb-1 mb-md-0 fs-6">
-                                                <i class="mdi mdi-calendar-range me-2 text-success"></i>
-                                                Application Year: {{ $gabbinaBiyyee->year }}
-                                            </h6>
-                                            <div class="mt-1 mt-md-0">
-                                                <span class="badge bg-success fs-6">Compost Distribution Schedule</span>
-                                            </div>
-                                        </div>
-                                        <small class="text-muted d-none d-md-block">Schedule compost distribution for the planning year
-                                            ({{ $gabbinaBiyyee->year }})</small>
-                                        <small class="text-muted d-md-none small">Application year:
-                                            {{ $gabbinaBiyyee->year }}</small>
-                                    </div>
-                                </div>
-
-                                <!-- Quarters Section -->
-                                <div class="card mb-3 mb-md-4 border-0 shadow-sm">
-                                    <div class="card-header bg-light py-2 py-md-3">
-                                        <div
-                                            class="d-flex justify-content-between align-items-center flex-column flex-md-row">
-                                            <h6 class="mb-1 mb-md-0 fs-6">
-                                                <i class="mdi mdi-chart-pie me-2 text-success"></i>
-                                                Select Quarters ({{ $gabbinaBiyyee->year }})
-                                            </h6>
-                                            <div class="mt-1 mt-md-0">
-                                                <button type="button" class="btn btn-outline-success btn-xs btn-sm"
-                                                    onclick="selectAllQuarters()">
-                                                    <i class="mdi mdi-select-all me-1"></i> Select All
-                                                </button>
-                                                <button type="button"
-                                                    class="btn btn-outline-secondary btn-xs btn-sm ms-1"
-                                                    onclick="clearAllQuarters()">
-                                                    <i class="mdi mdi-select-off me-1"></i> Clear All
-                                                </button>
-                                            </div>
-                                        </div>
-                                        <small class="text-muted d-none d-md-block">Click on quarter cards to
-                                            select/deselect multiple quarters for application year
-                                            {{ $gabbinaBiyyee->year }}</small>
-                                        <small class="text-muted d-md-none small">Tap quarter cards to select</small>
-                                    </div>
-                                    <div class="card-body">
-                                        <div class="row g-2 g-md-3" id="quartersContainer">
-                                            <!-- Quarters will be populated here -->
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Months Section -->
-                                <div class="card mb-3 mb-md-4 border-0 shadow-sm" id="monthsSection"
-                                    style="display: none;">
-                                    <div class="card-header bg-light py-2 py-md-3">
-                                        <div
-                                            class="d-flex justify-content-between align-items-center flex-column flex-md-row">
-                                            <h6 class="mb-1 mb-md-0 fs-6">
-                                                <i class="mdi mdi-calendar-month me-2 text-info"></i>
-                                                Select Months ({{ $gabbinaBiyyee->year }})
-                                            </h6>
-                                            <div class="mt-1 mt-md-0">
-                                                <button type="button" class="btn btn-outline-info btn-xs btn-sm"
-                                                    onclick="selectAllMonths()">
-                                                    <i class="mdi mdi-select-all me-1"></i> Select All
-                                                </button>
-                                                <button type="button"
-                                                    class="btn btn-outline-secondary btn-xs btn-sm ms-1"
-                                                    onclick="clearAllMonths()">
-                                                    <i class="mdi mdi-select-off me-1"></i> Clear All
-                                                </button>
-                                            </div>
-                                        </div>
-                                        <small class="text-muted d-none d-md-block">Select months from the chosen
-                                            quarters for application year {{ $gabbinaBiyyee->year }}</small>
-                                        <small class="text-muted d-md-none small">Select months from chosen
-                                            quarters</small>
-                                    </div>
-                                    <div class="card-body">
-                                        <div class="row g-2 g-md-3" id="monthsContainer">
-                                            <!-- Months will be populated here -->
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Weeks & Compost Scheduling Section -->
-                                <div class="card mb-3 mb-md-4 border-0 shadow-sm" id="schedulingSection"
-                                    style="display: none;">
-                                    <div class="card-header bg-light py-2 py-md-3">
-                                        <div
-                                            class="d-flex justify-content-between align-items-center flex-column flex-md-row">
-                                            <h6 class="mb-1 mb-md-0 fs-6">
-                                                <i class="mdi mdi-calendar-week me-2 text-warning"></i>
-                                                Schedule Distribution Quantity ({{ $gabbinaBiyyee->year }})
-                                            </h6>
-                                            <div class="mt-1 mt-md-0 text-center text-md-end">
-                                                <small class="text-muted me-2 d-none d-md-inline">Total Scheduled: </small>
-                                                <span class="badge bg-success fs-6" id="totalScheduledBadge">0 {{ $gabbinaBiyyee->unit }}</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="card-body">
-                                        <div id="schedulingContainer">
-                                            <!-- Scheduling will be populated here -->
-                                        </div>
-                                        <div class="mt-2 mt-md-3 p-2 p-md-3 bg-light rounded">
-                                            <div class="row align-items-center">
-                                                <div class="col-md-8 mb-2 mb-md-0">
-                                                    <small class="text-muted">
-                                                        <i class="mdi mdi-information-outline me-1"></i>
-                                                        Enter compost distribution quantity for each week in application year
-                                                        {{ $gabbinaBiyyee->year }}. Quantities will be validated against available total.
-                                                    </small>
+                                        
+                                        <div class="col-md-4 col-sm-6">
+                                            <div class="info-box bg-light">
+                                                <span class="info-box-icon bg-success"><i class="fas fa-recycle"></i></span>
+                                                <div class="info-box-content">
+                                                    <span class="info-box-text">{{ __('Compost Type') }}</span>
+                                                    <span class="info-box-number">{{ $gabbinaBiyyee->compost_type }}</span>
                                                 </div>
-                                                <div class="col-md-4 text-center text-md-end">
-                                                    <button type="button"
-                                                        class="btn btn-success btn-sm w-100 w-md-auto"
-                                                        onclick="saveAllSchedules()">
-                                                        <i class="mdi mdi-content-save-all me-1"></i> Save All
-                                                    </button>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="col-md-2 col-sm-4">
+                                            <div class="info-box bg-light">
+                                                <span class="info-box-icon bg-info"><i class="fas fa-calendar-alt"></i></span>
+                                                <div class="info-box-content">
+                                                    <span class="info-box-text">{{ __('Year') }}</span>
+                                                    <span class="info-box-number">{{ $gabbinaBiyyee->year }}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="col-md-2 col-sm-4">
+                                            <div class="info-box bg-light">
+                                                <span class="info-box-icon bg-warning"><i class="fas fa-calendar-check"></i></span>
+                                                <div class="info-box-content">
+                                                    <span class="info-box-text">{{ __('Application Year') }}</span>
+                                                    <span class="info-box-number">{{ $gabbinaBiyyee->year }}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="col-md-2 col-sm-4">
+                                            <div class="info-box bg-light">
+                                                <span class="info-box-icon bg-primary"><i class="fas fa-weight"></i></span>
+                                                <div class="info-box-content">
+                                                    <span class="info-box-text">{{ __('Unit') }}</span>
+                                                    <span class="info-box-number">{{ $gabbinaBiyyee->unit }}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        @if($gabbinaBiyyee->land_area)
+                                        <div class="col-md-2 col-sm-4">
+                                            <div class="info-box bg-light">
+                                                <span class="info-box-icon bg-purple"><i class="fas fa-globe-americas"></i></span>
+                                                <div class="info-box-content">
+                                                    <span class="info-box-text">{{ __('Land Area') }}</span>
+                                                    <span class="info-box-number">{{ number_format($gabbinaBiyyee->land_area, 2) }} ha</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        @endif
+                                    </div>
+
+                                    <!-- Quantity Information Display -->
+                                    <div class="row mb-4">
+                                        <div class="col-md-3 col-sm-6">
+                                            <div class="info-box bg-light">
+                                                <span class="info-box-icon bg-success"><i class="fas fa-users"></i></span>
+                                                <div class="info-box-content">
+                                                    <span class="info-box-text">{{ __('Common Quantity') }}</span>
+                                                    <span class="info-box-number">{{ $gabbinaBiyyee->common ? number_format($gabbinaBiyyee->common, 2) : '0.00' }} {{ $gabbinaBiyyee->unit }}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="col-md-3 col-sm-6">
+                                            <div class="info-box bg-light">
+                                                <span class="info-box-icon bg-info"><i class="fas fa-user"></i></span>
+                                                <div class="info-box-content">
+                                                    <span class="info-box-text">{{ __('Individual Quantity') }}</span>
+                                                    <span class="info-box-number">{{ $gabbinaBiyyee->individual ? number_format($gabbinaBiyyee->individual, 2) : '0.00' }} {{ $gabbinaBiyyee->unit }}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="col-md-3 col-sm-6">
+                                            <div class="info-box bg-light">
+                                                <span class="info-box-icon bg-warning"><i class="fas fa-tachometer-alt"></i></span>
+                                                <div class="info-box-content">
+                                                    <span class="info-box-text">{{ __('Available Quantity') }}</span>
+                                                    <span class="info-box-number" id="availableQuantity">{{ $gabbinaBiyyee->total ? number_format($gabbinaBiyyee->total, 2) : '0.00' }} {{ $gabbinaBiyyee->unit }}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="col-md-3 col-sm-6">
+                                            <div class="info-box bg-light">
+                                                <span class="info-box-icon bg-danger"><i class="fas fa-calculator"></i></span>
+                                                <div class="info-box-content">
+                                                    <span class="info-box-text">{{ __('Remaining Quantity') }}</span>
+                                                    <span class="info-box-number" id="remainingQuantity">{{ $gabbinaBiyyee->total ? number_format($gabbinaBiyyee->total, 2) : '0.00' }} {{ $gabbinaBiyyee->unit }}</span>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
 
-                                <!-- Summary Section -->
-                                <div class="card border-0 shadow-sm">
-                                    <div class="card-header bg-light py-2 py-md-3">
-                                        <div
-                                            class="d-flex justify-content-between align-items-center flex-column flex-md-row">
-                                            <h6 class="mb-1 mb-md-0 fs-6">
-                                                <i class="mdi mdi-chart-bar me-2 text-success"></i>
-                                                Compost Distribution Summary (Application Year:
-                                                {{ $gabbinaBiyyee->year }})
-                                            </h6>
-                                            <div class="selected-summary mt-1 mt-md-0 text-center text-md-end">
-                                                <small class="text-muted me-2">Selected: </small>
-                                                <span class="badge bg-success" id="selectedQuartersBadge">0 quarters</span>
-                                                <span class="badge bg-info mx-1" id="selectedMonthsBadge">0 months</span>
-                                                <span class="badge bg-warning" id="selectedWeeksBadge">0 schedules</span>
+                                    <!-- Distribution Scheduling Section -->
+                                    <div class="row mb-4">
+                                        <div class="col-12">
+                                            <h5 class="text-info mb-3">
+                                                <i class="fas fa-calendar-alt mr-1"></i>
+                                                {{ __('Compost Distribution Schedule') }}
+                                            </h5>
+                                            <hr class="mt-0">
+                                            <p class="text-muted">
+                                                {{ __('Select multiple quarters, months, and schedule distribution across weeks for application year') }} ({{ $gabbinaBiyyee->year }}).
+                                            </p>
+                                            <div class="callout callout-info mt-2">
+                                                <h6><i class="fas fa-info-circle mr-2"></i>{{ __('Distribution Status') }}</h6>
+                                                <div class="row">
+                                                    <div class="col-md-4">
+                                                        <small class="text-muted">{{ __('Total Available') }}</small>
+                                                        <div class="font-weight-bold text-primary">{{ $gabbinaBiyyee->total ? number_format($gabbinaBiyyee->total, 2) : '0.00' }} {{ $gabbinaBiyyee->unit }}</div>
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <small class="text-muted">{{ __('Scheduled Quantity') }}</small>
+                                                        <div class="font-weight-bold text-success" id="scheduledQuantityDisplay">0 {{ $gabbinaBiyyee->unit }}</div>
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <small class="text-muted">{{ __('Remaining Quantity') }}</small>
+                                                        <div class="font-weight-bold text-warning" id="remainingQuantityDisplay">{{ $gabbinaBiyyee->total ? number_format($gabbinaBiyyee->total, 2) : '0.00' }} {{ $gabbinaBiyyee->unit }}</div>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="card-body">
-                                        <div class="table-responsive">
-                                            <table class="table table-sm table-hover">
-                                                <thead class="table-light">
-                                                    <tr>
-                                                        <th class="d-none d-md-table-cell">Year</th>
-                                                        <th>Compost Type</th>
-                                                        <th class="d-none d-md-table-cell">Quarter</th>
-                                                        <th>Month</th>
-                                                        <th>Week</th>
-                                                        <th class="d-none d-md-table-cell">Date Range</th>
-                                                        <th>Quantity</th>
-                                                        <th>Action</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody id="summaryTable">
-                                                    <tr>
-                                                        <td colspan="8" class="text-center text-muted py-4">
-                                                            <i class="mdi mdi-recycle me-2"></i>
-                                                            No compost distribution scheduled yet. Start by selecting quarters above.
-                                                        </td>
-                                                    </tr>
-                                                </tbody>
-                                                <tfoot class="table-secondary">
-                                                    <tr>
-                                                        <td colspan="6"
-                                                            class="text-end fw-bold d-none d-md-table-cell">Total
-                                                            Scheduled:</td>
-                                                        <td colspan="2" class="text-center fw-bold d-md-none">Total
-                                                            Scheduled:</td>
-                                                        <td class="fw-bold text-success" id="summaryTotal">0 {{ $gabbinaBiyyee->unit }}</td>
-                                                        <td class="d-md-none"></td>
-                                                    </tr>
-                                                </tfoot>
-                                            </table>
+
+                                    <!-- Quarters Selection -->
+                                    <div class="card card-outline card-primary mb-3">
+                                        <div class="card-header">
+                                            <h3 class="card-title">
+                                                <i class="fas fa-calendar-range mr-2"></i>
+                                                {{ __('Select Quarters') }} ({{ $gabbinaBiyyee->year }})
+                                            </h3>
+                                            <div class="card-tools">
+                                                <button type="button" class="btn btn-tool" onclick="selectAllQuarters()" title="{{ __('Select All') }}">
+                                                    <i class="fas fa-check-square"></i>
+                                                </button>
+                                                <button type="button" class="btn btn-tool" onclick="clearAllQuarters()" title="{{ __('Clear All') }}">
+                                                    <i class="fas fa-square"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="row" id="quartersContainer">
+                                                <!-- Quarters will be populated here -->
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Months Section (Initially Hidden) -->
+                                    <div class="card card-outline card-info mb-3" id="monthsSection" style="display: none;">
+                                        <div class="card-header">
+                                            <h3 class="card-title">
+                                                <i class="fas fa-calendar-month mr-2"></i>
+                                                {{ __('Select Months') }} ({{ $gabbinaBiyyee->year }})
+                                            </h3>
+                                            <div class="card-tools">
+                                                <button type="button" class="btn btn-tool" onclick="selectAllMonths()" title="{{ __('Select All') }}">
+                                                    <i class="fas fa-check-square"></i>
+                                                </button>
+                                                <button type="button" class="btn btn-tool" onclick="clearAllMonths()" title="{{ __('Clear All') }}">
+                                                    <i class="fas fa-square"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="table-responsive">
+                                                <table class="table table-hover table-sm">
+                                                    <thead class="thead-light">
+                                                        <tr>
+                                                            <th width="50">
+                                                                <div class="custom-control custom-checkbox">
+                                                                    <input class="custom-control-input" type="checkbox" id="selectAllMonthsCheckbox">
+                                                                    <label for="selectAllMonthsCheckbox" class="custom-control-label"></label>
+                                                                </div>
+                                                            </th>
+                                                            <th>{{ __('Month') }}</th>
+                                                            <th>{{ __('Quarter') }}</th>
+                                                            <th>{{ __('Year') }}</th>
+                                                            <th>{{ __('Scheduled') }}</th>
+                                                            <th>{{ __('Status') }}</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody id="monthsTable">
+                                                        <!-- Months will be populated here -->
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Weeks Section (Initially Hidden) -->
+                                    <div class="card card-outline card-warning mb-3" id="weeksSection" style="display: none;">
+                                        <div class="card-header">
+                                            <h3 class="card-title">
+                                                <i class="fas fa-calendar-week mr-2"></i>
+                                                {{ __('Schedule Distribution') }} ({{ $gabbinaBiyyee->year }})
+                                            </h3>
+                                            <div class="card-tools">
+                                                <span class="badge badge-success" id="totalScheduledBadge">0 {{ $gabbinaBiyyee->unit }}</span>
+                                            </div>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="table-responsive">
+                                                <table class="table table-bordered table-striped table-hover">
+                                                    <thead class="thead-dark">
+                                                        <tr>
+                                                            <th>{{ __('Week') }}</th>
+                                                            <th>{{ __('Month') }}</th>
+                                                            <th>{{ __('Quarter') }}</th>
+                                                            <th>{{ __('Date Range') }}</th>
+                                                            <th>{{ __('Year') }}</th>
+                                                            <th width="150">{{ __('Quantity') }}</th>
+                                                            <th width="80">{{ __('Status') }}</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody id="weeksTable">
+                                                        <!-- Weeks will be populated here -->
+                                                    </tbody>
+                                                    <tfoot class="bg-light">
+                                                        <tr>
+                                                            <td colspan="5" class="text-right font-weight-bold">{{ __('Total Scheduled') }}:</td>
+                                                            <td class="font-weight-bold text-success" id="weeksTotalScheduled">0 {{ $gabbinaBiyyee->unit }}</td>
+                                                            <td class="font-weight-bold text-info">{{ __('Scheduled') }}</td>
+                                                        </tr>
+                                                    </tfoot>
+                                                </table>
+                                            </div>
+                                            <div class="callout callout-info mt-3">
+                                                <div class="row align-items-center">
+                                                    <div class="col-md-8">
+                                                        <h6><i class="fas fa-info-circle mr-2"></i>{{ __('Instructions') }}</h6>
+                                                        <p class="mb-0">{{ __('Enter quantity for each week. The system will validate against available quantity.') }}</p>
+                                                    </div>
+                                                    <div class="col-md-4 text-right">
+                                                        <button type="button" class="btn btn-success" onclick="saveAllSchedules()">
+                                                            <i class="fas fa-save mr-2"></i> {{ __('Save All Schedules') }}
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Summary Section -->
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h3 class="card-title">
+                                                <i class="fas fa-list-alt mr-2"></i>
+                                                {{ __('Distribution Summary') }} ({{ __('Application Year') }}: {{ $gabbinaBiyyee->year }})
+                                            </h3>
+                                        </div>
+                                        <div class="card-body p-0">
+                                            <div class="table-responsive">
+                                                <table class="table table-hover">
+                                                    <thead class="thead-light">
+                                                        <tr>
+                                                            <th>{{ __('Year') }}</th>
+                                                            <th>{{ __('Compost Type') }}</th>
+                                                            <th>{{ __('Quarter') }}</th>
+                                                            <th>{{ __('Month') }}</th>
+                                                            <th>{{ __('Week') }}</th>
+                                                            <th>{{ __('Date Range') }}</th>
+                                                            <th>{{ __('Quantity') }}</th>
+                                                            <th>{{ __('Action') }}</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody id="summaryTable">
+                                                        <tr>
+                                                            <td colspan="8" class="text-center text-muted py-4">
+                                                                <i class="fas fa-recycle mr-2"></i>
+                                                                {{ __('No distribution scheduled yet. Start by selecting quarters above.') }}
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                    <tfoot class="bg-gray">
+                                                        <tr>
+                                                            <td colspan="6" class="text-right font-weight-bold">{{ __('Total') }}:</td>
+                                                            <td class="font-weight-bold text-success" id="summaryTotal">0 {{ $gabbinaBiyyee->unit }}</td>
+                                                            <td></td>
+                                                        </tr>
+                                                    </tfoot>
+                                                </table>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-
-                            <!-- Hidden field to store structured compost distribution data -->
-                            <input type="hidden" name="compost_distribution_details"
-                                id="compostDistributionDetails"
-                                value="{{ json_encode($gabbinaBiyyee->compost_distribution_details ?? []) }}">
-
-                            <!-- Form Actions -->
-                            <div class="form-actions mt-4 mt-md-5 pt-3 pt-md-4 border-top">
-                                <div
-                                    class="d-flex justify-content-between align-items-center flex-column flex-md-row gap-3">
-                                    <a href="{{ route('sector.gabbina_biyyee.index') }}"
-                                        class="btn btn-outline-secondary btn-lg w-100 w-md-auto order-2 order-md-1">
-                                        <i class="mdi mdi-arrow-left me-2"></i>
-                                        Back to Compost Plans
-                                    </a>
-                                    <div class="d-flex gap-2 gap-md-3 w-100 w-md-auto order-1 order-md-2">
-                                        <a href="{{ route('sector.gabbina_biyyee.index') }}"
-                                            class="btn btn-outline-danger btn-lg flex-fill">
-                                            <i class="mdi mdi-cancel me-2"></i>
-                                            Cancel
-                                        </a>
-                                        <button type="submit" class="btn btn-success btn-lg flex-fill"
-                                            id="submitBtn">
-                                            <i class="mdi mdi-content-save-outline me-2"></i>
-                                            Update Compost Schedule
-                                        </button>
+                                <!-- /.card-body -->
+                                
+                                <div class="card-footer">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <a href="{{ route('sector.gabbina_biyyee.index') }}" class="btn btn-default">
+                                                <i class="fas fa-arrow-left mr-2"></i> {{ __('Back to Compost Plans') }}
+                                            </a>
+                                        </div>
+                                        <div class="col-md-6 text-right">
+                                            <button type="submit" class="btn btn-success ml-2" id="submitBtn">
+                                                <i class="fas fa-save mr-2"></i> {{ __('Update Schedule') }}
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        </form>
+                            </form>
+                        </div>
+                        <!-- /.card -->
                     </div>
                 </div>
             </div>
-        </div>
+        </section>
+        <!-- /.content -->
     </div>
 
+    {{-- JavaScript Section --}}
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
     <script>
+        // Translations for JavaScript messages
+        const translations = {
+            please_select_quarters_first: "{{ __('Please select quarters first') }}",
+            all_quarters_selected: "{{ __('All quarters selected for application year') }}",
+            all_quarters_cleared: "{{ __('All quarters cleared') }}",
+            all_months_selected: "{{ __('All months in selected quarters selected for application year') }}",
+            all_months_cleared: "{{ __('All months cleared') }}",
+            all_schedules_saved: "{{ __('All schedules saved successfully for application year') }}",
+            schedule_removed: "{{ __('Schedule removed successfully!') }}",
+            no_quantity_available: "{{ __('No quantity available to schedule for this month') }}",
+            scheduled_equally: "{{ __('Distributed equally across weeks in') }}",
+            all_schedules_cleared: "{{ __('All schedules cleared for') }}",
+            no_months_available: "{{ __('No months available in selected quarters.') }}",
+            fix_validation_errors: "{{ __('Please fix validation errors before saving') }}",
+            no_schedule_warning: "{{ __('No compost distribution has been scheduled for application year . Do you want to proceed without scheduling?') }}",
+            please_add_schedule: "{{ __('Please add compost schedule or confirm to proceed without it') }}",
+            scheduled_exceeds_available: "{{ __('Scheduled quantity exceeds available quantity') }}",
+            exceeds_available_quantity: "{{ __('Exceeds available quantity') }}",
+            value_cannot_negative: "{{ __('Value cannot be negative') }}",
+            valid: "{{ __('Valid') }}",
+            week: "{{ __('Week') }}",
+            days: "{{ __('Days') }}",
+            year: "{{ __('Year') }}",
+            scheduled: "{{ __('Scheduled') }}",
+            not_scheduled: "{{ __('Not Scheduled') }}",
+            partially_scheduled: "{{ __('Partially Scheduled') }}",
+            months: "{{ __('months') }}",
+            quarters: "{{ __('quarters') }}",
+            weeks: "{{ __('weeks') }}",
+            selected: "{{ __('Selected') }}",
+            q: "{{ __('Q') }}",
+            please_fix_errors: "{{ __('Please fix the validation errors before submitting.') }}"
+        };
+
+        let availableQuantity = parseFloat({{ $gabbinaBiyyee->total ?? 0 }});
+        const unit = '{{ $gabbinaBiyyee->unit }}';
         let selectedQuarters = new Set();
         let selectedMonths = new Set();
         let compostSummaryRows = [];
         const applicationYear = {{ $gabbinaBiyyee->year }};
-        const availableQuantity = {{ $gabbinaBiyyee->total ?? 0 }};
-        const unit = '{{ $gabbinaBiyyee->unit }}';
 
-        // Ethiopian Calendar Data
+        // Ethiopian Calendar Data with translations
         const EC_MONTHS = [
-            { id: 1, name: "Meskerem", days: 30 },
-            { id: 2, name: "Tikimt", days: 30 },
-            { id: 3, name: "Hidar", days: 30 },
-            { id: 4, name: "Tahsas", days: 30 },
-            { id: 5, name: "Tir", days: 30 },
-            { id: 6, name: "Yekatit", days: 30 },
-            { id: 7, name: "Megabit", days: 30 },
-            { id: 8, name: "Miyazia", days: 30 },
-            { id: 9, name: "Ginbot", days: 30 },
-            { id: 10, name: "Sene", days: 30 },
-            { id: 11, name: "Hamle", days: 30 },
-            { id: 12, name: "Nehase", days: 30 },
-            { id: 13, name: "Pagumen", days: 5 }
+            { id: 1, name: "{{ __('Meskerem') }}", days: 30 },
+            { id: 2, name: "{{ __('Tikimt') }}", days: 30 },
+            { id: 3, name: "{{ __('Hidar') }}", days: 30 },
+            { id: 4, name: "{{ __('Tahsas') }}", days: 30 },
+            { id: 5, name: "{{ __('Tir') }}", days: 30 },
+            { id: 6, name: "{{ __('Yekatit') }}", days: 30 },
+            { id: 7, name: "{{ __('Megabit') }}", days: 30 },
+            { id: 8, name: "{{ __('Miyazia') }}", days: 30 },
+            { id: 9, name: "{{ __('Ginbot') }}", days: 30 },
+            { id: 10, name: "{{ __('Sene') }}", days: 30 },
+            { id: 11, name: "{{ __('Hamle') }}", days: 30 },
+            { id: 12, name: "{{ __('Nehase') }}", days: 30 },
+            { id: 13, name: "{{ __('Pagumen') }}", days: 5 }
         ];
 
         const EC_QUARTERS = {
@@ -417,21 +446,35 @@
             4: [10, 11, 12, 13]
         };
 
+        // Status calculation function
+        function calculateStatus(quantityValue) {
+            if (quantityValue === 0) return translations.not_scheduled;
+            return translations.scheduled;
+        }
+
+        function getStatusClass(status) {
+            switch(status) {
+                case translations.not_scheduled: return 'badge-secondary';
+                case translations.scheduled: return 'badge-success';
+                case translations.partially_scheduled: return 'badge-warning';
+                default: return 'badge-secondary';
+            }
+        }
+
+        // Initialize form
         $(document).ready(function() {
             console.log('Document ready - initializing compost scheduling for application year:', applicationYear);
             console.log('Available quantity:', availableQuantity);
 
             // Update the application year display
-            $('#applicationYear').text(applicationYear);
             $('#availableQuantity').text(availableQuantity.toFixed(2) + ' ' + unit);
-            updateRemainingQuantity();
 
             // Form submission validation
             $('#compostPlanForm').on('submit', function(e) {
                 console.log('Form submitted, validating...');
                 if (!validateForm()) {
                     e.preventDefault();
-                    showAlert('Please fix the validation errors before submitting.', 'error');
+                    showAlert(translations.please_fix_errors, 'error');
                 } else {
                     console.log('Form validation passed, submitting...');
                     saveCompostJSON();
@@ -440,14 +483,11 @@
 
             renderQuarters();
             loadExistingCompostDistribution();
-            updateTotalScheduledBadge();
-
-            // Mobile touch improvements
-            improveMobileTouch();
+            updateQuantitySummary();
         });
 
         /* -------------------------------
-           COMPOST QUANTITY VALIDATION
+           QUANTITY VALIDATION & CALCULATION
         ------------------------------- */
         function getCurrentScheduledQuantity() {
             return compostSummaryRows.reduce((total, row) => total + row.quantity, 0);
@@ -457,56 +497,62 @@
             return Math.max(0, availableQuantity - getCurrentScheduledQuantity());
         }
 
-        function updateRemainingQuantity() {
+        function updateQuantitySummary() {
+            const scheduled = getCurrentScheduledQuantity();
             const remaining = getRemainingQuantity();
-            $('#remainingQuantity').text(remaining.toFixed(2) + ' ' + unit);
-            
+
+            $("#scheduledQuantityDisplay").text(scheduled.toFixed(2) + " " + unit);
+            $("#remainingQuantityDisplay").text(remaining.toFixed(2) + " " + unit);
+            $("#remainingQuantity").text(remaining.toFixed(2) + " " + unit);
+
             // Update color based on remaining quantity
             if (remaining === 0) {
-                $('#remainingQuantity').removeClass('text-success').addClass('text-danger');
+                $("#remainingQuantityDisplay").removeClass('text-warning').addClass('text-danger');
+                $("#remainingQuantity").removeClass('text-success').addClass('text-danger');
             } else if (remaining < availableQuantity * 0.2) {
-                $('#remainingQuantity').removeClass('text-success').addClass('text-warning');
+                $("#remainingQuantityDisplay").removeClass('text-danger').addClass('text-warning');
+                $("#remainingQuantity").removeClass('text-success').addClass('text-warning');
             } else {
-                $('#remainingQuantity').removeClass('text-danger text-warning').addClass('text-success');
+                $("#remainingQuantityDisplay").removeClass('text-danger text-warning').addClass('text-primary');
+                $("#remainingQuantity").removeClass('text-danger text-warning').addClass('text-success');
             }
         }
 
-        function validateCompostInput(input) {
+        function validateQuantityInput(input) {
             const value = parseFloat($(input).val()) || 0;
-            const feedback = $(input).siblings('.validation-feedback');
+            const feedback = $(input).parent().siblings('.validation-feedback');
 
-            // Clear previous validation
             $(input).removeClass('is-valid is-invalid');
             feedback.empty();
 
             if (value < 0) {
                 $(input).addClass('is-invalid');
-                feedback.html('<small class="text-danger"><i class="mdi mdi-alert-circle me-1"></i>Value cannot be negative</small>');
+                feedback.html('<small class="text-danger"><i class="fas fa-exclamation-circle mr-1"></i>' + translations.value_cannot_negative + '</small>');
                 return false;
             }
 
             // Calculate remaining quantity excluding current row
             const scheduledWithoutCurrent = compostSummaryRows
-                .filter(row => !(row.month === $(input).data('month-name') && row.week === `Week ${$(input).data('week')}`))
+                .filter(row => !(row.month === $(input).data('month-name') &&
+                                row.week === translations.week + ' ' + $(input).data('week')))
                 .reduce((total, row) => total + row.quantity, 0);
 
             const maxAllowed = Math.max(0, availableQuantity - scheduledWithoutCurrent);
 
             if (value > maxAllowed) {
                 $(input).addClass('is-invalid');
-                feedback.html(`<small class="text-danger"><i class="mdi mdi-alert-circle me-1"></i>Exceeds available quantity (max: ${maxAllowed.toFixed(2)})</small>`);
+                feedback.html(`<small class="text-danger"><i class="fas fa-exclamation-circle mr-1"></i>${translations.exceeds_available_quantity} (${maxAllowed.toFixed(2)})</small>`);
                 return false;
             }
 
             if (value > 0) {
                 $(input).addClass('is-valid');
-                feedback.html('<small class="text-success"><i class="mdi mdi-check-circle me-1"></i>Valid</small>');
             }
 
             return true;
         }
 
-        function validateAllCompostSchedules() {
+        function validateAllSchedules() {
             let isValid = true;
             const errors = [];
 
@@ -514,17 +560,20 @@
             
             if (totalScheduled > availableQuantity) {
                 isValid = false;
-                errors.push(`Total scheduled quantity (${totalScheduled.toFixed(2)}) exceeds available quantity (${availableQuantity.toFixed(2)})`);
+                errors.push(translations.scheduled_exceeds_available + ` (${totalScheduled.toFixed(2)}/${availableQuantity.toFixed(2)})`);
             }
 
             // Check individual inputs
-            $('.compost-quantity').each(function() {
-                if (!validateCompostInput(this)) {
+            $('.quantity-input').each(function() {
+                if (!validateQuantityInput(this)) {
                     isValid = false;
                 }
             });
 
-            return { isValid, errors };
+            return {
+                isValid,
+                errors
+            };
         }
 
         /* -------------------------------
@@ -534,54 +583,54 @@
             $("#quartersContainer").empty();
 
             Object.keys(EC_QUARTERS).forEach(q => {
-                const quarterQuantity = calculateQuarterScheduledQuantity(parseInt(q));
+                const quarterData = calculateQuarterData(parseInt(q));
                 const isSelected = selectedQuarters.has(parseInt(q));
                 const quarterName = `Q${q}`;
-                const monthNames = EC_QUARTERS[q].map(m => EC_MONTHS[m - 1].name).join(", ");
+                const monthNames = EC_QUARTERS[q].map(m => EC_MONTHS[m-1].name).join(", ");
 
                 $("#quartersContainer").append(`
-                <div class="col-6 col-md-3 mb-2 mb-md-3">
-                    <div class="card quarter-card p-2 p-md-3 text-center ${isSelected ? 'card-selected' : ''}" data-q="${q}">
-                        <div class="form-check mb-1 mb-md-2">
-                            <input class="form-check-input quarter-checkbox" type="checkbox" id="quarter${q}" ${isSelected ? 'checked' : ''}>
-                            <label class="form-check-label fw-bold fs-6 fs-md-5" for="quarter${q}">${quarterName}</label>
+                <div class="col-md-3 col-sm-6 mb-3">
+                    <div class="card card-outline ${isSelected ? 'card-primary card-selected' : 'card-secondary'} h-100 quarter-card" data-quarter="${q}">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <div class="custom-control custom-checkbox">
+                                    <input class="custom-control-input quarter-checkbox" type="checkbox"
+                                           id="quarter${q}" ${isSelected ? 'checked' : ''}>
+                                    <label for="quarter${q}" class="custom-control-label font-weight-bold">
+                                        ${quarterName}
+                                    </label>
+                                </div>
+                            </h3>
                         </div>
-                        <small class="text-muted d-none d-md-block">${monthNames}</small>
-                        <small class="text-muted d-md-none">${EC_QUARTERS[q].length} months</small>
-                        <div class="mt-1 mt-md-2">
-                            <small class="text-success">${quarterQuantity.toFixed(2)} ${unit}</small>
-                        </div>
-                        <div class="mt-1">
-                            <small class="text-info">Year: ${applicationYear}</small>
+                        <div class="card-body">
+                            <p class="text-muted mb-2">
+                                <small>${monthNames}</small>
+                            </p>
+                            <div class="row">
+                                <div class="col-12">
+                                    <small class="text-success">
+                                        <i class="fas fa-recycle mr-1"></i>{{ __('Scheduled') }}: ${quarterData.scheduled.toFixed(2)} ${unit}
+                                    </small>
+                                </div>
+                                <div class="col-12">
+                                    <small class="text-info">
+                                        <i class="fas fa-calendar mr-1"></i>{{ __('Year') }}: ${applicationYear}
+                                    </small>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
             `);
+
+                // Add event listener to quarter card
+                $(`#quarter${q}`).on('change', function() {
+                    handleQuarterChange(parseInt(q), $(this).is(':checked'));
+                });
             });
 
-            // Add event listeners for quarter checkboxes
-            $('.quarter-checkbox').on('change', function() {
-                const quarterNum = parseInt($(this).closest('.quarter-card').data('q'));
-                const isChecked = $(this).is(':checked');
-
-                if (isChecked) {
-                    selectedQuarters.add(quarterNum);
-                    $(this).closest('.quarter-card').addClass('card-selected');
-                } else {
-                    selectedQuarters.delete(quarterNum);
-                    $(this).closest('.quarter-card').removeClass('card-selected');
-                    // Remove months from this quarter from selected months
-                    const quarterMonths = EC_QUARTERS[quarterNum];
-                    quarterMonths.forEach(month => {
-                        selectedMonths.delete(month);
-                    });
-                }
-
-                renderMonths();
-                updateBadges();
-            });
-
-            $(".quarter-card").click(function(e) {
+            // Add click event to whole quarter card
+            $('.quarter-card').click(function(e) {
                 if (!$(e.target).is('input') && !$(e.target).is('label')) {
                     const checkbox = $(this).find('.quarter-checkbox');
                     checkbox.prop('checked', !checkbox.prop('checked'));
@@ -590,35 +639,62 @@
             });
         }
 
+        function handleQuarterChange(quarterNum, isChecked) {
+            if (isChecked) {
+                selectedQuarters.add(quarterNum);
+                $(`.quarter-card[data-quarter="${quarterNum}"]`).removeClass('card-secondary').addClass('card-primary card-selected');
+            } else {
+                selectedQuarters.delete(quarterNum);
+                $(`.quarter-card[data-quarter="${quarterNum}"]`).removeClass('card-primary card-selected').addClass('card-secondary');
+                // Remove months from this quarter from selected months
+                const quarterMonths = EC_QUARTERS[quarterNum];
+                quarterMonths.forEach(month => {
+                    selectedMonths.delete(month);
+                });
+            }
+
+            renderMonthsTable();
+            updateQuantitySummary();
+        }
+
+        function calculateQuarterData(quarter) {
+            const quarterName = `Q${quarter}`;
+            const quarterSchedules = compostSummaryRows.filter(row => row.quarter === quarterName);
+            
+            return {
+                scheduled: quarterSchedules.reduce((total, row) => total + (row.quantity || 0), 0)
+            };
+        }
+
         function selectAllQuarters() {
             Object.keys(EC_QUARTERS).forEach(q => {
-                selectedQuarters.add(parseInt(q));
+                if (!selectedQuarters.has(parseInt(q))) {
+                    selectedQuarters.add(parseInt(q));
+                }
             });
             renderQuarters();
-            renderMonths();
-            updateBadges();
-            showAlert('All quarters selected for application year ' + applicationYear, 'success');
+            renderMonthsTable();
+            showAlert(translations.all_quarters_selected + ' ' + applicationYear, 'success');
         }
 
         function clearAllQuarters() {
             selectedQuarters.clear();
             selectedMonths.clear();
             renderQuarters();
-            renderMonths();
-            $('#schedulingSection').hide();
-            updateBadges();
-            showAlert('All quarters cleared', 'info');
+            $('#monthsSection').hide();
+            $('#weeksSection').hide();
+            showAlert(translations.all_quarters_cleared, 'info');
         }
 
         /* -------------------------------
-           MONTHS MANAGEMENT
+           MONTHS TABLE MANAGEMENT
         ------------------------------- */
-        function renderMonths() {
-            $("#monthsContainer").empty();
+        function renderMonthsTable() {
+            $("#monthsTable").empty();
 
             if (selectedQuarters.size === 0) {
                 $("#monthsSection").hide();
-                $("#schedulingSection").hide();
+                $("#weeksSection").hide();
                 return;
             }
 
@@ -633,59 +709,110 @@
             // Remove duplicates and sort
             allMonths = [...new Set(allMonths)].sort((a, b) => a - b);
 
+            if (allMonths.length === 0) {
+                $("#monthsTable").append(`
+                    <tr>
+                        <td colspan="6" class="text-center text-muted py-3">
+                            <i class="fas fa-calendar-alt mr-2"></i>
+                            ${translations.no_months_available}
+                        </td>
+                    </tr>
+                `);
+                return;
+            }
+
             allMonths.forEach(monthNum => {
                 const month = EC_MONTHS[monthNum - 1];
-                const monthQuantity = calculateMonthScheduledQuantity(monthNum);
+                const monthData = calculateMonthData(monthNum);
                 const isSelected = selectedMonths.has(monthNum);
+                const quarterNum = findQuarter(monthNum);
+                const status = monthData.scheduled > 0 ? translations.partially_scheduled : translations.not_scheduled;
+                const statusClass = monthData.scheduled > 0 ? 'badge-warning' : 'badge-secondary';
 
-                $("#monthsContainer").append(`
-                <div class="col-6 col-md-4 mb-2 mb-md-3">
-                    <div class="card month-card p-2 p-md-3 text-center ${isSelected ? 'card-selected' : ''}" data-month="${monthNum}">
-                        <div class="form-check mb-1 mb-md-2">
-                            <input class="form-check-input month-checkbox" type="checkbox" id="month${monthNum}" ${isSelected ? 'checked' : ''}>
-                            <label class="form-check-label fw-bold fs-6" for="month${monthNum}">${month.name}</label>
-                        </div>
-                        <small class="text-muted">Q${findQuarter(monthNum)}</small>
-                        <div class="mt-1 mt-md-2">
-                            <small class="text-success">${monthQuantity.toFixed(2)} ${unit}</small>
-                        </div>
-                        <div class="mt-1">
-                            <small class="text-info">Year: ${applicationYear}</small>
-                        </div>
-                    </div>
-                </div>
-            `);
+                $("#monthsTable").append(`
+                    <tr class="${isSelected ? 'table-info' : ''} month-row" data-month="${monthNum}">
+                        <td>
+                            <div class="custom-control custom-checkbox">
+                                <input class="custom-control-input month-checkbox" type="checkbox"
+                                       id="month${monthNum}" ${isSelected ? 'checked' : ''}>
+                                <label for="month${monthNum}" class="custom-control-label"></label>
+                            </div>
+                        </td>
+                        <td>
+                            <strong>${month.name}</strong>
+                        </td>
+                        <td>
+                            <span class="badge badge-primary">Q${quarterNum}</span>
+                        </td>
+                        <td>${applicationYear}</td>
+                        <td>
+                            <span class="text-success font-weight-bold">${monthData.scheduled.toFixed(2)} ${unit}</span>
+                        </td>
+                        <td>
+                            <span class="badge ${statusClass}">${status}</span>
+                        </td>
+                    </tr>
+                `);
+
+                // Add event listener to month checkbox
+                $(`#month${monthNum}`).on('change', function() {
+                    handleMonthChange(monthNum, $(this).is(':checked'));
+                });
             });
 
-            // Add event listeners for month checkboxes
-            $('.month-checkbox').on('change', function() {
-                const monthNum = parseInt($(this).closest('.month-card').data('month'));
+            // Add select all functionality
+            $('#selectAllMonthsCheckbox').off('change').on('change', function() {
                 const isChecked = $(this).is(':checked');
-
-                if (isChecked) {
-                    selectedMonths.add(monthNum);
-                    $(this).closest('.month-card').addClass('card-selected');
-                } else {
-                    selectedMonths.delete(monthNum);
-                    $(this).closest('.month-card').removeClass('card-selected');
-                }
-
-                renderScheduling();
-                updateBadges();
+                $('.month-checkbox').prop('checked', isChecked).trigger('change');
             });
 
-            $(".month-card").click(function(e) {
+            // Add click event to month rows
+            $('.month-row').click(function(e) {
                 if (!$(e.target).is('input') && !$(e.target).is('label')) {
                     const checkbox = $(this).find('.month-checkbox');
                     checkbox.prop('checked', !checkbox.prop('checked'));
                     checkbox.trigger('change');
                 }
             });
+
+            // Update select all checkbox state
+            updateSelectAllMonthsCheckbox();
+        }
+
+        function updateSelectAllMonthsCheckbox() {
+            const totalMonths = $('.month-checkbox').length;
+            const checkedMonths = $('.month-checkbox:checked').length;
+            const selectAllCheckbox = $('#selectAllMonthsCheckbox');
+            
+            selectAllCheckbox.prop('checked', totalMonths > 0 && totalMonths === checkedMonths);
+            selectAllCheckbox.prop('indeterminate', checkedMonths > 0 && checkedMonths < totalMonths);
+        }
+
+        function handleMonthChange(monthNum, isChecked) {
+            if (isChecked) {
+                selectedMonths.add(monthNum);
+                $(`.month-row[data-month="${monthNum}"]`).addClass('table-info');
+            } else {
+                selectedMonths.delete(monthNum);
+                $(`.month-row[data-month="${monthNum}"]`).removeClass('table-info');
+            }
+
+            updateSelectAllMonthsCheckbox();
+            renderWeeksTable();
+        }
+
+        function calculateMonthData(monthNum) {
+            const monthName = EC_MONTHS[monthNum - 1].name;
+            const monthSchedules = compostSummaryRows.filter(row => row.month === monthName);
+            
+            return {
+                scheduled: monthSchedules.reduce((total, row) => total + (row.quantity || 0), 0)
+            };
         }
 
         function selectAllMonths() {
             if (selectedQuarters.size === 0) {
-                showAlert('Please select quarters first', 'warning');
+                showAlert(translations.please_select_quarters_first, 'warning');
                 return;
             }
 
@@ -696,386 +823,300 @@
             });
 
             allMonths.forEach(month => {
-                selectedMonths.add(month);
+                if (!selectedMonths.has(month)) {
+                    selectedMonths.add(month);
+                }
             });
 
-            renderMonths();
-            renderScheduling();
-            updateBadges();
-            showAlert('All months in selected quarters selected for application year ' + applicationYear, 'success');
+            renderMonthsTable();
+            renderWeeksTable();
+            showAlert(translations.all_months_selected + ' ' + applicationYear, 'success');
         }
 
         function clearAllMonths() {
             selectedMonths.clear();
-            renderMonths();
-            $('#schedulingSection').hide();
-            updateBadges();
-            showAlert('All months cleared', 'info');
+            renderMonthsTable();
+            $('#weeksSection').hide();
+            showAlert(translations.all_months_cleared, 'info');
         }
 
         /* -------------------------------
-           SCHEDULING MANAGEMENT
+           WEEKS TABLE MANAGEMENT
         ------------------------------- */
-        function renderScheduling() {
-            $("#schedulingContainer").empty();
+        function renderWeeksTable() {
+            $("#weeksTable").empty();
 
             if (selectedMonths.size === 0) {
-                $("#schedulingSection").hide();
+                $("#weeksSection").hide();
                 return;
             }
 
-            $("#schedulingSection").show();
+            $("#weeksSection").show();
 
+            // Group weeks by month for better organization
             const monthsArray = Array.from(selectedMonths).sort((a, b) => a - b);
+            let totalScheduled = 0;
 
             monthsArray.forEach(monthNum => {
                 const month = EC_MONTHS[monthNum - 1];
-                const weeks = getWeeksForMonth(monthNum);
-                const monthQuantity = calculateMonthScheduledQuantity(monthNum);
+                const quarterNum = findQuarter(monthNum);
+                const monthData = calculateMonthData(monthNum);
 
-                $("#schedulingContainer").append(`
-                <div class="month-scheduling-section mb-4 p-3 border rounded bg-light">
-                    <div class="d-flex justify-content-between align-items-center flex-column flex-md-row mb-2 mb-md-3">
-                        <h6 class="mb-1 mb-md-0 text-success fs-6">
-                            <i class="mdi mdi-calendar-month me-2"></i>
-                            ${month.name} (Q${findQuarter(monthNum)}) - ${applicationYear}
-                        </h6>
-                        <div class="text-center text-md-end mt-1 mt-md-0">
-                            <span class="badge bg-info me-1 me-md-2 mb-1 mb-md-0">${monthQuantity.toFixed(2)} ${unit}</span>
-                            <button type="button" class="btn btn-outline-success btn-xs btn-sm me-1" onclick="distributeEqually(${monthNum})">
-                                <i class="mdi mdi-autorenew me-1"></i> Equal
-                            </button>
-                            <button type="button" class="btn btn-outline-secondary btn-xs btn-sm" onclick="clearMonthScheduling(${monthNum})">
-                                <i class="mdi mdi-refresh me-1"></i> Clear
-                            </button>
-                        </div>
-                    </div>
+                // Calculate weeks for this month
+                let weeks = [];
+                let start = 1;
+                while (start <= month.days) {
+                    let end = Math.min(start + 6, month.days);
+                    weeks.push({ start, end, weekNum: weeks.length + 1 });
+                    start += 7;
+                }
+
+                weeks.forEach(week => {
+                    const existingSchedule = compostSummaryRows.find(row =>
+                        row.month === month.name && row.week === translations.week + ' ' + week.weekNum
+                    );
                     
-                    <div class="weeks-scheduling">
-                        ${weeks.map(week => `
-                                <div class="week-scheduling mb-3 p-3 border rounded bg-white">
-                                    <div class="row align-items-center mb-2">
-                                        <div class="col-12 col-md-3 mb-2 mb-md-0">
-                                            <strong class="fs-6">Week ${week.weekNumber}</strong><br>
-                                            <small class="text-muted">Days ${week.start}-${week.end}</small>
-                                            <br>
-                                            <small class="text-info">Year: ${applicationYear}</small>
-                                        </div>
-                                        <div class="col-12 col-md-9">
-                                            <div class="compost-inputs">
-                                                <div class="compost-input-group mb-2">
-                                                    ${renderCompostInputs(monthNum, week.weekNumber, month.name)}
-                                                </div>
-                                            </div>
-                                        </div>
+                    const quantityValue = existingSchedule ? existingSchedule.quantity : 0;
+                    const status = calculateStatus(quantityValue);
+                    const statusClass = getStatusClass(status);
+                    
+                    totalScheduled += quantityValue;
+
+                    $("#weeksTable").append(`
+                        <tr class="week-row" data-month="${monthNum}" data-week="${week.weekNum}">
+                            <td>
+                                <strong>${translations.week} ${week.weekNum}</strong>
+                            </td>
+                            <td>${month.name}</td>
+                            <td>
+                                <span class="badge badge-primary">Q${quarterNum}</span>
+                            </td>
+                            <td>
+                                <small class="text-muted">${translations.days} ${week.start}-${week.end}</small>
+                            </td>
+                            <td>${applicationYear}</td>
+                            <td>
+                                <div class="input-group input-group-sm">
+                                    <input type="number" step="0.01" min="0" max="${availableQuantity}"
+                                           class="form-control form-control-sm quantity-input"
+                                           data-month="${monthNum}"
+                                           data-week="${week.weekNum}"
+                                           data-month-name="${month.name}"
+                                           value="${quantityValue.toFixed(2)}"
+                                           placeholder="0.00">
+                                    <div class="input-group-append">
+                                        <span class="input-group-text">${unit}</span>
                                     </div>
                                 </div>
-                            `).join('')}
-                    </div>
-                </div>
-            `);
+                                <div class="validation-feedback mt-1" style="font-size: 0.75rem;"></div>
+                            </td>
+                            <td>
+                                <span class="badge ${statusClass}">${status}</span>
+                            </td>
+                        </tr>
+                    `);
+                });
             });
 
-            updateTotalScheduledBadge();
-            enhanceCompostInputValidation();
-        }
-
-        function renderCompostInputs(monthNum, weekNumber, monthName) {
-            const existing = compostSummaryRows.find(row =>
-                row.month === monthName && row.week === `Week ${weekNumber}`
-            );
-
-            const scheduled = getCurrentScheduledQuantity();
-            const remaining = getRemainingQuantity();
-
-            // Calculate max allowed for this input
-            const scheduledWithoutCurrent = compostSummaryRows
-                .filter(row => !(row.month === monthName && row.week === `Week ${weekNumber}`))
-                .reduce((total, row) => total + row.quantity, 0);
-
-            const maxAllowed = Math.max(0, availableQuantity - scheduledWithoutCurrent);
-
-            return `
-            <div class="compost-input-item mb-2 p-2 border rounded bg-light">
-                <div class="row g-2 align-items-center">
-                    <div class="col-12 col-md-5">
-                        <small class="fw-bold d-block">{{ $gabbinaBiyyee->compost_type }}</small>
-                        <small class="text-muted">Compost Distribution</small>
-                        <div class="quantity-info mt-1">
-                            <small class="text-success">Used: ${scheduled.toFixed(2)}/${availableQuantity.toFixed(2)} ${unit}</small><br>
-                            <small class="${remaining === 0 ? 'text-danger' : 'text-warning'}">Available: ${remaining.toFixed(2)} ${unit}</small>
-                        </div>
-                    </div>
-                    <div class="col-7 col-md-4">
-                        <div class="input-group input-group-sm">
-                            <input type="number" 
-                                   step="0.01" 
-                                   min="0" 
-                                   max="${maxAllowed}"
-                                   class="form-control compost-quantity"
-                                   data-month="${monthNum}"
-                                   data-week="${weekNumber}"
-                                   data-month-name="${monthName}"
-                                   value="${existing ? existing.quantity : ''}"
-                                   placeholder="0.00"
-                                   ${remaining === 0 && !existing?.quantity ? 'disabled' : ''}>
-                            <span class="input-group-text">${unit}</span>
-                        </div>
-                        <div class="validation-feedback mt-1"></div>
-                        ${remaining === 0 && !existing?.quantity ? '<small class="text-danger">No quantity available</small>' : ''}
-                    </div>
-                    <div class="col-5 col-md-3 text-center">
-                        ${existing && existing.quantity > 0 ?
-                        '<span class="badge bg-success"><i class="mdi mdi-check me-1"></i>Saved</span>' :
-                        '<span class="badge bg-secondary"><i class="mdi mdi-clock me-1"></i>Pending</span>'
-                        }
-                    </div>
-                </div>
-            </div>
-        `;
-        }
-
-        function enhanceCompostInputValidation() {
-            $('.compost-quantity').off('input').on('input', function() {
-                validateCompostInput(this);
-                updateTotalScheduledBadge();
-                updateRemainingQuantity();
-            });
-        }
-
-        // Update compost scheduling when input changes
-        $(document).on('input', '.compost-quantity', function() {
-            const monthNum = parseInt($(this).data('month'));
-            const weekNumber = parseInt($(this).data('week'));
-            const quantity = parseFloat($(this).val()) || 0;
-
-            const month = EC_MONTHS[monthNum - 1];
-
-            // Validate before updating
-            if (validateCompostInput(this)) {
-                updateCompostScheduling(month.name, weekNumber, quantity);
-                updateSummaryTable();
-                updateTotalScheduledBadge();
-                updateRemainingQuantity();
-            }
-        });
-
-        function updateCompostScheduling(monthName, weekNumber, quantity) {
-            // Find or create scheduling entry
-            let scheduling = compostSummaryRows.find(d =>
-                d.month === monthName && d.week === `Week ${weekNumber}`
-            );
-
-            if (scheduling) {
-                scheduling.quantity = quantity;
-            } else {
-                const weekData = getWeekData(EC_MONTHS.findIndex(m => m.name === monthName) + 1, weekNumber);
-                scheduling = {
-                    year: applicationYear,
-                    quarter: `Q${findQuarter(EC_MONTHS.findIndex(m => m.name === monthName) + 1)}`,
-                    month: monthName,
-                    week: `Week ${weekNumber}`,
-                    range: weekData.range,
-                    compost_type: '{{ $gabbinaBiyyee->compost_type }}',
-                    quantity: quantity,
-                    unit: unit
-                };
-                compostSummaryRows.push(scheduling);
-            }
-
-            // Remove if quantity is 0
-            if (quantity === 0) {
-                compostSummaryRows = compostSummaryRows.filter(d =>
-                    !(d.month === monthName && d.week === `Week ${weekNumber}`)
-                );
-            }
-        }
-
-        function distributeEqually(monthNum) {
-            const month = EC_MONTHS[monthNum - 1];
-            const remaining = getRemainingQuantity();
+            // Add input event listeners
+            enhanceQuantityInputValidation();
             
-            if (remaining <= 0) {
-                showAlert(`No remaining quantity available for scheduling`, 'warning');
-                return;
-            }
-
-            const weeks = getWeeksForMonth(monthNum);
-            if (weeks.length === 0) return;
-
-            const equalQuantity = remaining / weeks.length;
-
-            weeks.forEach(week => {
-                const input = $(`.compost-quantity[data-month="${monthNum}"][data-week="${week.weekNumber}"]`);
-                if (input.length) {
-                    input.val(equalQuantity.toFixed(2));
-                    updateCompostScheduling(month.name, week.weekNumber, equalQuantity);
-                }
-            });
-
-            updateSummaryTable();
-            updateTotalScheduledBadge();
-            updateRemainingQuantity();
-            enhanceCompostInputValidation();
-            showAlert(`Distributed remaining quantity equally across all weeks in ${month.name}`, 'success');
-        }
-
-        function clearMonthScheduling(monthNum) {
-            const month = EC_MONTHS[monthNum - 1];
-            compostSummaryRows = compostSummaryRows.filter(row => row.month !== month.name);
-
-            // Clear all inputs for this month
-            $(`.compost-quantity[data-month="${monthNum}"]`).val('');
-
-            updateSummaryTable();
-            saveCompostJSON();
-            updateTotalScheduledBadge();
-            updateRemainingQuantity();
-            renderScheduling();
-            enhanceCompostInputValidation();
-
-            showAlert(`All schedules cleared for ${month.name}`, 'info');
-        }
-
-        function saveAllSchedules() {
-            const validation = validateAllCompostSchedules();
-
-            if (!validation.isValid) {
-                showAlert('Please fix validation errors before saving', 'error');
-                validation.errors.forEach(error => showAlert(error, 'warning'));
-                return;
-            }
-
-            // Update all compost schedules from inputs
-            $('.compost-quantity').each(function() {
-                const monthNum = parseInt($(this).data('month'));
-                const weekNumber = parseInt($(this).data('week'));
-                const quantity = parseFloat($(this).val()) || 0;
-
-                const month = EC_MONTHS[monthNum - 1];
-                updateCompostScheduling(month.name, weekNumber, quantity);
-            });
-
-            updateSummaryTable();
-            saveCompostJSON();
-            updateTotalScheduledBadge();
-            updateRemainingQuantity();
-            showAlert('All compost schedules saved successfully for application year ' + applicationYear + '!', 'success');
+            // Update footer totals
+            $('#weeksTotalScheduled').text(totalScheduled.toFixed(2) + ' ' + unit);
+            $('#totalScheduledBadge').text(totalScheduled.toFixed(2) + ' ' + unit);
         }
 
         /* -------------------------------
-           SUMMARY TABLE
+           INPUT VALIDATION
+        ------------------------------- */
+        function updateWeekDistribution(input) {
+            const monthNum = parseInt($(input).data('month'));
+            const weekNumber = parseInt($(input).data('week'));
+            const month = EC_MONTHS[monthNum - 1];
+            const quarter = `Q${findQuarter(monthNum)}`;
+            
+            const quantityInput = $(`.quantity-input[data-month="${monthNum}"][data-week="${weekNumber}"]`);
+            const quantityValue = parseFloat(quantityInput.val()) || 0;
+            
+            // Find or create schedule
+            let schedule = compostSummaryRows.find(row =>
+                row.month === month.name && row.week === translations.week + ' ' + weekNumber
+            );
+
+            if (schedule) {
+                schedule.quantity = quantityValue;
+            } else {
+                const weekData = getWeekData(monthNum, weekNumber);
+                schedule = {
+                    year: applicationYear,
+                    quarter: quarter,
+                    month: month.name,
+                    week: translations.week + ' ' + weekNumber,
+                    range: weekData.range,
+                    compost_type: '{{ $gabbinaBiyyee->compost_type }}',
+                    quantity: quantityValue,
+                    unit: unit
+                };
+                compostSummaryRows.push(schedule);
+            }
+
+            // Update status
+            schedule.status = calculateStatus(quantityValue);
+
+            // Remove if quantity is 0
+            if (quantityValue === 0) {
+                compostSummaryRows = compostSummaryRows.filter(row =>
+                    !(row.month === month.name && row.week === translations.week + ' ' + weekNumber)
+                );
+            }
+
+            // Update UI
+            updateWeekUI(monthNum, weekNumber, quantityValue);
+            updateSummaryTable();
+            updateQuantitySummary();
+            updateMonthTableData(monthNum);
+            updateWeeksTableFooter();
+        }
+
+        function updateWeekUI(monthNum, weekNumber, quantityValue) {
+            const status = calculateStatus(quantityValue);
+            const statusClass = getStatusClass(status);
+            
+            const weekRow = $(`.week-row[data-month="${monthNum}"][data-week="${weekNumber}"]`);
+            
+            weekRow.find('.badge').removeClass('badge-secondary badge-success');
+            weekRow.find('.badge').addClass(statusClass).text(status);
+        }
+
+        function updateMonthTableData(monthNum) {
+            const monthData = calculateMonthData(monthNum);
+            const monthName = EC_MONTHS[monthNum - 1].name;
+            
+            const monthRow = $(`.month-row[data-month="${monthNum}"]`);
+            monthRow.find('td:nth-child(5)').html(`<span class="text-success font-weight-bold">${monthData.scheduled.toFixed(2)} ${unit}</span>`);
+            
+            const status = monthData.scheduled > 0 ? translations.partially_scheduled : translations.not_scheduled;
+            const statusClass = monthData.scheduled > 0 ? 'badge-warning' : 'badge-secondary';
+            monthRow.find('td:nth-child(6)').html(`<span class="badge ${statusClass}">${status}</span>`);
+        }
+
+        function enhanceQuantityInputValidation() {
+            $('.quantity-input').off('input').on('input', function() {
+                if (validateQuantityInput(this)) {
+                    updateWeekDistribution(this);
+                }
+            });
+        }
+
+        function updateWeeksTableFooter() {
+            let totalScheduled = 0;
+            
+            $('.quantity-input').each(function() {
+                const value = parseFloat($(this).val()) || 0;
+                totalScheduled += value;
+            });
+            
+            $('#weeksTotalScheduled').text(totalScheduled.toFixed(2) + ' ' + unit);
+            $('#totalScheduledBadge').text(totalScheduled.toFixed(2) + ' ' + unit);
+        }
+
+        function saveAllSchedules() {
+            let hasErrors = false;
+
+            // Validate all inputs first
+            $('.quantity-input').each(function() {
+                if (!validateQuantityInput(this)) hasErrors = true;
+            });
+
+            if (hasErrors) {
+                showAlert(translations.fix_validation_errors, 'error');
+                return;
+            }
+
+            // Update all schedules from inputs
+            $('.quantity-input').each(function() {
+                updateWeekDistribution(this);
+            });
+
+            saveCompostJSON();
+            updateSummaryTable();
+            updateQuantitySummary();
+            showAlert(translations.all_schedules_saved + ' ' + applicationYear + '!', 'success');
+        }
+
+        /* -------------------------------
+           SUMMARY & DATA MANAGEMENT
         ------------------------------- */
         function updateSummaryTable() {
             $("#summaryTable").empty();
-            let total = 0;
+            let totalScheduled = 0;
 
             if (compostSummaryRows.length === 0) {
                 $("#summaryTable").append(`
                 <tr>
                     <td colspan="8" class="text-center text-muted py-4">
-                        <i class="mdi mdi-recycle me-2"></i>
-                        No compost distribution scheduled yet. Start by selecting quarters above.
+                        <i class="fas fa-recycle mr-2"></i>
+                        {{ __('No distribution scheduled yet. Start by selecting quarters above.') }}
                     </td>
                 </tr>
             `);
             } else {
                 compostSummaryRows.forEach((row, i) => {
+                    totalScheduled += row.quantity;
+                    const statusClass = getStatusClass(row.status);
+
                     $("#summaryTable").append(`
                     <tr>
-                        <td class="d-none d-md-table-cell">${row.year || applicationYear}</td>
+                        <td>${row.year || applicationYear}</td>
                         <td>${row.compost_type}</td>
-                        <td class="d-none d-md-table-cell">${row.quarter}</td>
+                        <td>${row.quarter}</td>
                         <td>${row.month}</td>
                         <td>${row.week}</td>
-                        <td class="d-none d-md-table-cell">${row.range || ''}</td>
-                        <td class="fw-bold text-success">${row.quantity.toFixed(2)} ${row.unit}</td>
+                        <td>${row.range}</td>
+                        <td class="font-weight-bold text-success">${row.quantity.toFixed(2)} ${row.unit}</td>
                         <td>
                             <button class="btn btn-sm btn-outline-danger" onclick="removeCompostRow(${i})">
-                                <i class="mdi mdi-delete"></i>
+                                <i class="fas fa-trash"></i>
                             </button>
                         </td>
                     </tr>
                 `);
-                    total += row.quantity;
                 });
             }
 
-            $("#summaryTotal").text(total.toFixed(2) + " " + unit);
+            $("#summaryTotal").text(totalScheduled.toFixed(2) + " " + unit);
         }
 
-        function removeCompostRow(i) {
-            compostSummaryRows.splice(i, 1);
+        function removeCompostRow(index) {
+            compostSummaryRows.splice(index, 1);
             updateSummaryTable();
             saveCompostJSON();
-            updateTotalScheduledBadge();
-            updateRemainingQuantity();
-            renderScheduling(); // Refresh scheduling inputs
-            showAlert('Compost schedule removed successfully!', 'info');
+            updateQuantitySummary();
+            renderWeeksTable();
+            showAlert(translations.schedule_removed, 'info');
         }
 
-        /* -------------------------------
-           UTILITY FUNCTIONS
-        ------------------------------- */
-        function getWeekData(monthNum, weekNumber) {
-            const month = EC_MONTHS[monthNum - 1];
-            let start = 1 + (weekNumber - 1) * 7;
-            let end = Math.min(start + 6, month.days);
-            return { range: `${start}-${end}` };
-        }
+        function saveCompostJSON() {
+            const totalScheduled = compostSummaryRows.reduce((total, row) => total + row.quantity, 0);
+            const remainingQuantity = getRemainingQuantity();
 
-        function getWeeksForMonth(monthNum) {
-            const month = EC_MONTHS[monthNum - 1];
-            let weeks = [];
-            let start = 1;
-            let weekNumber = 1;
+            const distributionData = {
+                planning_year: applicationYear,
+                application_year: applicationYear,
+                weekly_distribution: compostSummaryRows,
+                total_scheduled: totalScheduled,
+                available_quantity: availableQuantity,
+                remaining_quantity: remainingQuantity,
+                updated_at: new Date().toISOString()
+            };
 
-            while (start <= month.days) {
-                let end = Math.min(start + 6, month.days);
-                weeks.push({ weekNumber, start, end });
-                start += 7;
-                weekNumber++;
-            }
-
-            return weeks;
-        }
-
-        function findQuarter(monthId) {
-            return Object.keys(EC_QUARTERS).find(q => EC_QUARTERS[q].includes(monthId));
-        }
-
-        function calculateTotalScheduledQuantity() {
-            return compostSummaryRows.reduce((total, row) => total + row.quantity, 0);
-        }
-
-        function calculateQuarterScheduledQuantity(quarter) {
-            const quarterName = `Q${quarter}`;
-            return compostSummaryRows
-                .filter(row => row.quarter === quarterName)
-                .reduce((total, row) => total + row.quantity, 0);
-        }
-
-        function calculateMonthScheduledQuantity(month) {
-            const monthName = EC_MONTHS[month - 1].name;
-            return compostSummaryRows
-                .filter(row => row.month === monthName)
-                .reduce((total, row) => total + row.quantity, 0);
-        }
-
-        function updateTotalScheduledBadge() {
-            const totalScheduled = calculateTotalScheduledQuantity();
-            $('#totalScheduledBadge').text(totalScheduled.toFixed(2) + ' ' + unit);
-        }
-
-        function updateBadges() {
-            $("#selectedQuartersBadge").text(selectedQuarters.size + " quarters");
-            $("#selectedMonthsBadge").text(selectedMonths.size + " months");
-            $("#selectedWeeksBadge").text(compostSummaryRows.length + " schedules");
+            $("#compostDistributionDetails").val(JSON.stringify(distributionData));
+            console.log('Saved compost_distribution_details for application year ' + applicationYear + ':',
+                distributionData);
         }
 
         function loadExistingCompostDistribution() {
             let existing = {!! json_encode($gabbinaBiyyee->compost_distribution_details ?? '[]') !!};
-
             console.log('Loading existing compost distribution:', existing);
 
             if (existing && typeof existing === 'object') {
@@ -1088,7 +1129,8 @@
                         range: row.range || '',
                         compost_type: row.compost_type || '{{ $gabbinaBiyyee->compost_type }}',
                         quantity: parseFloat(row.quantity) || 0,
-                        unit: row.unit || unit
+                        unit: row.unit || unit,
+                        status: row.status || calculateStatus(parseFloat(row.quantity || 0))
                     }));
                 } else if (existing.weekly_distribution) {
                     compostSummaryRows = existing.weekly_distribution.map(row => ({
@@ -1099,7 +1141,8 @@
                         range: row.range || '',
                         compost_type: row.compost_type || '{{ $gabbinaBiyyee->compost_type }}',
                         quantity: parseFloat(row.quantity) || 0,
-                        unit: row.unit || unit
+                        unit: row.unit || unit,
+                        status: row.status || calculateStatus(parseFloat(row.quantity || 0))
                     }));
                 }
 
@@ -1113,35 +1156,32 @@
                 });
 
                 updateSummaryTable();
-                updateBadges();
+                updateQuantitySummary();
 
                 if (selectedQuarters.size > 0) {
-                    renderQuarters();
-                    renderMonths();
+                    $("#monthsSection").show();
+                    renderMonthsTable();
                 }
 
                 if (selectedMonths.size > 0) {
-                    renderScheduling();
+                    $("#weeksSection").show();
+                    renderWeeksTable();
                 }
-
-                updateTotalScheduledBadge();
-                updateRemainingQuantity();
             }
         }
 
-        function saveCompostJSON() {
-            const distributionData = {
-                planning_year: applicationYear,
-                application_year: applicationYear,
-                weekly_distribution: compostSummaryRows,
-                total_scheduled: calculateTotalScheduledQuantity(),
-                available_quantity: availableQuantity,
-                remaining_quantity: getRemainingQuantity(),
-                updated_at: new Date().toISOString()
-            };
+        /* -------------------------------
+           UTILITY FUNCTIONS
+        ------------------------------- */
+        function findQuarter(monthId) {
+            return Object.keys(EC_QUARTERS).find(q => EC_QUARTERS[q].includes(monthId));
+        }
 
-            $("#compostDistributionDetails").val(JSON.stringify(distributionData));
-            console.log('Saved compost_distribution_details for application year ' + applicationYear + ':', distributionData);
+        function getWeekData(monthNum, weekNumber) {
+            const month = EC_MONTHS[monthNum - 1];
+            let start = 1 + (weekNumber - 1) * 7;
+            let end = Math.min(start + 6, month.days);
+            return { range: `${start}-${end}` };
         }
 
         function validateForm() {
@@ -1149,28 +1189,27 @@
             const errors = [];
 
             // Enhanced distribution validation
-            const scheduledQuantity = calculateTotalScheduledQuantity();
+            const scheduledQuantity = getCurrentScheduledQuantity();
 
             if (scheduledQuantity === 0) {
-                const proceed = confirm('No compost distribution has been scheduled for application year ' +
-                    applicationYear + '. Do you want to proceed without scheduling?');
+                const proceed = confirm(translations.no_schedule_warning + ' ' + applicationYear + '?');
                 if (!proceed) {
-                    errors.push('Please add compost scheduling or confirm to proceed without it');
+                    errors.push(translations.please_add_schedule);
                     isValid = false;
                 }
             }
 
             // Validate compost quantity
-            const compostValidation = validateAllCompostSchedules();
+            const compostValidation = validateAllSchedules();
             if (!compostValidation.isValid) {
                 errors.push(...compostValidation.errors);
                 isValid = false;
             }
 
             // Check for individual input errors
-            $('.compost-quantity').each(function() {
+            $('.quantity-input').each(function() {
                 if ($(this).hasClass('is-invalid')) {
-                    errors.push('Some compost schedules have validation errors');
+                    errors.push('{{ __('Some compost schedules have validation errors') }}');
                     isValid = false;
                     return false; // break the loop
                 }
@@ -1189,337 +1228,248 @@
             $('.validation-error-alert').remove();
 
             const errorHtml = `
-            <div class="row justify-content-center mb-3 mb-md-4 validation-error-alert">
-                <div class="col-12 col-lg-10">
-                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                        <div class="d-flex align-items-center">
-                            <i class="mdi mdi-alert-circle-outline me-2 fs-5"></i>
-                            <div class="flex-grow-1">
-                                <h6 class="alert-heading mb-2">Please fix the following errors:</h6>
-                                <ul class="mb-0 ps-3">
-                                    ${errors.map(error => `<li>${error}</li>`).join('')}
-                                </ul>
-                            </div>
-                        </div>
-                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            <div class="row mb-3 validation-error-alert">
+                <div class="col-12">
+                    <div class="alert alert-danger alert-dismissible">
+                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                        <h5><i class="icon fas fa-ban"></i> {{ __('Validation Error!') }}</h5>
+                        <ul class="mb-0">
+                            ${errors.map(error => `<li>${error}</li>`).join('')}
+                        </ul>
                     </div>
                 </div>
             </div>
         `;
 
-            $('.page-header').after(errorHtml);
-
-            // Scroll to errors
-            $('html, body').animate({
-                scrollTop: $('.validation-error-alert').offset().top - 100
-            }, 500);
+            $('.content-header').after(errorHtml);
         }
 
         function showAlert(message, type = 'info') {
-            const alertClass = {
-                'success': 'alert-success',
-                'error': 'alert-danger',
-                'warning': 'alert-warning',
-                'info': 'alert-info'
-            }[type] || 'alert-info';
-
-            const toastId = 'toast-' + Date.now();
-            const toastHtml = `
-            <div id="${toastId}" class="toast align-items-center text-white bg-${type === 'error' ? 'danger' : type === 'warning' ? 'warning' : 'success'} border-0 position-fixed top-0 end-0 m-3" role="alert">
-                <div class="d-flex">
-                    <div class="toast-body">
-                        <i class="mdi mdi-${type === 'success' ? 'check-circle' : type === 'error' ? 'alert-circle' : 'information'} me-2"></i>
-                        ${message}
+            const toast = $(`
+                <div class="toast align-items-center text-white bg-${type === 'error' ? 'danger' : type === 'warning' ? 'warning' : 'success'} border-0 position-fixed bottom-0 end-0 m-3" role="alert" style="z-index: 9999;">
+                    <div class="d-flex">
+                        <div class="toast-body">
+                            <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'} mr-2"></i>
+                            ${message}
+                        </div>
+                        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" style="opacity: 1;"></button>
                     </div>
-                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
                 </div>
-            </div>
-        `;
+            `);
 
-            $('body').append(toastHtml);
-            const toast = new bootstrap.Toast(document.getElementById(toastId));
-            toast.show();
-
-            document.getElementById(toastId).addEventListener('hidden.bs.toast', function() {
-                this.remove();
-            });
-        }
-
-        function improveMobileTouch() {
-            // Prevent zoom on input focus for better mobile experience
-            $('input, select, textarea').on('focus', function() {
-                $('meta[name=viewport]').attr('content',
-                    'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0');
-            });
-
-            $('input, select, textarea').on('blur', function() {
-                $('meta[name=viewport]').attr('content', 'width=device-width, initial-scale=1.0');
-            });
-
-            // Better touch targets for mobile
-            if (window.innerWidth < 768) {
-                $('.btn').addClass('py-2');
-                $('.form-control').addClass('py-2');
-            }
+            $('body').append(toast);
+            
+            // Simple show/hide instead of Bootstrap toast
+            toast.fadeIn();
+            setTimeout(() => {
+                toast.fadeOut(400, function() {
+                    $(this).remove();
+                });
+            }, 3000);
         }
     </script>
 
     <style>
-        .compost-plan-container {
-            background: linear-gradient(135deg, #f0fff4 0%, #e6ffee 100%);
-            min-height: 100vh;
-        }
-
-        .form-card {
-            border-radius: 15px;
-            overflow: hidden;
-        }
-
-        .bg-gradient-success {
-            background: linear-gradient(135deg, #388e3c 0%, #2e7d32 100%) !important;
-        }
-
-        .page-header .header-icon {
-            animation: float 3s ease-in-out infinite;
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-5px); }
-        }
-
-        .header-divider {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 1rem 0;
-        }
-
-        .divider-line {
-            flex: 1;
-            height: 2px;
-            background: linear-gradient(90deg, transparent, #dee2e6, transparent);
-        }
-
-        .divider-icon {
-            margin: 0 1rem;
-            color: #388e3c;
-            font-size: 1.5rem;
-        }
-
-        .section-header {
-            position: relative;
-        }
-
-        .section-title {
-            color: #2c3e50;
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-        }
-
-        .section-divider {
-            height: 3px;
-            background: linear-gradient(90deg, #388e3c, #2e7d32);
-            border-radius: 2px;
-            width: 60px;
-        }
-
-        .info-card {
-            border-left: 4px solid #388e3c;
-            min-height: 80px;
-        }
-
-        /* Quarter and Month Card Styles */
-        .quarter-card,
-        .month-card {
-            transition: all 0.3s ease;
-            border: 2px solid #e9ecef;
-            cursor: pointer;
-            min-height: 120px;
-        }
-
-        .quarter-card:hover,
-        .month-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            border-color: #388e3c;
-        }
-
+        /* Card selection styles */
         .card-selected {
-            border-color: #388e3c !important;
-            background-color: #f0fff4 !important;
+            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25) !important;
+        }
+
+        /* Info box hover effects */
+        .info-box:hover {
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(56, 142, 60, 0.15) !important;
+            transition: transform 0.3s ease;
         }
 
-        .quarter-checkbox,
-        .month-checkbox {
-            transform: scale(1.2);
+        /* Card hover effects */
+        .card-outline:hover:not(.card-selected) {
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         }
 
-        /* Scheduling Section Styles */
-        .month-scheduling-section {
-            border-left: 4px solid #388e3c !important;
+        /* Quarter and month card hover */
+        .quarter-card, .month-row {
+            cursor: pointer;
+            transition: all 0.2s ease;
         }
 
-        .week-scheduling {
-            border-left: 3px solid #2e7d32;
+        .quarter-card:hover:not(.card-selected) {
+            border-color: #007bff !important;
         }
 
-        .compost-input-item {
-            border-left: 3px solid #4caf50;
+        .month-row:hover {
+            background-color: rgba(0, 123, 255, 0.05) !important;
         }
 
-        .compost-quantity:focus {
-            border-color: #388e3c;
-            box-shadow: 0 0 0 0.2rem rgba(56, 142, 60, 0.25);
+        /* Custom checkbox styling */
+        .custom-control-input:checked ~ .custom-control-label::before {
+            border-color: #007bff;
+            background-color: #007bff;
         }
 
-        .quantity-info {
-            font-size: 0.75rem;
+        /* Week table row styling */
+        .week-row input.form-control-sm {
+            min-width: 100px;
         }
 
-        .quantity-info small {
-            display: block;
-            line-height: 1.2;
-        }
-
-        .btn-xs {
-            padding: 0.25rem 0.5rem;
-            font-size: 0.75rem;
-        }
-
-        /* Validation styles */
+        /* Validation feedback */
         .validation-feedback {
             min-height: 20px;
         }
 
-        .compost-quantity.is-valid {
-            border-color: #28a745;
-            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3e%3cpath fill='%2328a745' d='M2.3 6.73L.6 4.53c-.4-1.04.46-1.4 1.1-.8l1.1 1.4 3.4-3.8c.6-.63 1.6-.27 1.2.7l-4 4.6c-.43.5-.8.4-1.1.1z'/%3e%3c/svg%3e");
+        /* Toast positioning */
+        .toast {
+            display: none;
+            min-width: 300px;
         }
 
-        .compost-quantity.is-invalid {
-            border-color: #dc3545;
-            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' width='12' height='12' fill='none' stroke='%23dc3545'%3e%3ccircle cx='6' cy='6' r='4.5'/%3e%3cpath d='m5.8 3.6.4.4.4-.4'/%3e%3cpath d='M6 7v2.5'/%3e%3c/svg%3e");
-        }
-
-        .table-success td {
-            background-color: #e8f5e8 !important;
-            border-bottom: 2px solid #c8e6c9;
-        }
-
-        /* Mobile-first responsive adjustments */
-        @media (max-width: 576px) {
-            .container-fluid {
-                padding-left: 10px;
-                padding-right: 10px;
-            }
-
-            .card-body {
-                padding: 1.5rem !important;
-            }
-
-            .form-actions {
-                margin-left: -1.5rem;
-                margin-right: -1.5rem;
-                padding-left: 1.5rem;
-                padding-right: 1.5rem;
-            }
-
-            .compost-scheduling-container {
-                padding: 10px;
-            }
-
-            .info-card {
-                min-height: 70px;
-            }
-
-            .quarter-card,
-            .month-card {
-                min-height: 100px;
-            }
-
-            .btn-lg {
-                padding: 0.75rem 1rem;
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .card-title {
                 font-size: 0.9rem;
             }
-
-            .compost-input-item {
-                padding: 0.75rem !important;
+            
+            .info-box-number {
+                font-size: 1.2rem;
+            }
+            
+            .table-responsive {
+                font-size: 0.85rem;
+            }
+            
+            .week-row td {
+                padding: 0.5rem !important;
+            }
+            
+            .quantity-input {
+                font-size: 0.8rem !important;
             }
         }
 
-        @media (max-width: 768px) {
-            .card-body {
-                padding: 2rem !important;
-            }
-
-            .form-actions {
-                margin-left: -2rem;
-                margin-right: -2rem;
-                padding-left: 2rem;
-                padding-right: 2rem;
-            }
-
-            .form-actions .d-flex {
-                flex-direction: column;
-                gap: 1rem;
-            }
-
-            .form-actions .btn {
-                width: 100%;
-            }
-
-            .compost-scheduling-container {
-                padding: 15px;
-            }
-
-            .quarter-card .col-md-3,
-            .month-card .col-md-4 {
-                width: 100%;
-            }
-
-            /* Improve touch targets for mobile */
-            .btn {
-                padding: 0.75rem 1rem;
-            }
-
-            .form-control {
-                padding: 0.75rem;
-            }
-
-            /* Better spacing for mobile */
-            .row.g-2 {
-                margin: -5px;
-            }
-
-            .row.g-2>[class*="col-"] {
-                padding: 5px;
-            }
-
-            .week-scheduling {
-                padding: 1rem !important;
-            }
+        /* Table styling */
+        .table-hover tbody tr:hover {
+            background-color: rgba(0, 0, 0, 0.075);
         }
 
-        /* Custom scrollbar for better UX */
-        .table-responsive::-webkit-scrollbar {
-            height: 8px;
+        .table-info {
+            background-color: rgba(0, 123, 255, 0.15) !important;
         }
 
-        .table-responsive::-webkit-scrollbar-track {
-            background: #f1f1f1;
-            border-radius: 4px;
+        /* Input validation states */
+        .quantity-input.is-valid {
+            border-color: #28a745;
         }
 
-        .table-responsive::-webkit-scrollbar-thumb {
-            background: #388e3c;
-            border-radius: 4px;
+        .quantity-input.is-invalid {
+            border-color: #dc3545;
         }
 
-        .table-responsive::-webkit-scrollbar-thumb:hover {
-            background: #2e7d32;
+        /* Table Header Styles - WHITESMOKE with BLACK TEXT */
+        table.table thead {
+            background-color: whitesmoke !important;
+        }
+        
+        table.table thead th,
+        .table thead th {
+            background-color: whitesmoke !important;
+            border-color: #dee2e6 !important;
+            font-weight: 600;
+            color: #000000 !important;
+            padding: 12px 8px;
+        }
+        
+        table.table thead.thead-light {
+            background-color: whitesmoke !important;
+        }
+        
+        table.table thead.thead-light th,
+        .table thead.thead-light th {
+            background-color: whitesmoke !important;
+            border-color: #dee2e6;
+            color: #000000 !important;
+        }
+        
+        table.table thead.thead-dark {
+            background-color: #343a40 !important;
+        }
+        
+        table.table thead.thead-dark th,
+        .table thead.thead-dark th {
+            background-color: #343a40 !important;
+            border-color: #454d55;
+            color: white !important;
+        }
+        
+        /* EXCLUDE card headers from table header styles */
+        .card-header,
+        .card-header h3,
+        .card-header .card-title,
+        .card-header .card-tools,
+        .card-header .badge {
+            color: inherit !important;
+            background-color: transparent !important;
+            border-color: transparent !important;
+        }
+        
+        /* Table footer styling */
+        table.table tfoot.bg-gray,
+        .table tfoot.bg-gray {
+            background-color: #f8f9fa !important;
+        }
+        
+        table.table tfoot.bg-light,
+        .table tfoot.bg-light {
+            background-color: #f8f9fa !important;
+        }
+        
+        /* Zebra striping for better readability */
+        table.table.table-striped tbody tr:nth-of-type(odd),
+        .table.table-striped tbody tr:nth-of-type(odd) {
+            background-color: rgba(0, 0, 0, 0.02);
+        }
+        
+        table.table.table-striped tbody tr:nth-of-type(even),
+        .table.table-striped tbody tr:nth-of-type(even) {
+            background-color: white;
+        }
+        
+        /* Selected row highlighting */
+        table.table tbody tr.month-row.table-info,
+        .table tbody tr.month-row.table-info {
+            background-color: rgba(23, 162, 184, 0.15) !important;
+        }
+        
+        /* Card header backgrounds */
+        .card-header {
+            background-color: rgba(0, 0, 0, 0.03);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+            color: #495057 !important;
+        }
+        
+        /* Hover effects on table rows */
+        table.table.table-hover tbody tr:hover,
+        .table.table-hover tbody tr:hover {
+            background-color: rgba(0, 123, 255, 0.1);
+        }
+        
+        /* Reset card titles to their original colors */
+        .card-title {
+            color: #495057 !important;
+        }
+        
+        .card-success .card-header .card-title {
+            color: white !important;
+        }
+        
+        .card-primary .card-header .card-title {
+            color: white !important;
+        }
+        
+        .card-info .card-header .card-title {
+            color: white !important;
+        }
+        
+        .card-outline .card-header .card-title {
+            color: #495057 !important;
         }
     </style>
 </x-layout>

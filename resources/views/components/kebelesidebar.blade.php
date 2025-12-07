@@ -1,93 +1,148 @@
- 
- 
-           
+<!-- Dashboard -->
+<li class="nav-item">
+    <a href="{{ url('kebele/dashboard') }}" class="nav-link">
+        <i class="nav-icon fas fa-tachometer-alt"></i>
+        <p>{{ __('Dashboard') }}</p>
+    </a>
+</li>
 
-           
-                <li>
-                    <span class="caret"><i class="fa-solid fa-folder folder-icon"></i><span class="sidebar-text">{{ __('Karoora') }}</span></span>
-                    <ul>
-                        <li>
-                            <span class="caret"><i
-                                    class="fa-solid fa-folder folder-icon"></i><span class="sidebar-text">{{ __('Karrora Waggaa') }}</span></span>
-                            <ul>
-                                <li>
-                                    <span class="caret"><i
-                                            class="fa-solid fa-folder folder-icon"></i><span class="sidebar-text">{{ __('Misooma Midhaanii') }}</span></span>
-                                    <ul>
-                                        <li><i class="fa-regular fa-file file-icon"></i><a
-                                                href="{{ url('sector/crop-plans') }}"><span class="sidebar-text">{{ __('Midhaan') }}</span></a></li>
-                                        <li><i class="fa-regular fa-file file-icon"></i><a
-                                                href=" {{url('sector/crop-fertilizer')}}"><span class="sidebar-text">{{ __('Calla Guddiftuu') }}</span></a></li>
-                                        <li><i class="fa-regular fa-file file-icon"></i><a
-                                                href="{{url('sector/mechanizations')}}"><span class="sidebar-text">{{ __('Diyeessii makaanaayizeeshinii') }}</span></a></li>
-                                                   <li><i class="fa-regular fa-file file-icon"></i><a
-                                                href="{{url('sector/gabbina-biyyee')}}"><span class="sidebar-text">{{ __('Gabbina Biyyoo') }}</span></a></li>
-                                               
-                                               <li><i class="fa-regular fa-file file-icon"></i><a
-                                                href="{{url('sector/seedling-preparations')}}"><span class="sidebar-text">{{ __('Qophii Fi Dhaabbii Biqiltuu') }}</span></a></li>
-                                               
-                                        
-                                       
-                                    </ul>
-                                </li>
-                             
-                            </ul>
-                        </li>
-                    </ul>
+<hr>
+
+<!-- Karrora Waggaa (Annual Plan) -->
+<li class="nav-item">
+    <a href="#" class="nav-link">
+        <i class="nav-icon fas fa-calendar-alt"></i>
+        <p>
+            {{ __('Karrora Waggaa') }}
+            <i class="fas fa-angle-left right"></i>
+        </p>
+    </a>
+
+    <ul class="nav nav-treeview">
+
+        <!-- Misooma Midhaanii (Crop Development) -->
+        <li class="nav-item">
+            <a href="#" class="nav-link">
+                <i class="fas fa-seedling nav-icon"></i>
+                <p>
+                    {{ __('Misooma Midhaanii') }}
+                    <i class="fas fa-angle-left right"></i>
+                </p>
+            </a>
+
+            <ul class="nav nav-treeview">
+
+                <li class="nav-item">
+                    <a href="{{ url('sector/crop-plans') }}" class="nav-link">
+                        <i class="fas fa-leaf nav-icon"></i>
+                        <p>{{ __('Midhaan') }}</p>
+                    </a>
                 </li>
 
-                <!--sagantaa yeroo Raawwii section -->
-                <li>
-                    <span class="caret"><i class="fa-solid fa-folder folder-icon"></i><span class="sidebar-text">{{ __('Sagantaa Yeroo Raawwii') }}</span></span>
-                   <ul>
-                                        <li><i class="fa-regular fa-file file-icon"></i><a
-                                                href="{{ url('sector/activityplan-plans') }}"><span class="sidebar-text">{{ __('Qonna') }}</span></a></li>
-                                        <li><i class="fa-regular fa-file file-icon"></i><a
-                                                href="{{url('sector/productiontime-plans')}}"><span class="sidebar-text">{{ __('oomisha') }}</span></a></li>
-                                        <li><i class="fa-regular fa-file file-icon"></i><a
-                                                href=" {{url('sector/fertilizer-plans')}}"><span class="sidebar-text">{{ __('fertilizer') }}</span></a></li>
-                                        <li><i class="fa-regular fa-file file-icon"></i><a
-                                                href="{{url('sector/mechanizations/timeline')}}"><span class="sidebar-text">{{ __('Mechinization') }}</span></a>
-                                        </li>
-                                         <li><i class="fa-regular fa-file file-icon"></i><a
-                                                href="{{url('sector/gabbina_biyyee/timeline')}}"><span class="sidebar-text">{{ __('Gabbina Birroo') }}</span></a>
-                                        </li>
-
-                                          <li><i class="fa-regular fa-file file-icon"></i><a
-                                                href="{{url('sector/seedling-preparations/timeline')}}"><span class="sidebar-text">{{ __('Qophii Fi Dhaabbii Biqiltuu') }}</span></a>
-                                        </li>
-                                        
-                                        
-
-                                        
-                                    </ul>
-                </li>
-                {{-- Raawwii  --}}
-                 <li>
-                    <span class="caret"><i class="fa-solid fa-folder folder-icon"></i><span class="sidebar-text">{{ __('Raawwii') }}</span></span>
-                   <ul>
-                   
-                                        <li><i class="fa-regular fa-file file-icon"></i><a
-                                                href="{{ url('sector/crop-rawwiiqonnaa') }}"><span class="sidebar-text">{{ __('Rawwii Qophii Qonnaa') }}</span></a></li> 
-
-                                        <li><i class="fa-regular fa-file file-icon"></i><a
-                                                href="{{ url('sector/crop-rawwiiomisha') }}"><span class="sidebar-text">{{ __('Rawwii Oomisha') }}</span></a></li> 
-
-                                                
-                                        <li><i class="fa-regular fa-file file-icon"></i><a
-                                                href="{{ url('sector/fertilizer-achivements') }}"><span class="sidebar-text">{{ __('Rawwii Callaguddiftuu') }}</span></a></li> 
-
-                                            
-                                               
-                                                                                      
-                                    </ul>
+                <li class="nav-item">
+                    <a href="{{ url('sector/crop-fertilizer') }}" class="nav-link">
+                        <i class="fas fa-flask nav-icon"></i>
+                        <p>{{ __('Calla Guddiftuu') }}</p>
+                    </a>
                 </li>
 
-                
-            
-        
+                <li class="nav-item">
+                    <a href="{{ url('sector/mechanizations') }}" class="nav-link">
+                        <i class="fas fa-cogs nav-icon"></i>
+                        <p>{{ __('Makaanaayizeeshinii') }}</p>
+                    </a>
+                </li>
 
-    
- 
+                <li class="nav-item">
+                    <a href="{{ url('sector/gabbina-biyyee') }}" class="nav-link">
+                        <i class="fas fa-mountain nav-icon"></i>
+                        <p>{{ __('Gabbina Biyyoo') }}</p>
+                    </a>
+                </li>
 
- 
+                <li class="nav-item">
+                    <a href="{{ url('sector/seedling-preparations') }}" class="nav-link">
+                        <i class="fas fa-tree nav-icon"></i>
+                        <p>{{ __('Biqiltuuwwan') }}</p>
+                    </a>
+                </li>
+
+            </ul>
+        </li>
+
+    </ul>
+</li>
+
+<!-- Yeroo Raawwii (Execution Time) -->
+<li class="nav-item">
+    <a href="#" class="nav-link">
+        <i class="nav-icon fas fa-clock"></i>
+        <p>
+            {{ __('Yeroo Raawwii') }}
+            <i class="fas fa-angle-left right"></i>
+        </p>
+    </a>
+
+    <ul class="nav nav-treeview">
+
+        <li class="nav-item">
+            <a href="{{ url('sector/activityplan-plans') }}" class="nav-link">
+                <i class="fas fa-tractor nav-icon"></i>
+                <p>{{ __('Qonna') }}</p>
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <a href="{{ url('sector/productiontime-plans') }}" class="nav-link">
+                <i class="fas fa-industry nav-icon"></i>
+                <p>{{ __('Oomisha') }}</p>
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <a href="{{ url('sector/fertilizer-plans') }}" class="nav-link">
+                <i class="fas fa-flask nav-icon"></i>
+                <p>{{ __('Calla Guddiftuu') }}</p>
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <a href="{{ url('sector/mechanizations/timeline') }}" class="nav-link">
+                <i class="fas fa-cogs nav-icon"></i>
+                <p>{{ __('Mechinization') }}</p>
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <a href="{{ url('sector/gabbina_biyyee/timeline') }}" class="nav-link">
+                <i class="fas fa-mountain nav-icon"></i>
+                <p>{{ __('Gabbina Biyyoo') }}</p>
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <a href="{{ url('sector/seedling-preparations/timeline') }}" class="nav-link">
+                <i class="fas fa-tree nav-icon"></i>
+                <p>{{ __('Biqiltuuwwan') }}</p>
+            </a>
+        </li>
+
+    </ul>
+</li>
+
+<!-- Charts -->
+{{-- <li class="nav-item">
+    <a href="#" class="nav-link">
+        <i class="nav-icon fas fa-chart-pie"></i>
+        <p>
+            {{ __('Charts') }}
+            <i class="right fas fa-angle-left"></i>
+        </p>
+    </a>
+    <ul class="nav nav-treeview">
+        <li class="nav-item"><a href="pages/charts/chartjs.html" class="nav-link"><i class="far fa-circle nav-icon"></i><p>ChartJS</p></a></li>
+        <li class="nav-item"><a href="pages/charts/flot.html" class="nav-link"><i class="far fa-circle nav-icon"></i><p>Flot</p></a></li>
+        <li class="nav-item"><a href="pages/charts/inline.html" class="nav-link"><i class="far fa-circle nav-icon"></i><p>Inline</p></a></li>
+        <li class="nav-item"><a href="pages/charts/uplot.html" class="nav-link"><i class="far fa-circle nav-icon"></i><p>uPlot</p></a></li>
+    </ul>
+</li> --}}

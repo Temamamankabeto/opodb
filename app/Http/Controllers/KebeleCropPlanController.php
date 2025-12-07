@@ -18,29 +18,7 @@ use App\Exports\KebeleCropPlanTemplateExport;
 
 class KebeleCropPlanController extends Controller
 {
-//   public function index()
-// {
-//     $user = Auth::user();
-
-//     $cropPlans = KebeleCropPlan::with(['cropType', 'crop'])
-//         // ->where('sector_id', $user->sector_id)
-//         ->where('kebele_id', $user->kebele_id)
-//         ->orderBy('year')
-//         ->orderBy('season')
-//         ->orderBy('croptype_id')
-//         ->get();
-
-//     // Calculate yearly totals
-//     $yearlyTotals = [];
-//     foreach ($cropPlans->groupBy('year') as $year => $plansByYear) {
-//         $yearlyTotals[$year] = [
-//             'total_area' => $plansByYear->sum('area_to_plant'),
-//             'total_yield' => $plansByYear->sum('expected_yield'),
-//         ];
-//     }
-
-//     return view('sector.crop_plans.index', compact('cropPlans', 'yearlyTotals'));
-// }
+ 
     public function index()
     {
         $user = Auth::user();
