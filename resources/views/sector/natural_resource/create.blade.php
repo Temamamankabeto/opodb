@@ -82,16 +82,11 @@
                                             <label class="form-label small mt-2">Unit <span class="text-danger">*</span></label>
                                             <select class="form-select resource-unit" disabled>
                                                 <option value="">-- Select Unit --</option>
-                                                <option value="kg">kg</option>
-                                                <option value="liter">Liter</option>
-                                                <option value="piece">Piece</option>
-                                                <option value="bag">Bag</option>
-                                                <option value="quintal">Quintal</option>
-                                                <option value="ton">Ton</option>
-                                                <option value="box">Box</option>
-                                                <option value="bottle">Bottle</option>
-                                                <option value="pack">Pack</option>
-                                                <option value="unit">Unit</option>
+                                                <option value="M">M</option>
+                                                <option value="M2">M2</option>
+                                                <option value="hec">hec</option>
+                                                <option value="Lakk">Lakk</option>
+                                                 
                                             </select>
                                         </div>
                                     </div>
