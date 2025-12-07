@@ -251,13 +251,13 @@
                 </li>
 
                 <li class="nav-item">
-                    <a href="{{ url('sector/building-economic-institution-plans) }}" class="nav-link">
+                    <a href="{{ url('sector/building-economic-institution-plans') }}" class="nav-link">
                         <i class="fas fa-cogs nav-icon"></i>
-                        <p>{{ __('Ce`uumsa Diinagde') }}</p>
+                        <p>{{ __('Ce`uumsa Diinagdee') }}</p>
                     </a>
                 </li>
-
-                {{-- <li class="nav-item">
+{{-- 
+                <li class="nav-item">
                     <a href="{{ url('sector/gabbina-biyyee') }}" class="nav-link">
                         <i class="fas fa-mountain nav-icon"></i>
                         <p>{{ __('Gabbina Biyyoo') }}</p>
