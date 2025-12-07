@@ -12,7 +12,7 @@ class BuildingEconomicInstitutionPlanController extends Controller
    public function index()
     {
         $plans = EconomicTransitionFacility::with(['institution', 'sector', 'kebele', 'woreda', 'zone', 'region', 'createdBy'])
-            ->where('sector_id', Auth::user()->sector_id)
+            ->where('kebele_id', Auth::user()->kebele_id)
             ->orderBy('year', 'desc')
             ->get()
             ->map(function ($plan) {
@@ -198,7 +198,7 @@ foreach ($improvementData as $index => $data) {
                 'institution_id' => $institution->id,
                 'new_building_data' => $institutionNewBuildings,
                 'improvement_data' => $institutionImprovements,
-                'sector_id' => $user->sector_id,
+                // 'sector_id' => $user->sector_id,
                 'kebele_id' => $user->kebele_id,
                 'woreda_id' => $user->woreda_id,
                 'zone_id' => $user->zone_id,
@@ -232,7 +232,7 @@ foreach ($improvementData as $index => $data) {
         $existingPlans = EconomicTransitionFacility::with('institution')
             ->where('year', $year)
             ->where('kebele_id', $user->kebele_id)
-            ->where('sector_id', $user->sector_id)
+            // ->where('sector_id', $user->sector_id)
             ->get();
 
         return response()->json([
@@ -257,7 +257,7 @@ foreach ($improvementData as $index => $data) {
     public function edit($id)
 {
     $plan = EconomicTransitionFacility::with('institution')
-        ->where('sector_id', Auth::user()->sector_id)
+        ->where('kebele_id', Auth::user()->kebele_id)
         ->findOrFail($id);
 
     $institutions = Institution::where('institution_type_id', 3)->get(); // Make sure this matches your institution type

@@ -363,7 +363,7 @@ public function update(Request $request, $id)
 
     public function destroy($id)
     {
-        $plan = BuildingInstitutionPlan::where('sector_id', Auth::user()->sector_id)
+        $plan = BuildingInstitutionPlan::where('kebele_id', Auth::user()->kebele_id)
             ->findOrFail($id);
 
         $plan->delete();

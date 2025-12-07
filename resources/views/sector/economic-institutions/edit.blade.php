@@ -1,645 +1,778 @@
 <x-layout>
-    <div class="container py-5">
-        <h2 class="mb-4">
-            <i class="bi bi-pencil-square text-primary me-2"></i>
-            Edit Building Economic Institution Plan
-        </h2>
-
-        @if ($errors->any())
-            <div class="alert alert-danger">
-                <ul class="mb-0">
-                    @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
-        @endif
-
-        <form action="{{ route('sector.building-economic-institution-plans.update', $plan->id) }}" method="POST" id="mainForm">
-            @csrf
-            @method('PUT')
-
-            <!-- Hidden JSON fields -->
-            <input type="hidden" name="new_building_data" id="newBuildingDataJson">
-            <input type="hidden" name="improvement_data" id="improvementDataJson">
-
-            <!-- Year Selection -->
-           <!-- Year and Institution Selection (Read-only) -->
-<div class="card border-0 shadow-sm mb-4">
-    <div class="card-header bg-primary text-white py-3">
-        <h5 class="mb-0"><i class="bi bi-calendar3 me-2"></i>Plan Information</h5>
-    </div>
-    <div class="card-body p-4">
-        <div class="alert alert-info py-2 mb-3">
-            <i class="bi bi-info-circle me-2"></i>
-            Year and Institution cannot be changed for existing plans. To modify these, please create a new plan.
-        </div>
-        
-        <div class="row">
-            <div class="col-md-6">
-                <label class="form-label fw-semibold">Year <span class="text-danger">*</span></label>
-                <select name="year" class="form-select" id="yearSelect" required disabled>
-                    <option value="{{ $plan->year }}" selected>{{ $plan->year }} EC</option>
-                </select>
-                <input type="hidden" name="year" value="{{ $plan->year }}">
-                @error('year')
-                    <div class="text-danger small mt-1">{{ $message }}</div>
-                @enderror
-            </div>
-            <div class="col-md-6">
-                <label class="form-label fw-semibold">Institution <span class="text-danger">*</span></label>
-                <select name="institution_id" class="form-select" id="institutionSelect" required disabled>
-                    <option value="{{ $plan->institution_id }}" selected>
-                        {{ $plan->institution->name ?? 'Institution Not Found' }}
-                    </option>
-                </select>
-                <input type="hidden" name="institution_id" value="{{ $plan->institution_id }}">
-                @error('institution_id')
-                    <div class="text-danger small mt-1">{{ $message }}</div>
-                @enderror
-            </div>
-        </div>
-        
-        <!-- Display additional read-only information -->
-        <div class="row mt-3">
-            <div class="col-md-6">
-                <div class="form-group">
-                    <label class="form-label small text-muted">Created Date</label>
-                    <input type="text" class="form-control" 
-                           value="{{ $plan->created_at->format('M d, Y H:i') }}" readonly 
-                           style="background-color: #f8f9fa;">
-                </div>
-            </div>
-            <div class="col-md-6">
-                <div class="form-group">
-                    <label class="form-label small text-muted">Last Updated</label>
-                    <input type="text" class="form-control" 
-                           value="{{ $plan->updated_at->format('M d, Y H:i') }}" readonly 
-                           style="background-color: #f8f9fa;">
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-            <!-- New Building Data -->
-            <div class="card border-0 shadow-sm mb-4" id="newBuildingCard">
-                <div class="card-header bg-info text-white py-3">
-                    <h5 class="mb-0"><i class="bi bi-plus-circle me-2"></i>New Building Construction</h5>
-                </div>
-                <div class="card-body p-4">
-                    <div class="alert alert-info py-2 mb-3">
-                        <i class="bi bi-info-circle me-2"></i>
-                        Edit new building construction data for the selected institution.
+    <div class="content-header">
+        <section class="content">
+            <div class="container-fluid">
+                <div class="row mb-3">
+                    <div class="col-12">
+                        <h2 class="mb-0">
+                            <i class="fas fa-pencil-square text-primary mr-2"></i>
+                            Edit Building Economic Institution Plan
+                        </h2>
                     </div>
+                </div>
 
-                    <div id="newBuildingsContainer">
-                        @if (!empty($plan->new_building_data) && count($plan->new_building_data) > 0)
-                            @foreach ($plan->new_building_data as $index => $building)
-                                <div class="card border mb-3 new-building-item" data-index="{{ $index }}">
-                                    <div class="card-body">
-                                        <div class="row g-2">
-                                            <div class="col-12">
-                                                <label class="form-label small fw-semibold text-primary">
-                                                    <i class="bi bi-building me-1"></i>
-                                                    Building Entry #{{ $index + 1 }}
-                                                </label>
-                                            </div>
-                                            
-                                            <!-- Public Section -->
-                                            <div class="col-12 border-bottom pb-2 mb-2">
-                                                <h6 class="text-success mb-2">Public Sector</h6>
-                                                <div class="row g-2">
-                                                    <div class="col-md-4">
-                                                        <label class="form-label small">Number of Buildings <span class="text-danger">*</span></label>
-                                                        <input type="number" class="form-control new-building-public-number"
-                                                            value="{{ old("new_building_data.$index.public_number", $building['public_number'] ?? '') }}"
-                                                            placeholder="0" min="0" required>
-                                                    </div>
-                                                    <div class="col-md-4">
-                                                        <label class="form-label small">Cost per Building (ETB) <span class="text-danger">*</span></label>
-                                                        <input type="number" step="0.01" class="form-control new-building-public-cost"
-                                                            value="{{ old("new_building_data.$index.public_cost", $building['public_cost'] ?? '') }}"
-                                                            placeholder="0.00" min="0" required>
-                                                    </div>
-                                                    <div class="col-md-4">
-                                                        <label class="form-label small">Total Cost (ETB)</label>
-                                                        <input type="text" class="form-control new-building-public-total-cost"
-                                                            placeholder="0.00" readonly style="background-color: #f8f9fa; font-size: 0.8rem;">
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <!-- Private Section -->
-                                            <div class="col-12 border-bottom pb-2 mb-2">
-                                                <h6 class="text-warning mb-2">Private Sector</h6>
-                                                <div class="row g-2">
-                                                    <div class="col-md-4">
-                                                        <label class="form-label small">Number of Buildings <span class="text-danger">*</span></label>
-                                                        <input type="number" class="form-control new-building-private-number"
-                                                            value="{{ old("new_building_data.$index.private_number", $building['private_number'] ?? '') }}"
-                                                            placeholder="0" min="0" required>
-                                                    </div>
-                                                    <div class="col-md-4">
-                                                        <label class="form-label small">Cost per Building (ETB) <span class="text-danger">*</span></label>
-                                                        <input type="number" step="0.01" class="form-control new-building-private-cost"
-                                                            value="{{ old("new_building_data.$index.private_cost", $building['private_cost'] ?? '') }}"
-                                                            placeholder="0.00" min="0" required>
-                                                    </div>
-                                                    <div class="col-md-4">
-                                                        <label class="form-label small">Total Cost (ETB)</label>
-                                                        <input type="text" class="form-control new-building-private-total-cost"
-                                                            placeholder="0.00" readonly style="background-color: #f8f9fa; font-size: 0.8rem;">
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <!-- Association Section -->
-                                            <div class="col-12 border-bottom pb-2 mb-2">
-                                                <h6 class="text-info mb-2">Association Sector</h6>
-                                                <div class="row g-2">
-                                                    <div class="col-md-4">
-                                                        <label class="form-label small">Number of Buildings <span class="text-danger">*</span></label>
-                                                        <input type="number" class="form-control new-building-association-number"
-                                                            value="{{ old("new_building_data.$index.association_number", $building['association_number'] ?? '') }}"
-                                                            placeholder="0" min="0" required>
-                                                    </div>
-                                                    <div class="col-md-4">
-                                                        <label class="form-label small">Cost per Building (ETB) <span class="text-danger">*</span></label>
-                                                        <input type="number" step="0.01" class="form-control new-building-association-cost"
-                                                            value="{{ old("new_building_data.$index.association_cost", $building['association_cost'] ?? '') }}"
-                                                            placeholder="0.00" min="0" required>
-                                                    </div>
-                                                    <div class="col-md-4">
-                                                        <label class="form-label small">Total Cost (ETB)</label>
-                                                        <input type="text" class="form-control new-building-association-total-cost"
-                                                            placeholder="0.00" readonly style="background-color: #f8f9fa; font-size: 0.8rem;">
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <!-- Totals Section -->
-                                            <div class="col-12 bg-light p-2 rounded mb-2">
-                                                <div class="row g-2">
-                                                    <div class="col-md-3">
-                                                        <label class="form-label small fw-semibold">Total Buildings</label>
-                                                        <input type="text" class="form-control new-building-total-number" placeholder="0" readonly style="background-color: #e9ecef; font-size: 0.8rem;">
-                                                    </div>
-                                                    <div class="col-md-3">
-                                                        <label class="form-label small fw-semibold">Average Cost (ETB)</label>
-                                                        <input type="text" class="form-control new-building-average-cost" placeholder="0.00" readonly style="background-color: #e9ecef; font-size: 0.8rem;">
-                                                    </div>
-                                                    <div class="col-md-3">
-                                                        <label class="form-label small fw-semibold">Grand Total (ETB)</label>
-                                                        <input type="text" class="form-control new-building-grand-total" placeholder="0.00" readonly style="background-color: #e9ecef; font-size: 0.8rem;">
-                                                    </div>
-                                                    <div class="col-md-3">
-                                                        <label class="form-label small fw-semibold">Total Cost (ETB)</label>
-                                                        <input type="text" class="form-control new-building-total-cost" placeholder="0.00" readonly style="background-color: #e9ecef; font-size: 0.8rem;">
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <div class="col-12">
-                                                <label class="form-label small">Project Description <span class="text-danger">*</span></label>
-                                                <textarea class="form-control new-building-description" rows="2"
-                                                    placeholder="Describe the construction project..." style="font-size: 0.8rem;" required>{{ old("new_building_data.$index.description", $building['description'] ?? '') }}</textarea>
-                                            </div>
-                                            
-                                            @if ($index > 0)
-                                                <div class="col-12 text-end">
-                                                    <button type="button" class="btn btn-sm btn-outline-danger remove-new-building">
-                                                        <i class="bi bi-trash me-1"></i>Remove Building
-                                                    </button>
-                                                </div>
-                                            @endif
-                                        </div>
-                                    </div>
-                                </div>
+                @if ($errors->any())
+                    <div class="alert alert-danger alert-dismissible">
+                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                        <h5><i class="icon fas fa-ban"></i> Validation Error!</h5>
+                        <ul class="mb-0">
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
                             @endforeach
-                        @else
-                            <div class="card border mb-3 new-building-item" data-index="0">
-                                <div class="card-body">
-                                    <div class="row g-2">
-                                        <!-- Public Section -->
-                                        <div class="col-12 border-bottom pb-2 mb-2">
-                                            <h6 class="text-success mb-2">Public Sector</h6>
-                                            <div class="row g-2">
-                                                <div class="col-md-4">
-                                                    <label class="form-label small">Number of Buildings <span class="text-danger">*</span></label>
-                                                    <input type="number" class="form-control new-building-public-number"
-                                                        value="{{ old('new_building_data.0.public_number', '') }}" placeholder="0" min="0" required>
-                                                </div>
-                                                <div class="col-md-4">
-                                                    <label class="form-label small">Cost per Building (ETB) <span class="text-danger">*</span></label>
-                                                    <input type="number" step="0.01" class="form-control new-building-public-cost"
-                                                        value="{{ old('new_building_data.0.public_cost', '') }}" placeholder="0.00" min="0" required>
-                                                </div>
-                                                <div class="col-md-4">
-                                                    <label class="form-label small">Total Cost (ETB)</label>
-                                                    <input type="text" class="form-control new-building-public-total-cost"
-                                                        placeholder="0.00" readonly style="background-color: #f8f9fa; font-size: 0.8rem;">
-                                                </div>
-                                            </div>
-                                        </div>
+                        </ul>
+                    </div>
+                @endif
 
-                                        <!-- Private Section -->
-                                        <div class="col-12 border-bottom pb-2 mb-2">
-                                            <h6 class="text-warning mb-2">Private Sector</h6>
-                                            <div class="row g-2">
-                                                <div class="col-md-4">
-                                                    <label class="form-label small">Number of Buildings <span class="text-danger">*</span></label>
-                                                    <input type="number" class="form-control new-building-private-number"
-                                                        value="{{ old('new_building_data.0.private_number', '') }}" placeholder="0" min="0" required>
-                                                </div>
-                                                <div class="col-md-4">
-                                                    <label class="form-label small">Cost per Building (ETB) <span class="text-danger">*</span></label>
-                                                    <input type="number" step="0.01" class="form-control new-building-private-cost"
-                                                        value="{{ old('new_building_data.0.private_cost', '') }}" placeholder="0.00" min="0" required>
-                                                </div>
-                                                <div class="col-md-4">
-                                                    <label class="form-label small">Total Cost (ETB)</label>
-                                                    <input type="text" class="form-control new-building-private-total-cost"
-                                                        placeholder="0.00" readonly style="background-color: #f8f9fa; font-size: 0.8rem;">
-                                                </div>
-                                            </div>
-                                        </div>
+                <form action="{{ route('sector.building-economic-institution-plans.update', $plan->id) }}" method="POST" id="mainForm">
+                    @csrf
+                    @method('PUT')
 
-                                        <!-- Association Section -->
-                                        <div class="col-12 border-bottom pb-2 mb-2">
-                                            <h6 class="text-info mb-2">Association Sector</h6>
-                                            <div class="row g-2">
-                                                <div class="col-md-4">
-                                                    <label class="form-label small">Number of Buildings <span class="text-danger">*</span></label>
-                                                    <input type="number" class="form-control new-building-association-number"
-                                                        value="{{ old('new_building_data.0.association_number', '') }}" placeholder="0" min="0" required>
-                                                </div>
-                                                <div class="col-md-4">
-                                                    <label class="form-label small">Cost per Building (ETB) <span class="text-danger">*</span></label>
-                                                    <input type="number" step="0.01" class="form-control new-building-association-cost"
-                                                        value="{{ old('new_building_data.0.association_cost', '') }}" placeholder="0.00" min="0" required>
-                                                </div>
-                                                <div class="col-md-4">
-                                                    <label class="form-label small">Total Cost (ETB)</label>
-                                                    <input type="text" class="form-control new-building-association-total-cost"
-                                                        placeholder="0.00" readonly style="background-color: #f8f9fa; font-size: 0.8rem;">
-                                                </div>
-                                            </div>
-                                        </div>
+                    <!-- Hidden JSON fields -->
+                    <input type="hidden" name="new_building_data" id="newBuildingDataJson">
+                    <input type="hidden" name="improvement_data" id="improvementDataJson">
 
-                                        <!-- Totals Section -->
-                                        <div class="col-12 bg-light p-2 rounded mb-2">
-                                            <div class="row g-2">
-                                                <div class="col-md-3">
-                                                    <label class="form-label small fw-semibold">Total Buildings</label>
-                                                    <input type="text" class="form-control new-building-total-number" placeholder="0" readonly style="background-color: #e9ecef; font-size: 0.8rem;">
-                                                </div>
-                                                <div class="col-md-3">
-                                                    <label class="form-label small fw-semibold">Average Cost (ETB)</label>
-                                                    <input type="text" class="form-control new-building-average-cost" placeholder="0.00" readonly style="background-color: #e9ecef; font-size: 0.8rem;">
-                                                </div>
-                                                <div class="col-md-3">
-                                                    <label class="form-label small fw-semibold">Grand Total (ETB)</label>
-                                                    <input type="text" class="form-control new-building-grand-total" placeholder="0.00" readonly style="background-color: #e9ecef; font-size: 0.8rem;">
-                                                </div>
-                                                <div class="col-md-3">
-                                                    <label class="form-label small fw-semibold">Total Cost (ETB)</label>
-                                                    <input type="text" class="form-control new-building-total-cost" placeholder="0.00" readonly style="background-color: #e9ecef; font-size: 0.8rem;">
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div class="col-12">
-                                            <label class="form-label small">Project Description <span class="text-danger">*</span></label>
-                                            <textarea class="form-control new-building-description" rows="2"
-                                                placeholder="Describe the construction project..." style="font-size: 0.8rem;" required>{{ old('new_building_data.0.description', '') }}</textarea>
-                                        </div>
+                    <!-- Year and Institution Selection (Read-only) -->
+                    <div class="card card-primary mb-3">
+                        <div class="card-header">
+                            <h3 class="card-title"><i class="fas fa-calendar-alt mr-2"></i>Plan Information</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="alert alert-info py-2 mb-3">
+                                <i class="fas fa-info-circle mr-2"></i>
+                                Year and Institution cannot be changed for existing plans. To modify these, please create a new plan.
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="font-weight-bold">Year <span class="text-danger">*</span></label>
+                                        <select name="year" class="form-control" id="yearSelect" required disabled>
+                                            <option value="{{ $plan->year }}" selected>{{ $plan->year }} EC</option>
+                                        </select>
+                                        <input type="hidden" name="year" value="{{ $plan->year }}">
+                                        @error('year')
+                                            <div class="text-danger small mt-1">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="font-weight-bold">Institution <span class="text-danger">*</span></label>
+                                        <select name="institution_id" class="form-control" id="institutionSelect" required disabled>
+                                            <option value="{{ $plan->institution_id }}" selected>
+                                                {{ $plan->institution->name ?? 'Institution Not Found' }}
+                                            </option>
+                                        </select>
+                                        <input type="hidden" name="institution_id" value="{{ $plan->institution_id }}">
+                                        @error('institution_id')
+                                            <div class="text-danger small mt-1">{{ $message }}</div>
+                                        @enderror
                                     </div>
                                 </div>
                             </div>
-                        @endif
-                    </div>
-
-                    <div class="text-center mt-3">
-                        <button type="button" class="btn btn-sm btn-outline-primary" id="addNewBuilding">
-                            <i class="bi bi-plus-circle me-1"></i>Add Another Building
-                        </button>
-                    </div>
-
-                    @error('new_building_data')
-                        <div class="text-danger small mt-2">{{ $message }}</div>
-                    @enderror
-                </div>
-            </div>
-
-            <!-- Improvement Data -->
-            <div class="card border-0 shadow-sm mb-4" id="improvementCard">
-                <div class="card-header bg-warning text-dark py-3">
-                    <h5 class="mb-0"><i class="bi bi-tools me-2"></i>Existing Building Improvements</h5>
-                </div>
-                <div class="card-body p-4">
-                    <div class="alert alert-info py-2 mb-3">
-                        <i class="bi bi-info-circle me-2"></i>
-                        Edit improvement projects on existing buildings for the selected institution.
-                    </div>
-
-                    <div id="improvementsContainer">
-                        @if (!empty($plan->improvement_data) && count($plan->improvement_data) > 0)
-                            @foreach ($plan->improvement_data as $index => $improvement)
-                                <div class="card border mb-3 improvement-item" data-index="{{ $index }}">
-                                    <div class="card-body">
-                                        <div class="row g-2">
-                                            <div class="col-12">
-                                                <label class="form-label small fw-semibold text-warning">
-                                                    <i class="bi bi-tools me-1"></i>
-                                                    Improvement Entry #{{ $index + 1 }}
-                                                </label>
-                                            </div>
-                                            
-                                            <!-- Public Section -->
-                                            <div class="col-12 border-bottom pb-2 mb-2">
-                                                <h6 class="text-success mb-2">Public Sector</h6>
-                                                <div class="row g-2">
-                                                    <div class="col-md-4">
-                                                        <label class="form-label small">Number of Improvements <span class="text-danger">*</span></label>
-                                                        <input type="number" class="form-control improvement-public-number"
-                                                            value="{{ old("improvement_data.$index.public_number", $improvement['public_number'] ?? '') }}"
-                                                            placeholder="0" min="0" required>
-                                                    </div>
-                                                    <div class="col-md-4">
-                                                        <label class="form-label small">Cost per Improvement (ETB) <span class="text-danger">*</span></label>
-                                                        <input type="number" step="0.01" class="form-control improvement-public-cost"
-                                                            value="{{ old("improvement_data.$index.public_cost", $improvement['public_cost'] ?? '') }}"
-                                                            placeholder="0.00" min="0" required>
-                                                    </div>
-                                                    <div class="col-md-4">
-                                                        <label class="form-label small">Total Cost (ETB)</label>
-                                                        <input type="text" class="form-control improvement-public-total-cost"
-                                                            placeholder="0.00" readonly style="background-color: #f8f9fa; font-size: 0.8rem;">
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <!-- Private Section -->
-                                            <div class="col-12 border-bottom pb-2 mb-2">
-                                                <h6 class="text-warning mb-2">Private Sector</h6>
-                                                <div class="row g-2">
-                                                    <div class="col-md-4">
-                                                        <label class="form-label small">Number of Improvements <span class="text-danger">*</span></label>
-                                                        <input type="number" class="form-control improvement-private-number"
-                                                            value="{{ old("improvement_data.$index.private_number", $improvement['private_number'] ?? '') }}"
-                                                            placeholder="0" min="0" required>
-                                                    </div>
-                                                    <div class="col-md-4">
-                                                        <label class="form-label small">Cost per Improvement (ETB) <span class="text-danger">*</span></label>
-                                                        <input type="number" step="0.01" class="form-control improvement-private-cost"
-                                                            value="{{ old("improvement_data.$index.private_cost", $improvement['private_cost'] ?? '') }}"
-                                                            placeholder="0.00" min="0" required>
-                                                    </div>
-                                                    <div class="col-md-4">
-                                                        <label class="form-label small">Total Cost (ETB)</label>
-                                                        <input type="text" class="form-control improvement-private-total-cost"
-                                                            placeholder="0.00" readonly style="background-color: #f8f9fa; font-size: 0.8rem;">
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <!-- Association Section -->
-                                            <div class="col-12 border-bottom pb-2 mb-2">
-                                                <h6 class="text-info mb-2">Association Sector</h6>
-                                                <div class="row g-2">
-                                                    <div class="col-md-4">
-                                                        <label class="form-label small">Number of Improvements <span class="text-danger">*</span></label>
-                                                        <input type="number" class="form-control improvement-association-number"
-                                                            value="{{ old("improvement_data.$index.association_number", $improvement['association_number'] ?? '') }}"
-                                                            placeholder="0" min="0" required>
-                                                    </div>
-                                                    <div class="col-md-4">
-                                                        <label class="form-label small">Cost per Improvement (ETB) <span class="text-danger">*</span></label>
-                                                        <input type="number" step="0.01" class="form-control improvement-association-cost"
-                                                            value="{{ old("improvement_data.$index.association_cost", $improvement['association_cost'] ?? '') }}"
-                                                            placeholder="0.00" min="0" required>
-                                                    </div>
-                                                    <div class="col-md-4">
-                                                        <label class="form-label small">Total Cost (ETB)</label>
-                                                        <input type="text" class="form-control improvement-association-total-cost"
-                                                            placeholder="0.00" readonly style="background-color: #f8f9fa; font-size: 0.8rem;">
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <!-- Totals Section -->
-                                            <div class="col-12 bg-light p-2 rounded mb-2">
-                                                <div class="row g-2">
-                                                    <div class="col-md-3">
-                                                        <label class="form-label small fw-semibold">Total Improvements</label>
-                                                        <input type="text" class="form-control improvement-total-number" placeholder="0" readonly style="background-color: #e9ecef; font-size: 0.8rem;">
-                                                    </div>
-                                                    <div class="col-md-3">
-                                                        <label class="form-label small fw-semibold">Average Cost (ETB)</label>
-                                                        <input type="text" class="form-control improvement-average-cost" placeholder="0.00" readonly style="background-color: #e9ecef; font-size: 0.8rem;">
-                                                    </div>
-                                                    <div class="col-md-3">
-                                                        <label class="form-label small fw-semibold">Grand Total (ETB)</label>
-                                                        <input type="text" class="form-control improvement-grand-total" placeholder="0.00" readonly style="background-color: #e9ecef; font-size: 0.8rem;">
-                                                    </div>
-                                                    <div class="col-md-3">
-                                                        <label class="form-label small fw-semibold">Total Cost (ETB)</label>
-                                                        <input type="text" class="form-control improvement-total-cost" placeholder="0.00" readonly style="background-color: #e9ecef; font-size: 0.8rem;">
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <div class="col-12">
-                                                <label class="form-label small">Improvement Description <span class="text-danger">*</span></label>
-                                                <textarea class="form-control improvement-description" rows="2" placeholder="Describe the improvement work..."
-                                                    style="font-size: 0.8rem;" required>{{ old("improvement_data.$index.description", $improvement['description'] ?? '') }}</textarea>
-                                            </div>
-                                            
-                                            @if ($index > 0)
-                                                <div class="col-12 text-end">
-                                                    <button type="button" class="btn btn-sm btn-outline-danger remove-improvement">
-                                                        <i class="bi bi-trash me-1"></i>Remove Improvement
-                                                    </button>
-                                                </div>
-                                            @endif
-                                        </div>
+                            
+                            <!-- Display additional read-only information -->
+                            <div class="row mt-3">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="form-label small text-muted">Created Date</label>
+                                        <input type="text" class="form-control" 
+                                               value="{{ $plan->created_at->format('M d, Y H:i') }}" readonly 
+                                               style="background-color: #f8f9fa;">
                                     </div>
                                 </div>
-                            @endforeach
-                        @else
-                            <div class="card border mb-3 improvement-item" data-index="0">
-                                <div class="card-body">
-                                    <div class="row g-2">
-                                        <!-- Public Section -->
-                                        <div class="col-12 border-bottom pb-2 mb-2">
-                                            <h6 class="text-success mb-2">Public Sector</h6>
-                                            <div class="row g-2">
-                                                <div class="col-md-4">
-                                                    <label class="form-label small">Number of Improvements <span class="text-danger">*</span></label>
-                                                    <input type="number" class="form-control improvement-public-number"
-                                                        value="{{ old('improvement_data.0.public_number', '') }}" placeholder="0" min="0" required>
-                                                </div>
-                                                <div class="col-md-4">
-                                                    <label class="form-label small">Cost per Improvement (ETB) <span class="text-danger">*</span></label>
-                                                    <input type="number" step="0.01" class="form-control improvement-public-cost"
-                                                        value="{{ old('improvement_data.0.public_cost', '') }}" placeholder="0.00" min="0" required>
-                                                </div>
-                                                <div class="col-md-4">
-                                                    <label class="form-label small">Total Cost (ETB)</label>
-                                                    <input type="text" class="form-control improvement-public-total-cost"
-                                                        placeholder="0.00" readonly style="background-color: #f8f9fa; font-size: 0.8rem;">
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <!-- Private Section -->
-                                        <div class="col-12 border-bottom pb-2 mb-2">
-                                            <h6 class="text-warning mb-2">Private Sector</h6>
-                                            <div class="row g-2">
-                                                <div class="col-md-4">
-                                                    <label class="form-label small">Number of Improvements <span class="text-danger">*</span></label>
-                                                    <input type="number" class="form-control improvement-private-number"
-                                                        value="{{ old('improvement_data.0.private_number', '') }}" placeholder="0" min="0" required>
-                                                </div>
-                                                <div class="col-md-4">
-                                                    <label class="form-label small">Cost per Improvement (ETB) <span class="text-danger">*</span></label>
-                                                    <input type="number" step="0.01" class="form-control improvement-private-cost"
-                                                        value="{{ old('improvement_data.0.private_cost', '') }}" placeholder="0.00" min="0" required>
-                                                </div>
-                                                <div class="col-md-4">
-                                                    <label class="form-label small">Total Cost (ETB)</label>
-                                                    <input type="text" class="form-control improvement-private-total-cost"
-                                                        placeholder="0.00" readonly style="background-color: #f8f9fa; font-size: 0.8rem;">
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <!-- Association Section -->
-                                        <div class="col-12 border-bottom pb-2 mb-2">
-                                            <h6 class="text-info mb-2">Association Sector</h6>
-                                            <div class="row g-2">
-                                                <div class="col-md-4">
-                                                    <label class="form-label small">Number of Improvements <span class="text-danger">*</span></label>
-                                                    <input type="number" class="form-control improvement-association-number"
-                                                        value="{{ old('improvement_data.0.association_number', '') }}" placeholder="0" min="0" required>
-                                                </div>
-                                                <div class="col-md-4">
-                                                    <label class="form-label small">Cost per Improvement (ETB) <span class="text-danger">*</span></label>
-                                                    <input type="number" step="0.01" class="form-control improvement-association-cost"
-                                                        value="{{ old('improvement_data.0.association_cost', '') }}" placeholder="0.00" min="0" required>
-                                                </div>
-                                                <div class="col-md-4">
-                                                    <label class="form-label small">Total Cost (ETB)</label>
-                                                    <input type="text" class="form-control improvement-association-total-cost"
-                                                        placeholder="0.00" readonly style="background-color: #f8f9fa; font-size: 0.8rem;">
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <!-- Totals Section -->
-                                        <div class="col-12 bg-light p-2 rounded mb-2">
-                                            <div class="row g-2">
-                                                <div class="col-md-3">
-                                                    <label class="form-label small fw-semibold">Total Improvements</label>
-                                                    <input type="text" class="form-control improvement-total-number" placeholder="0" readonly style="background-color: #e9ecef; font-size: 0.8rem;">
-                                                </div>
-                                                <div class="col-md-3">
-                                                    <label class="form-label small fw-semibold">Average Cost (ETB)</label>
-                                                    <input type="text" class="form-control improvement-average-cost" placeholder="0.00" readonly style="background-color: #e9ecef; font-size: 0.8rem;">
-                                                </div>
-                                                <div class="col-md-3">
-                                                    <label class="form-label small fw-semibold">Grand Total (ETB)</label>
-                                                    <input type="text" class="form-control improvement-grand-total" placeholder="0.00" readonly style="background-color: #e9ecef; font-size: 0.8rem;">
-                                                </div>
-                                                <div class="col-md-3">
-                                                    <label class="form-label small fw-semibold">Total Cost (ETB)</label>
-                                                    <input type="text" class="form-control improvement-total-cost" placeholder="0.00" readonly style="background-color: #e9ecef; font-size: 0.8rem;">
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div class="col-12">
-                                            <label class="form-label small">Improvement Description <span class="text-danger">*</span></label>
-                                            <textarea class="form-control improvement-description" rows="2" placeholder="Describe the improvement work..."
-                                                style="font-size: 0.8rem;" required>{{ old('improvement_data.0.description', '') }}</textarea>
-                                        </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label class="form-label small text-muted">Last Updated</label>
+                                        <input type="text" class="form-control" 
+                                               value="{{ $plan->updated_at->format('M d, Y H:i') }}" readonly 
+                                               style="background-color: #f8f9fa;">
                                     </div>
                                 </div>
                             </div>
-                        @endif
-                    </div>
-
-                    <div class="text-center mt-3">
-                        <button type="button" class="btn btn-sm btn-outline-warning" id="addImprovement">
-                            <i class="bi bi-plus-circle me-1"></i>Add Another Improvement
-                        </button>
-                    </div>
-
-                    @error('improvement_data')
-                        <div class="text-danger small mt-2">{{ $message }}</div>
-                    @enderror
-                </div>
-            </div>
-
-            <!-- Summary Card -->
-            <div class="card border-0 shadow-sm mb-4">
-                <div class="card-header bg-secondary text-white py-3">
-                    <h5 class="mb-0"><i class="bi bi-calculator me-2"></i>Financial Summary</h5>
-                </div>
-                <div class="card-body p-4">
-                    <div class="row text-center">
-                        <div class="col-md-3">
-                            <div class="border rounded p-3 bg-light">
-                                <h6 class="text-success mb-1">Public Total</h6>
-                                <h4 class="text-success mb-0" id="publicTotal">0.00 ETB</h4>
-                                <small class="text-muted" id="publicCount">0 projects</small>
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="border rounded p-3 bg-light">
-                                <h6 class="text-warning mb-1">Private Total</h6>
-                                <h4 class="text-warning mb-0" id="privateTotal">0.00 ETB</h4>
-                                <small class="text-muted" id="privateCount">0 projects</small>
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="border rounded p-3 bg-light">
-                                <h6 class="text-info mb-1">Association Total</h6>
-                                <h4 class="text-info mb-0" id="associationTotal">0.00 ETB</h4>
-                                <small class="text-muted" id="associationCount">0 projects</small>
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="border rounded p-3 bg-light">
-                                <h6 class="text-primary mb-1">New Construction</h6>
-                                <h4 class="text-primary mb-0" id="newBuildingsTotal">0.00 ETB</h4>
-                                <small class="text-muted" id="newBuildingsCount">0 buildings</small>
-                            </div>
                         </div>
                     </div>
-                    <div class="row mt-4">
+
+                    <!-- New Building Data -->
+                    <div class="card card-info mb-3" id="newBuildingCard">
+                        <div class="card-header">
+                            <h3 class="card-title"><i class="fas fa-plus-circle mr-2"></i>New Building Construction</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="alert alert-info py-2 mb-3">
+                                <i class="fas fa-info-circle mr-2"></i>
+                                Edit new building construction data for the selected institution.
+                            </div>
+
+                            <div id="newBuildingsContainer">
+                                @if (!empty($plan->new_building_data) && count($plan->new_building_data) > 0)
+                                    @foreach ($plan->new_building_data as $index => $building)
+                                        <div class="card border mb-3 new-building-item" data-index="{{ $index }}">
+                                            <div class="card-body">
+                                                <div class="row">
+                                                    <div class="col-12">
+                                                        <label class="small font-weight-bold text-primary">
+                                                            <i class="fas fa-building mr-1"></i>
+                                                            Building Entry #{{ $index + 1 }}
+                                                        </label>
+                                                    </div>
+                                                    
+                                                    <!-- Public Section -->
+                                                    <div class="col-12 border-bottom pb-2 mb-2">
+                                                        <h6 class="text-success mb-2">Public Sector</h6>
+                                                        <div class="row">
+                                                            <div class="col-md-4">
+                                                                <div class="form-group mb-2">
+                                                                    <label class="small">Number of Buildings <span class="text-danger">*</span></label>
+                                                                    <input type="number" class="form-control new-building-public-number"
+                                                                        value="{{ old("new_building_data.$index.public_number", $building['public_number'] ?? '') }}"
+                                                                        placeholder="0" min="0" required>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-4">
+                                                                <div class="form-group mb-2">
+                                                                    <label class="small">Cost per Building (ETB) <span class="text-danger">*</span></label>
+                                                                    <input type="number" step="0.01" class="form-control new-building-public-cost"
+                                                                        value="{{ old("new_building_data.$index.public_cost", $building['public_cost'] ?? '') }}"
+                                                                        placeholder="0.00" min="0" required>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-4">
+                                                                <div class="form-group mb-2">
+                                                                    <label class="small">Total Cost (ETB)</label>
+                                                                    <input type="text" class="form-control new-building-public-total-cost"
+                                                                        placeholder="0.00" readonly style="background-color: #f8f9fa;">
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- Private Section -->
+                                                    <div class="col-12 border-bottom pb-2 mb-2">
+                                                        <h6 class="text-warning mb-2">Private Sector</h6>
+                                                        <div class="row">
+                                                            <div class="col-md-4">
+                                                                <div class="form-group mb-2">
+                                                                    <label class="small">Number of Buildings <span class="text-danger">*</span></label>
+                                                                    <input type="number" class="form-control new-building-private-number"
+                                                                        value="{{ old("new_building_data.$index.private_number", $building['private_number'] ?? '') }}"
+                                                                        placeholder="0" min="0" required>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-4">
+                                                                <div class="form-group mb-2">
+                                                                    <label class="small">Cost per Building (ETB) <span class="text-danger">*</span></label>
+                                                                    <input type="number" step="0.01" class="form-control new-building-private-cost"
+                                                                        value="{{ old("new_building_data.$index.private_cost", $building['private_cost'] ?? '') }}"
+                                                                        placeholder="0.00" min="0" required>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-4">
+                                                                <div class="form-group mb-2">
+                                                                    <label class="small">Total Cost (ETB)</label>
+                                                                    <input type="text" class="form-control new-building-private-total-cost"
+                                                                        placeholder="0.00" readonly style="background-color: #f8f9fa;">
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- Association Section -->
+                                                    <div class="col-12 border-bottom pb-2 mb-2">
+                                                        <h6 class="text-info mb-2">Association Sector</h6>
+                                                        <div class="row">
+                                                            <div class="col-md-4">
+                                                                <div class="form-group mb-2">
+                                                                    <label class="small">Number of Buildings <span class="text-danger">*</span></label>
+                                                                    <input type="number" class="form-control new-building-association-number"
+                                                                        value="{{ old("new_building_data.$index.association_number", $building['association_number'] ?? '') }}"
+                                                                        placeholder="0" min="0" required>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-4">
+                                                                <div class="form-group mb-2">
+                                                                    <label class="small">Cost per Building (ETB) <span class="text-danger">*</span></label>
+                                                                    <input type="number" step="0.01" class="form-control new-building-association-cost"
+                                                                        value="{{ old("new_building_data.$index.association_cost", $building['association_cost'] ?? '') }}"
+                                                                        placeholder="0.00" min="0" required>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-4">
+                                                                <div class="form-group mb-2">
+                                                                    <label class="small">Total Cost (ETB)</label>
+                                                                    <input type="text" class="form-control new-building-association-total-cost"
+                                                                        placeholder="0.00" readonly style="background-color: #f8f9fa;">
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- Totals Section -->
+                                                    <div class="col-12 bg-light p-2 rounded mb-2">
+                                                        <div class="row">
+                                                            <div class="col-md-3">
+                                                                <div class="form-group mb-0">
+                                                                    <label class="small font-weight-bold">Total Buildings</label>
+                                                                    <input type="text" class="form-control new-building-total-number" placeholder="0" readonly style="background-color: #e9ecef;">
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-3">
+                                                                <div class="form-group mb-0">
+                                                                    <label class="small font-weight-bold">Average Cost (ETB)</label>
+                                                                    <input type="text" class="form-control new-building-average-cost" placeholder="0.00" readonly style="background-color: #e9ecef;">
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-3">
+                                                                <div class="form-group mb-0">
+                                                                    <label class="small font-weight-bold">Grand Total (ETB)</label>
+                                                                    <input type="text" class="form-control new-building-grand-total" placeholder="0.00" readonly style="background-color: #e9ecef;">
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-3">
+                                                                <div class="form-group mb-0">
+                                                                    <label class="small font-weight-bold">Total Cost (ETB)</label>
+                                                                    <input type="text" class="form-control new-building-total-cost" placeholder="0.00" readonly style="background-color: #e9ecef;">
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="col-12">
+                                                        <div class="form-group">
+                                                            <label class="small">Project Description <span class="text-danger">*</span></label>
+                                                            <textarea class="form-control new-building-description" rows="2"
+                                                                placeholder="Describe the construction project..." required>{{ old("new_building_data.$index.description", $building['description'] ?? '') }}</textarea>
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    @if ($index > 0)
+                                                        <div class="col-12 text-right">
+                                                            <button type="button" class="btn btn-sm btn-outline-danger remove-new-building">
+                                                                <i class="fas fa-trash mr-1"></i>Remove Building
+                                                            </button>
+                                                        </div>
+                                                    @endif
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                @else
+                                    <div class="card border mb-3 new-building-item" data-index="0">
+                                        <div class="card-body">
+                                            <div class="row">
+                                                <!-- Public Section -->
+                                                <div class="col-12 border-bottom pb-2 mb-2">
+                                                    <h6 class="text-success mb-2">Public Sector</h6>
+                                                    <div class="row">
+                                                        <div class="col-md-4">
+                                                            <div class="form-group mb-2">
+                                                                <label class="small">Number of Buildings <span class="text-danger">*</span></label>
+                                                                <input type="number" class="form-control new-building-public-number"
+                                                                    value="{{ old('new_building_data.0.public_number', '') }}" placeholder="0" min="0" required>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            <div class="form-group mb-2">
+                                                                <label class="small">Cost per Building (ETB) <span class="text-danger">*</span></label>
+                                                                <input type="number" step="0.01" class="form-control new-building-public-cost"
+                                                                    value="{{ old('new_building_data.0.public_cost', '') }}" placeholder="0.00" min="0" required>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            <div class="form-group mb-2">
+                                                                <label class="small">Total Cost (ETB)</label>
+                                                                <input type="text" class="form-control new-building-public-total-cost"
+                                                                    placeholder="0.00" readonly style="background-color: #f8f9fa;">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <!-- Private Section -->
+                                                <div class="col-12 border-bottom pb-2 mb-2">
+                                                    <h6 class="text-warning mb-2">Private Sector</h6>
+                                                    <div class="row">
+                                                        <div class="col-md-4">
+                                                            <div class="form-group mb-2">
+                                                                <label class="small">Number of Buildings <span class="text-danger">*</span></label>
+                                                                <input type="number" class="form-control new-building-private-number"
+                                                                    value="{{ old('new_building_data.0.private_number', '') }}" placeholder="0" min="0" required>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            <div class="form-group mb-2">
+                                                                <label class="small">Cost per Building (ETB) <span class="text-danger">*</span></label>
+                                                                <input type="number" step="0.01" class="form-control new-building-private-cost"
+                                                                    value="{{ old('new_building_data.0.private_cost', '') }}" placeholder="0.00" min="0" required>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            <div class="form-group mb-2">
+                                                                <label class="small">Total Cost (ETB)</label>
+                                                                <input type="text" class="form-control new-building-private-total-cost"
+                                                                    placeholder="0.00" readonly style="background-color: #f8f9fa;">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <!-- Association Section -->
+                                                <div class="col-12 border-bottom pb-2 mb-2">
+                                                    <h6 class="text-info mb-2">Association Sector</h6>
+                                                    <div class="row">
+                                                        <div class="col-md-4">
+                                                            <div class="form-group mb-2">
+                                                                <label class="small">Number of Buildings <span class="text-danger">*</span></label>
+                                                                <input type="number" class="form-control new-building-association-number"
+                                                                    value="{{ old('new_building_data.0.association_number', '') }}" placeholder="0" min="0" required>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            <div class="form-group mb-2">
+                                                                <label class="small">Cost per Building (ETB) <span class="text-danger">*</span></label>
+                                                                <input type="number" step="0.01" class="form-control new-building-association-cost"
+                                                                    value="{{ old('new_building_data.0.association_cost', '') }}" placeholder="0.00" min="0" required>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            <div class="form-group mb-2">
+                                                                <label class="small">Total Cost (ETB)</label>
+                                                                <input type="text" class="form-control new-building-association-total-cost"
+                                                                    placeholder="0.00" readonly style="background-color: #f8f9fa;">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <!-- Totals Section -->
+                                                <div class="col-12 bg-light p-2 rounded mb-2">
+                                                    <div class="row">
+                                                        <div class="col-md-3">
+                                                            <div class="form-group mb-0">
+                                                                <label class="small font-weight-bold">Total Buildings</label>
+                                                                <input type="text" class="form-control new-building-total-number" placeholder="0" readonly style="background-color: #e9ecef;">
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-3">
+                                                            <div class="form-group mb-0">
+                                                                <label class="small font-weight-bold">Average Cost (ETB)</label>
+                                                                <input type="text" class="form-control new-building-average-cost" placeholder="0.00" readonly style="background-color: #e9ecef;">
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-3">
+                                                            <div class="form-group mb-0">
+                                                                <label class="small font-weight-bold">Grand Total (ETB)</label>
+                                                                <input type="text" class="form-control new-building-grand-total" placeholder="0.00" readonly style="background-color: #e9ecef;">
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-3">
+                                                            <div class="form-group mb-0">
+                                                                <label class="small font-weight-bold">Total Cost (ETB)</label>
+                                                                <input type="text" class="form-control new-building-total-cost" placeholder="0.00" readonly style="background-color: #e9ecef;">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-12">
+                                                    <div class="form-group">
+                                                        <label class="small">Project Description <span class="text-danger">*</span></label>
+                                                        <textarea class="form-control new-building-description" rows="2"
+                                                            placeholder="Describe the construction project..." required>{{ old('new_building_data.0.description', '') }}</textarea>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endif
+                            </div>
+
+                            <div class="text-center mt-3">
+                                <button type="button" class="btn btn-sm btn-outline-primary" id="addNewBuilding">
+                                    <i class="fas fa-plus-circle mr-1"></i>Add Another Building
+                                </button>
+                            </div>
+
+                            @error('new_building_data')
+                                <div class="text-danger small mt-2">{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
+
+                    <!-- Improvement Data -->
+                    <div class="card card-warning mb-3" id="improvementCard">
+                        <div class="card-header">
+                            <h3 class="card-title"><i class="fas fa-tools mr-2"></i>Existing Building Improvements</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="alert alert-info py-2 mb-3">
+                                <i class="fas fa-info-circle mr-2"></i>
+                                Edit improvement projects on existing buildings for the selected institution.
+                            </div>
+
+                            <div id="improvementsContainer">
+                                @if (!empty($plan->improvement_data) && count($plan->improvement_data) > 0)
+                                    @foreach ($plan->improvement_data as $index => $improvement)
+                                        <div class="card border mb-3 improvement-item" data-index="{{ $index }}">
+                                            <div class="card-body">
+                                                <div class="row">
+                                                    <div class="col-12">
+                                                        <label class="small font-weight-bold text-warning">
+                                                            <i class="fas fa-tools mr-1"></i>
+                                                            Improvement Entry #{{ $index + 1 }}
+                                                        </label>
+                                                    </div>
+                                                    
+                                                    <!-- Public Section -->
+                                                    <div class="col-12 border-bottom pb-2 mb-2">
+                                                        <h6 class="text-success mb-2">Public Sector</h6>
+                                                        <div class="row">
+                                                            <div class="col-md-4">
+                                                                <div class="form-group mb-2">
+                                                                    <label class="small">Number of Improvements <span class="text-danger">*</span></label>
+                                                                    <input type="number" class="form-control improvement-public-number"
+                                                                        value="{{ old("improvement_data.$index.public_number", $improvement['public_number'] ?? '') }}"
+                                                                        placeholder="0" min="0" required>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-4">
+                                                                <div class="form-group mb-2">
+                                                                    <label class="small">Cost per Improvement (ETB) <span class="text-danger">*</span></label>
+                                                                    <input type="number" step="0.01" class="form-control improvement-public-cost"
+                                                                        value="{{ old("improvement_data.$index.public_cost", $improvement['public_cost'] ?? '') }}"
+                                                                        placeholder="0.00" min="0" required>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-4">
+                                                                <div class="form-group mb-2">
+                                                                    <label class="small">Total Cost (ETB)</label>
+                                                                    <input type="text" class="form-control improvement-public-total-cost"
+                                                                        placeholder="0.00" readonly style="background-color: #f8f9fa;">
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- Private Section -->
+                                                    <div class="col-12 border-bottom pb-2 mb-2">
+                                                        <h6 class="text-warning mb-2">Private Sector</h6>
+                                                        <div class="row">
+                                                            <div class="col-md-4">
+                                                                <div class="form-group mb-2">
+                                                                    <label class="small">Number of Improvements <span class="text-danger">*</span></label>
+                                                                    <input type="number" class="form-control improvement-private-number"
+                                                                        value="{{ old("improvement_data.$index.private_number", $improvement['private_number'] ?? '') }}"
+                                                                        placeholder="0" min="0" required>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-4">
+                                                                <div class="form-group mb-2">
+                                                                    <label class="small">Cost per Improvement (ETB) <span class="text-danger">*</span></label>
+                                                                    <input type="number" step="0.01" class="form-control improvement-private-cost"
+                                                                        value="{{ old("improvement_data.$index.private_cost", $improvement['private_cost'] ?? '') }}"
+                                                                        placeholder="0.00" min="0" required>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-4">
+                                                                <div class="form-group mb-2">
+                                                                    <label class="small">Total Cost (ETB)</label>
+                                                                    <input type="text" class="form-control improvement-private-total-cost"
+                                                                        placeholder="0.00" readonly style="background-color: #f8f9fa;">
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- Association Section -->
+                                                    <div class="col-12 border-bottom pb-2 mb-2">
+                                                        <h6 class="text-info mb-2">Association Sector</h6>
+                                                        <div class="row">
+                                                            <div class="col-md-4">
+                                                                <div class="form-group mb-2">
+                                                                    <label class="small">Number of Improvements <span class="text-danger">*</span></label>
+                                                                    <input type="number" class="form-control improvement-association-number"
+                                                                        value="{{ old("improvement_data.$index.association_number", $improvement['association_number'] ?? '') }}"
+                                                                        placeholder="0" min="0" required>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-4">
+                                                                <div class="form-group mb-2">
+                                                                    <label class="small">Cost per Improvement (ETB) <span class="text-danger">*</span></label>
+                                                                    <input type="number" step="0.01" class="form-control improvement-association-cost"
+                                                                        value="{{ old("improvement_data.$index.association_cost", $improvement['association_cost'] ?? '') }}"
+                                                                        placeholder="0.00" min="0" required>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-4">
+                                                                <div class="form-group mb-2">
+                                                                    <label class="small">Total Cost (ETB)</label>
+                                                                    <input type="text" class="form-control improvement-association-total-cost"
+                                                                        placeholder="0.00" readonly style="background-color: #f8f9fa;">
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- Totals Section -->
+                                                    <div class="col-12 bg-light p-2 rounded mb-2">
+                                                        <div class="row">
+                                                            <div class="col-md-3">
+                                                                <div class="form-group mb-0">
+                                                                    <label class="small font-weight-bold">Total Improvements</label>
+                                                                    <input type="text" class="form-control improvement-total-number" placeholder="0" readonly style="background-color: #e9ecef;">
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-3">
+                                                                <div class="form-group mb-0">
+                                                                    <label class="small font-weight-bold">Average Cost (ETB)</label>
+                                                                    <input type="text" class="form-control improvement-average-cost" placeholder="0.00" readonly style="background-color: #e9ecef;">
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-3">
+                                                                <div class="form-group mb-0">
+                                                                    <label class="small font-weight-bold">Grand Total (ETB)</label>
+                                                                    <input type="text" class="form-control improvement-grand-total" placeholder="0.00" readonly style="background-color: #e9ecef;">
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-3">
+                                                                <div class="form-group mb-0">
+                                                                    <label class="small font-weight-bold">Total Cost (ETB)</label>
+                                                                    <input type="text" class="form-control improvement-total-cost" placeholder="0.00" readonly style="background-color: #e9ecef;">
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="col-12">
+                                                        <div class="form-group">
+                                                            <label class="small">Improvement Description <span class="text-danger">*</span></label>
+                                                            <textarea class="form-control improvement-description" rows="2" placeholder="Describe the improvement work..."
+                                                                required>{{ old("improvement_data.$index.description", $improvement['description'] ?? '') }}</textarea>
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    @if ($index > 0)
+                                                        <div class="col-12 text-right">
+                                                            <button type="button" class="btn btn-sm btn-outline-danger remove-improvement">
+                                                                <i class="fas fa-trash mr-1"></i>Remove Improvement
+                                                            </button>
+                                                        </div>
+                                                    @endif
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                @else
+                                    <div class="card border mb-3 improvement-item" data-index="0">
+                                        <div class="card-body">
+                                            <div class="row">
+                                                <!-- Public Section -->
+                                                <div class="col-12 border-bottom pb-2 mb-2">
+                                                    <h6 class="text-success mb-2">Public Sector</h6>
+                                                    <div class="row">
+                                                        <div class="col-md-4">
+                                                            <div class="form-group mb-2">
+                                                                <label class="small">Number of Improvements <span class="text-danger">*</span></label>
+                                                                <input type="number" class="form-control improvement-public-number"
+                                                                    value="{{ old('improvement_data.0.public_number', '') }}" placeholder="0" min="0" required>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            <div class="form-group mb-2">
+                                                                <label class="small">Cost per Improvement (ETB) <span class="text-danger">*</span></label>
+                                                                <input type="number" step="0.01" class="form-control improvement-public-cost"
+                                                                    value="{{ old('improvement_data.0.public_cost', '') }}" placeholder="0.00" min="0" required>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            <div class="form-group mb-2">
+                                                                <label class="small">Total Cost (ETB)</label>
+                                                                <input type="text" class="form-control improvement-public-total-cost"
+                                                                    placeholder="0.00" readonly style="background-color: #f8f9fa;">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <!-- Private Section -->
+                                                <div class="col-12 border-bottom pb-2 mb-2">
+                                                    <h6 class="text-warning mb-2">Private Sector</h6>
+                                                    <div class="row">
+                                                        <div class="col-md-4">
+                                                            <div class="form-group mb-2">
+                                                                <label class="small">Number of Improvements <span class="text-danger">*</span></label>
+                                                                <input type="number" class="form-control improvement-private-number"
+                                                                    value="{{ old('improvement_data.0.private_number', '') }}" placeholder="0" min="0" required>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            <div class="form-group mb-2">
+                                                                <label class="small">Cost per Improvement (ETB) <span class="text-danger">*</span></label>
+                                                                <input type="number" step="0.01" class="form-control improvement-private-cost"
+                                                                    value="{{ old('improvement_data.0.private_cost', '') }}" placeholder="0.00" min="0" required>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            <div class="form-group mb-2">
+                                                                <label class="small">Total Cost (ETB)</label>
+                                                                <input type="text" class="form-control improvement-private-total-cost"
+                                                                    placeholder="0.00" readonly style="background-color: #f8f9fa;">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <!-- Association Section -->
+                                                <div class="col-12 border-bottom pb-2 mb-2">
+                                                    <h6 class="text-info mb-2">Association Sector</h6>
+                                                    <div class="row">
+                                                        <div class="col-md-4">
+                                                            <div class="form-group mb-2">
+                                                                <label class="small">Number of Improvements <span class="text-danger">*</span></label>
+                                                                <input type="number" class="form-control improvement-association-number"
+                                                                    value="{{ old('improvement_data.0.association_number', '') }}" placeholder="0" min="0" required>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            <div class="form-group mb-2">
+                                                                <label class="small">Cost per Improvement (ETB) <span class="text-danger">*</span></label>
+                                                                <input type="number" step="0.01" class="form-control improvement-association-cost"
+                                                                    value="{{ old('improvement_data.0.association_cost', '') }}" placeholder="0.00" min="0" required>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            <div class="form-group mb-2">
+                                                                <label class="small">Total Cost (ETB)</label>
+                                                                <input type="text" class="form-control improvement-association-total-cost"
+                                                                    placeholder="0.00" readonly style="background-color: #f8f9fa;">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <!-- Totals Section -->
+                                                <div class="col-12 bg-light p-2 rounded mb-2">
+                                                    <div class="row">
+                                                        <div class="col-md-3">
+                                                            <div class="form-group mb-0">
+                                                                <label class="small font-weight-bold">Total Improvements</label>
+                                                                <input type="text" class="form-control improvement-total-number" placeholder="0" readonly style="background-color: #e9ecef;">
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-3">
+                                                            <div class="form-group mb-0">
+                                                                <label class="small font-weight-bold">Average Cost (ETB)</label>
+                                                                <input type="text" class="form-control improvement-average-cost" placeholder="0.00" readonly style="background-color: #e9ecef;">
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-3">
+                                                            <div class="form-group mb-0">
+                                                                <label class="small font-weight-bold">Grand Total (ETB)</label>
+                                                                <input type="text" class="form-control improvement-grand-total" placeholder="0.00" readonly style="background-color: #e9ecef;">
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-3">
+                                                            <div class="form-group mb-0">
+                                                                <label class="small font-weight-bold">Total Cost (ETB)</label>
+                                                                <input type="text" class="form-control improvement-total-cost" placeholder="0.00" readonly style="background-color: #e9ecef;">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-12">
+                                                    <div class="form-group">
+                                                        <label class="small">Improvement Description <span class="text-danger">*</span></label>
+                                                        <textarea class="form-control improvement-description" rows="2" placeholder="Describe the improvement work..."
+                                                            required>{{ old('improvement_data.0.description', '') }}</textarea>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endif
+                            </div>
+
+                            <div class="text-center mt-3">
+                                <button type="button" class="btn btn-sm btn-outline-warning" id="addImprovement">
+                                    <i class="fas fa-plus-circle mr-1"></i>Add Another Improvement
+                                </button>
+                            </div>
+
+                            @error('improvement_data')
+                                <div class="text-danger small mt-2">{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
+
+                    <!-- Summary Card -->
+                    <div class="card card-secondary mb-3">
+                        <div class="card-header">
+                            <h3 class="card-title"><i class="fas fa-calculator mr-2"></i>Financial Summary</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="row text-center">
+                                <div class="col-md-3">
+                                    <div class="border rounded p-3 bg-light">
+                                        <h6 class="text-success mb-1">Public Total</h6>
+                                        <h4 class="text-success mb-0" id="publicTotal">0.00 ETB</h4>
+                                        <small class="text-muted" id="publicCount">0 projects</small>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="border rounded p-3 bg-light">
+                                        <h6 class="text-warning mb-1">Private Total</h6>
+                                        <h4 class="text-warning mb-0" id="privateTotal">0.00 ETB</h4>
+                                        <small class="text-muted" id="privateCount">0 projects</small>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="border rounded p-3 bg-light">
+                                        <h6 class="text-info mb-1">Association Total</h6>
+                                        <h4 class="text-info mb-0" id="associationTotal">0.00 ETB</h4>
+                                        <small class="text-muted" id="associationCount">0 projects</small>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="border rounded p-3 bg-light">
+                                        <h6 class="text-primary mb-1">New Construction</h6>
+                                        <h4 class="text-primary mb-0" id="newBuildingsTotal">0.00 ETB</h4>
+                                        <small class="text-muted" id="newBuildingsCount">0 buildings</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row mt-4">
+                                <div class="col-12">
+                                    <div class="border rounded p-3 bg-success text-white text-center">
+                                        <h5 class="mb-1">Grand Total</h5>
+                                        <h2 class="mb-0" id="grandTotal">0.00 ETB</h2>
+                                        <small id="totalProjects">0 total projects</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
                         <div class="col-12">
-                            <div class="border rounded p-3 bg-success text-white text-center">
-                                <h5 class="mb-1">Grand Total</h5>
-                                <h2 class="mb-0" id="grandTotal">0.00 ETB</h2>
-                                <small id="totalProjects">0 total projects</small>
+                            <div class="card">
+                                <div class="card-footer clearfix">
+                                    <a href="{{ route('sector.building-economic-institution-plans.index') }}" class="btn btn-default float-left">
+                                        <i class="fas fa-arrow-left mr-2"></i>Cancel
+                                    </a>
+                                    <button type="submit" class="btn btn-primary float-right" id="submitBtn">
+                                        <i class="fas fa-save mr-2"></i>Update Building Plan
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
+                </form>
             </div>
-
-            <div class="d-flex justify-content-end gap-3 border-top pt-4">
-                <a href="{{ route('sector.building-economic-institution-plans.index') }}" class="btn btn-outline-secondary">
-                    <i class="bi bi-arrow-left me-2"></i>Cancel
-                </a>
-                <button type="submit" class="btn btn-primary px-4" id="submitBtn">
-                    <i class="bi bi-save me-2"></i>Update Building Plan
-                </button>
-            </div>
-        </form>
+        </section>
     </div>
 
+    <!-- KEEP ALL ORIGINAL JAVASCRIPT EXACTLY AS IS -->
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             let newBuildingIndex = {{ !empty($plan->new_building_data) ? count($plan->new_building_data) : 1 }};
@@ -654,10 +787,10 @@
 
                 newItem.innerHTML = `
                     <div class="card-body">
-                        <div class="row g-2">
+                        <div class="row">
                             <div class="col-12">
-                                <label class="form-label small fw-semibold text-primary">
-                                    <i class="bi bi-building me-1"></i>
+                                <label class="small font-weight-bold text-primary">
+                                    <i class="fas fa-building mr-1"></i>
                                     Building Entry #${newBuildingIndex + 1}
                                 </label>
                             </div>
@@ -665,21 +798,27 @@
                             <!-- Public Section -->
                             <div class="col-12 border-bottom pb-2 mb-2">
                                 <h6 class="text-success mb-2">Public Sector</h6>
-                                <div class="row g-2">
+                                <div class="row">
                                     <div class="col-md-4">
-                                        <label class="form-label small">Number of Buildings <span class="text-danger">*</span></label>
-                                        <input type="number" class="form-control new-building-public-number" 
-                                               placeholder="0" min="0" required>
+                                        <div class="form-group mb-2">
+                                            <label class="small">Number of Buildings <span class="text-danger">*</span></label>
+                                            <input type="number" class="form-control new-building-public-number" 
+                                                   placeholder="0" min="0" required>
+                                        </div>
                                     </div>
                                     <div class="col-md-4">
-                                        <label class="form-label small">Cost per Building (ETB) <span class="text-danger">*</span></label>
-                                        <input type="number" step="0.01" class="form-control new-building-public-cost" 
-                                               placeholder="0.00" min="0" required>
+                                        <div class="form-group mb-2">
+                                            <label class="small">Cost per Building (ETB) <span class="text-danger">*</span></label>
+                                            <input type="number" step="0.01" class="form-control new-building-public-cost" 
+                                                   placeholder="0.00" min="0" required>
+                                        </div>
                                     </div>
                                     <div class="col-md-4">
-                                        <label class="form-label small">Total Cost (ETB)</label>
-                                        <input type="text" class="form-control new-building-public-total-cost" 
-                                               placeholder="0.00" readonly style="background-color: #f8f9fa; font-size: 0.8rem;">
+                                        <div class="form-group mb-2">
+                                            <label class="small">Total Cost (ETB)</label>
+                                            <input type="text" class="form-control new-building-public-total-cost" 
+                                                   placeholder="0.00" readonly style="background-color: #f8f9fa;">
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -687,21 +826,27 @@
                             <!-- Private Section -->
                             <div class="col-12 border-bottom pb-2 mb-2">
                                 <h6 class="text-warning mb-2">Private Sector</h6>
-                                <div class="row g-2">
+                                <div class="row">
                                     <div class="col-md-4">
-                                        <label class="form-label small">Number of Buildings <span class="text-danger">*</span></label>
-                                        <input type="number" class="form-control new-building-private-number" 
-                                               placeholder="0" min="0" required>
+                                        <div class="form-group mb-2">
+                                            <label class="small">Number of Buildings <span class="text-danger">*</span></label>
+                                            <input type="number" class="form-control new-building-private-number" 
+                                                   placeholder="0" min="0" required>
+                                        </div>
                                     </div>
                                     <div class="col-md-4">
-                                        <label class="form-label small">Cost per Building (ETB) <span class="text-danger">*</span></label>
-                                        <input type="number" step="0.01" class="form-control new-building-private-cost" 
-                                               placeholder="0.00" min="0" required>
+                                        <div class="form-group mb-2">
+                                            <label class="small">Cost per Building (ETB) <span class="text-danger">*</span></label>
+                                            <input type="number" step="0.01" class="form-control new-building-private-cost" 
+                                                   placeholder="0.00" min="0" required>
+                                        </div>
                                     </div>
                                     <div class="col-md-4">
-                                        <label class="form-label small">Total Cost (ETB)</label>
-                                        <input type="text" class="form-control new-building-private-total-cost" 
-                                               placeholder="0.00" readonly style="background-color: #f8f9fa; font-size: 0.8rem;">
+                                        <div class="form-group mb-2">
+                                            <label class="small">Total Cost (ETB)</label>
+                                            <input type="text" class="form-control new-building-private-total-cost" 
+                                                   placeholder="0.00" readonly style="background-color: #f8f9fa;">
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -709,57 +854,73 @@
                             <!-- Association Section -->
                             <div class="col-12 border-bottom pb-2 mb-2">
                                 <h6 class="text-info mb-2">Association Sector</h6>
-                                <div class="row g-2">
+                                <div class="row">
                                     <div class="col-md-4">
-                                        <label class="form-label small">Number of Buildings <span class="text-danger">*</span></label>
-                                        <input type="number" class="form-control new-building-association-number" 
-                                               placeholder="0" min="0" required>
+                                        <div class="form-group mb-2">
+                                            <label class="small">Number of Buildings <span class="text-danger">*</span></label>
+                                            <input type="number" class="form-control new-building-association-number" 
+                                                   placeholder="0" min="0" required>
+                                        </div>
                                     </div>
                                     <div class="col-md-4">
-                                        <label class="form-label small">Cost per Building (ETB) <span class="text-danger">*</span></label>
-                                        <input type="number" step="0.01" class="form-control new-building-association-cost" 
-                                               placeholder="0.00" min="0" required>
+                                        <div class="form-group mb-2">
+                                            <label class="small">Cost per Building (ETB) <span class="text-danger">*</span></label>
+                                            <input type="number" step="0.01" class="form-control new-building-association-cost" 
+                                                   placeholder="0.00" min="0" required>
+                                        </div>
                                     </div>
                                     <div class="col-md-4">
-                                        <label class="form-label small">Total Cost (ETB)</label>
-                                        <input type="text" class="form-control new-building-association-total-cost" 
-                                               placeholder="0.00" readonly style="background-color: #f8f9fa; font-size: 0.8rem;">
+                                        <div class="form-group mb-2">
+                                            <label class="small">Total Cost (ETB)</label>
+                                            <input type="text" class="form-control new-building-association-total-cost" 
+                                                   placeholder="0.00" readonly style="background-color: #f8f9fa;">
+                                        </div>
                                     </div>
                                 </div>
                             </div>
 
                             <!-- Totals Section -->
                             <div class="col-12 bg-light p-2 rounded mb-2">
-                                <div class="row g-2">
+                                <div class="row">
                                     <div class="col-md-3">
-                                        <label class="form-label small fw-semibold">Total Buildings</label>
-                                        <input type="text" class="form-control new-building-total-number" placeholder="0" readonly style="background-color: #e9ecef; font-size: 0.8rem;">
+                                        <div class="form-group mb-0">
+                                            <label class="small font-weight-bold">Total Buildings</label>
+                                            <input type="text" class="form-control new-building-total-number" placeholder="0" readonly style="background-color: #e9ecef;">
+                                        </div>
                                     </div>
                                     <div class="col-md-3">
-                                        <label class="form-label small fw-semibold">Average Cost (ETB)</label>
-                                        <input type="text" class="form-control new-building-average-cost" placeholder="0.00" readonly style="background-color: #e9ecef; font-size: 0.8rem;">
+                                        <div class="form-group mb-0">
+                                            <label class="small font-weight-bold">Average Cost (ETB)</label>
+                                            <input type="text" class="form-control new-building-average-cost" placeholder="0.00" readonly style="background-color: #e9ecef;">
+                                        </div>
                                     </div>
                                     <div class="col-md-3">
-                                        <label class="form-label small fw-semibold">Grand Total (ETB)</label>
-                                        <input type="text" class="form-control new-building-grand-total" placeholder="0.00" readonly style="background-color: #e9ecef; font-size: 0.8rem;">
+                                        <div class="form-group mb-0">
+                                            <label class="small font-weight-bold">Grand Total (ETB)</label>
+                                            <input type="text" class="form-control new-building-grand-total" placeholder="0.00" readonly style="background-color: #e9ecef;">
+                                        </div>
                                     </div>
                                     <div class="col-md-3">
-                                        <label class="form-label small fw-semibold">Total Cost (ETB)</label>
-                                        <input type="text" class="form-control new-building-total-cost" placeholder="0.00" readonly style="background-color: #e9ecef; font-size: 0.8rem;">
+                                        <div class="form-group mb-0">
+                                            <label class="small font-weight-bold">Total Cost (ETB)</label>
+                                            <input type="text" class="form-control new-building-total-cost" placeholder="0.00" readonly style="background-color: #e9ecef;">
+                                        </div>
                                     </div>
                                 </div>
                             </div>
 
                             <div class="col-12">
-                                <label class="form-label small">Project Description <span class="text-danger">*</span></label>
-                                <textarea class="form-control new-building-description" 
-                                          rows="2" 
-                                          placeholder="Describe the construction project..." 
-                                          style="font-size: 0.8rem;" required></textarea>
+                                <div class="form-group">
+                                    <label class="small">Project Description <span class="text-danger">*</span></label>
+                                    <textarea class="form-control new-building-description" 
+                                              rows="2" 
+                                              placeholder="Describe the construction project..." 
+                                              required></textarea>
+                                </div>
                             </div>
-                            <div class="col-12 text-end">
+                            <div class="col-12 text-right">
                                 <button type="button" class="btn btn-sm btn-outline-danger remove-new-building">
-                                    <i class="bi bi-trash me-1"></i>Remove Building
+                                    <i class="fas fa-trash mr-1"></i>Remove Building
                                 </button>
                             </div>
                         </div>
@@ -781,10 +942,10 @@
 
                 newItem.innerHTML = `
                     <div class="card-body">
-                        <div class="row g-2">
+                        <div class="row">
                             <div class="col-12">
-                                <label class="form-label small fw-semibold text-warning">
-                                    <i class="bi bi-tools me-1"></i>
+                                <label class="small font-weight-bold text-warning">
+                                    <i class="fas fa-tools mr-1"></i>
                                     Improvement Entry #${improvementIndex + 1}
                                 </label>
                             </div>
@@ -792,21 +953,27 @@
                             <!-- Public Section -->
                             <div class="col-12 border-bottom pb-2 mb-2">
                                 <h6 class="text-success mb-2">Public Sector</h6>
-                                <div class="row g-2">
+                                <div class="row">
                                     <div class="col-md-4">
-                                        <label class="form-label small">Number of Improvements <span class="text-danger">*</span></label>
-                                        <input type="number" class="form-control improvement-public-number" 
-                                               placeholder="0" min="0" required>
+                                        <div class="form-group mb-2">
+                                            <label class="small">Number of Improvements <span class="text-danger">*</span></label>
+                                            <input type="number" class="form-control improvement-public-number" 
+                                                   placeholder="0" min="0" required>
+                                        </div>
                                     </div>
                                     <div class="col-md-4">
-                                        <label class="form-label small">Cost per Improvement (ETB) <span class="text-danger">*</span></label>
-                                        <input type="number" step="0.01" class="form-control improvement-public-cost" 
-                                               placeholder="0.00" min="0" required>
+                                        <div class="form-group mb-2">
+                                            <label class="small">Cost per Improvement (ETB) <span class="text-danger">*</span></label>
+                                            <input type="number" step="0.01" class="form-control improvement-public-cost" 
+                                                   placeholder="0.00" min="0" required>
+                                        </div>
                                     </div>
                                     <div class="col-md-4">
-                                        <label class="form-label small">Total Cost (ETB)</label>
-                                        <input type="text" class="form-control improvement-public-total-cost" 
-                                               placeholder="0.00" readonly style="background-color: #f8f9fa; font-size: 0.8rem;">
+                                        <div class="form-group mb-2">
+                                            <label class="small">Total Cost (ETB)</label>
+                                            <input type="text" class="form-control improvement-public-total-cost" 
+                                                   placeholder="0.00" readonly style="background-color: #f8f9fa;">
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -814,21 +981,27 @@
                             <!-- Private Section -->
                             <div class="col-12 border-bottom pb-2 mb-2">
                                 <h6 class="text-warning mb-2">Private Sector</h6>
-                                <div class="row g-2">
+                                <div class="row">
                                     <div class="col-md-4">
-                                        <label class="form-label small">Number of Improvements <span class="text-danger">*</span></label>
-                                        <input type="number" class="form-control improvement-private-number" 
-                                               placeholder="0" min="0" required>
+                                        <div class="form-group mb-2">
+                                            <label class="small">Number of Improvements <span class="text-danger">*</span></label>
+                                            <input type="number" class="form-control improvement-private-number" 
+                                                   placeholder="0" min="0" required>
+                                        </div>
                                     </div>
                                     <div class="col-md-4">
-                                        <label class="form-label small">Cost per Improvement (ETB) <span class="text-danger">*</span></label>
-                                        <input type="number" step="0.01" class="form-control improvement-private-cost" 
-                                               placeholder="0.00" min="0" required>
+                                        <div class="form-group mb-2">
+                                            <label class="small">Cost per Improvement (ETB) <span class="text-danger">*</span></label>
+                                            <input type="number" step="0.01" class="form-control improvement-private-cost" 
+                                                   placeholder="0.00" min="0" required>
+                                        </div>
                                     </div>
                                     <div class="col-md-4">
-                                        <label class="form-label small">Total Cost (ETB)</label>
-                                        <input type="text" class="form-control improvement-private-total-cost" 
-                                               placeholder="0.00" readonly style="background-color: #f8f9fa; font-size: 0.8rem;">
+                                        <div class="form-group mb-2">
+                                            <label class="small">Total Cost (ETB)</label>
+                                            <input type="text" class="form-control improvement-private-total-cost" 
+                                                   placeholder="0.00" readonly style="background-color: #f8f9fa;">
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -836,57 +1009,73 @@
                             <!-- Association Section -->
                             <div class="col-12 border-bottom pb-2 mb-2">
                                 <h6 class="text-info mb-2">Association Sector</h6>
-                                <div class="row g-2">
+                                <div class="row">
                                     <div class="col-md-4">
-                                        <label class="form-label small">Number of Improvements <span class="text-danger">*</span></label>
-                                        <input type="number" class="form-control improvement-association-number" 
-                                               placeholder="0" min="0" required>
+                                        <div class="form-group mb-2">
+                                            <label class="small">Number of Improvements <span class="text-danger">*</span></label>
+                                            <input type="number" class="form-control improvement-association-number" 
+                                                   placeholder="0" min="0" required>
+                                        </div>
                                     </div>
                                     <div class="col-md-4">
-                                        <label class="form-label small">Cost per Improvement (ETB) <span class="text-danger">*</span></label>
-                                        <input type="number" step="0.01" class="form-control improvement-association-cost" 
-                                               placeholder="0.00" min="0" required>
+                                        <div class="form-group mb-2">
+                                            <label class="small">Cost per Improvement (ETB) <span class="text-danger">*</span></label>
+                                            <input type="number" step="0.01" class="form-control improvement-association-cost" 
+                                                   placeholder="0.00" min="0" required>
+                                        </div>
                                     </div>
                                     <div class="col-md-4">
-                                        <label class="form-label small">Total Cost (ETB)</label>
-                                        <input type="text" class="form-control improvement-association-total-cost" 
-                                               placeholder="0.00" readonly style="background-color: #f8f9fa; font-size: 0.8rem;">
+                                        <div class="form-group mb-2">
+                                            <label class="small">Total Cost (ETB)</label>
+                                            <input type="text" class="form-control improvement-association-total-cost" 
+                                                   placeholder="0.00" readonly style="background-color: #f8f9fa;">
+                                        </div>
                                     </div>
                                 </div>
                             </div>
 
                             <!-- Totals Section -->
                             <div class="col-12 bg-light p-2 rounded mb-2">
-                                <div class="row g-2">
+                                <div class="row">
                                     <div class="col-md-3">
-                                        <label class="form-label small fw-semibold">Total Improvements</label>
-                                        <input type="text" class="form-control improvement-total-number" placeholder="0" readonly style="background-color: #e9ecef; font-size: 0.8rem;">
+                                        <div class="form-group mb-0">
+                                            <label class="small font-weight-bold">Total Improvements</label>
+                                            <input type="text" class="form-control improvement-total-number" placeholder="0" readonly style="background-color: #e9ecef;">
+                                        </div>
                                     </div>
                                     <div class="col-md-3">
-                                        <label class="form-label small fw-semibold">Average Cost (ETB)</label>
-                                        <input type="text" class="form-control improvement-average-cost" placeholder="0.00" readonly style="background-color: #e9ecef; font-size: 0.8rem;">
+                                        <div class="form-group mb-0">
+                                            <label class="small font-weight-bold">Average Cost (ETB)</label>
+                                            <input type="text" class="form-control improvement-average-cost" placeholder="0.00" readonly style="background-color: #e9ecef;">
+                                        </div>
                                     </div>
                                     <div class="col-md-3">
-                                        <label class="form-label small fw-semibold">Grand Total (ETB)</label>
-                                        <input type="text" class="form-control improvement-grand-total" placeholder="0.00" readonly style="background-color: #e9ecef; font-size: 0.8rem;">
+                                        <div class="form-group mb-0">
+                                            <label class="small font-weight-bold">Grand Total (ETB)</label>
+                                            <input type="text" class="form-control improvement-grand-total" placeholder="0.00" readonly style="background-color: #e9ecef;">
+                                        </div>
                                     </div>
                                     <div class="col-md-3">
-                                        <label class="form-label small fw-semibold">Total Cost (ETB)</label>
-                                        <input type="text" class="form-control improvement-total-cost" placeholder="0.00" readonly style="background-color: #e9ecef; font-size: 0.8rem;">
+                                        <div class="form-group mb-0">
+                                            <label class="small font-weight-bold">Total Cost (ETB)</label>
+                                            <input type="text" class="form-control improvement-total-cost" placeholder="0.00" readonly style="background-color: #e9ecef;">
+                                        </div>
                                     </div>
                                 </div>
                             </div>
 
                             <div class="col-12">
-                                <label class="form-label small">Improvement Description <span class="text-danger">*</span></label>
-                                <textarea class="form-control improvement-description" 
-                                          rows="2" 
-                                          placeholder="Describe the improvement work..." 
-                                          style="font-size: 0.8rem;" required></textarea>
+                                <div class="form-group">
+                                    <label class="small">Improvement Description <span class="text-danger">*</span></label>
+                                    <textarea class="form-control improvement-description" 
+                                              rows="2" 
+                                              placeholder="Describe the improvement work..." 
+                                              required></textarea>
+                                </div>
                             </div>
-                            <div class="col-12 text-end">
+                            <div class="col-12 text-right">
                                 <button type="button" class="btn btn-sm btn-outline-danger remove-improvement">
-                                    <i class="bi bi-trash me-1"></i>Remove Improvement
+                                    <i class="fas fa-trash mr-1"></i>Remove Improvement
                                 </button>
                             </div>
                         </div>
@@ -938,9 +1127,9 @@
             function reindexBuildings() {
                 document.querySelectorAll('.new-building-item').forEach((item, index) => {
                     item.setAttribute('data-index', index);
-                    const label = item.querySelector('.form-label small');
+                    const label = item.querySelector('.small.font-weight-bold');
                     if (label) {
-                        label.innerHTML = `<i class="bi bi-building me-1"></i>Building Entry #${index + 1}`;
+                        label.innerHTML = `<i class="fas fa-building mr-1"></i>Building Entry #${index + 1}`;
                     }
                 });
                 newBuildingIndex = document.querySelectorAll('.new-building-item').length;
@@ -949,9 +1138,9 @@
             function reindexImprovements() {
                 document.querySelectorAll('.improvement-item').forEach((item, index) => {
                     item.setAttribute('data-index', index);
-                    const label = item.querySelector('.form-label small');
+                    const label = item.querySelector('.small.font-weight-bold');
                     if (label) {
-                        label.innerHTML = `<i class="bi bi-tools me-1"></i>Improvement Entry #${index + 1}`;
+                        label.innerHTML = `<i class="fas fa-tools mr-1"></i>Improvement Entry #${index + 1}`;
                     }
                 });
                 improvementIndex = document.querySelectorAll('.improvement-item').length;
@@ -1265,17 +1454,13 @@
             cursor: not-allowed;
         }
 
-        .card-header {
-            border-bottom: none;
-        }
-
         .alert {
             border: none;
             border-radius: 8px;
         }
 
         .is-valid {
-            border-color: #198754 !important;
+            border-color: #28a745 !important;
         }
 
         .is-invalid {
@@ -1291,15 +1476,42 @@
         }
 
         .text-success {
-            color: #198754 !important;
+            color: #28a745 !important;
         }
 
         .text-warning {
-            color: #fd7e14 !important;
+            color: #ffc107 !important;
         }
 
         .text-info {
-            color: #0dcaf0 !important;
+            color: #17a2b8 !important;
+        }
+
+        .text-primary {
+            color: #007bff !important;
+        }
+
+        /* AdminLTE specific styles */
+        .card-body {
+            padding: 1.25rem;
+        }
+
+        .card-footer {
+            padding: 0.75rem 1.25rem;
+            background-color: #f8f9fa;
+            border-top: 1px solid #dee2e6;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .card {
+            margin-bottom: 1rem;
+        }
+
+        .text-right {
+            text-align: right !important;
         }
     </style>
 </x-layout>

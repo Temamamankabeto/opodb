@@ -620,27 +620,7 @@ Route::delete('/enterprise-work/{id}', [EnterpriseWorkController::class, 'destro
                 ->name('building-power-institution-plans.destroy');
                 // Route::get('/building-power-institution-plans/check-existing', [BuildingPowerInstitutionPlanController::class, 'checkExisting'])->name('building-community-institution-plans.check-existing');
         
-        // Building deenagdee Institution Plan Routes
-
-            Route::get('/building-power-institution-plans', [BuildingPowerInstitutionPlanController::class, 'index'])
-                ->name('building-power-institution-plans.index');
-
-            Route::get('/building-power-institution-plans/create', [BuildingPowerInstitutionPlanController::class, 'create'])
-                ->name('building-power-institution-plans.create');
-
-            Route::post('/building-power-institution-plans/store', [BuildingPowerInstitutionPlanController::class, 'store'])
-                ->name('building-power-institution-plans.store');
-
-            Route::get('/building-power-institution-plans/{id}/edit', [BuildingPowerInstitutionPlanController::class, 'edit'])
-                ->name('building-power-institution-plans.edit');
-
-            Route::put('/building-power-institution-plans/{id}/update', [BuildingPowerInstitutionPlanController::class, 'update'])
-                ->name('building-power-institution-plans.update');
-
-            Route::delete('/building-power-institution-plans/{id}/destroy', [BuildingPowerInstitutionPlanController::class, 'destroy'])
-                ->name('building-power-institution-plans.destroy');
-                // Route::get('/building-power-institution-plans/check-existing', [BuildingPowerInstitutionPlanController::class, 'checkExisting'])->name('building-community-institution-plans.check-existing');
-        
+         
                 // Building economic Institution Plan Routes
 
             Route::get('/building-economic-institution-plans', [BuildingEconomicInstitutionPlanController::class, 'index'])
