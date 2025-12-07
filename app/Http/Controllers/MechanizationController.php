@@ -2,7 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\mechanization;
+use App\Models\MaterialSupply;
+use App\Models\Mechanization;
  
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
