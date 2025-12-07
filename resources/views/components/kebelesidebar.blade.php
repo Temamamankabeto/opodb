@@ -137,7 +137,7 @@
                 <li class="nav-item">
                     <a href="{{ url('sector/natural-plans') }}" class="nav-link">
                         <i class="fas fa-leaf nav-icon"></i>
-                        <p>{{ __('Beeylada') }}</p>
+                        <p>{{ __('Qaabeenya uumanaa') }}</p>
                     </a>
                 </li>
 
