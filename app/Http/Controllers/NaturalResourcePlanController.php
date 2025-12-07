@@ -21,7 +21,7 @@ class NaturalResourcePlanController extends Controller
                 return $plan;
             });
 
-        return view('sector.natural-resource.index', compact('plans'));
+        return view('sector.natural_resource.index', compact('plans'));
     }
 
     public function create()
@@ -30,7 +30,7 @@ class NaturalResourcePlanController extends Controller
         $currentYear = \App\Helpers\EthiopianYear::now();
         $years = range($currentYear - 2, $currentYear + 3);
 
-        return view('sector.natural-resource.create', compact('natural', 'years'));
+        return view('sector.natural_resource.create', compact('natural', 'years'));
     }
 
     public function store(Request $request)
