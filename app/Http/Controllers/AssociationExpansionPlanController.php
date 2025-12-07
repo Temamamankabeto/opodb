@@ -110,7 +110,7 @@ class AssociationExpansionPlanController extends Controller
         AssociationExpansionPlan::create([
             'year' => $request->year,
             'expansion_data' => $expansionData,
-            'sector_id' => $user->sector_id,
+            // 'sector_id' => $user->sector_id,
             'kebele_id' => $user->kebele_id,
             'woreda_id' => $user->woreda_id,
             'zone_id' => $user->zone_id,
