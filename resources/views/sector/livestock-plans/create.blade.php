@@ -1,302 +1,343 @@
 <x-layout>
-    <div class="container py-4">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h3 class="mb-0"><i class="bi bi-plus-circle text-success me-2"></i>Create Livestock Plan</h3>
-            <div class="badge bg-light text-dark fs-6">
-                <i class="bi bi-info-circle me-1"></i>
-                All fields marked with <span class="text-danger">*</span> are required
-            </div>
-        </div>
-
-        <form action="{{ route('sector.livestock_plans.store') }}" method="POST" class="needs-validation" novalidate id="mainForm">
-            @csrf
-
-            <!-- Year Selection -->
-            <div class="card border-0 shadow-sm mb-4">
-                <div class="card-header bg-primary text-white py-3">
-                    <h5 class="mb-0">
-                        <i class="bi bi-calendar3 me-2"></i>
-                        Year Selection
-                    </h5>
+    @section('title', 'Create Livestock Plan')
+    
+    <div class="content-header">
+        <!-- Content Header -->
+        <section class="content-header">
+            <div class="container-fluid">
+                <div class="row mb-2">
+                    <div class="col-sm-6">
+                        <h1>
+                            <i class="fas fa-plus-circle text-success mr-2"></i>
+                            Create Livestock Plan
+                        </h1>
+                    </div>
+                    <div class="col-sm-6">
+                         
+                    </div>
                 </div>
-                <div class="card-body p-4">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <label class="form-label fw-semibold">Year <span class="text-danger">*</span></label>
-                            <div class="input-group">
-                                <span class="input-group-text bg-light border-end-0">
-                                    <i class="bi bi-calendar3 text-muted"></i>
-                                </span>
-                                <select name="year" class="form-select border-start-0 ps-0" id="yearSelect" required>
-                                    <option value="">-- Select Year --</option>
-                                    @foreach ($years as $year)
-                                        <option value="{{ $year }}">{{ $year }} EC</option>
-                                    @endforeach
-                                </select>
+            </div>
+        </section>
+
+        <!-- Main content -->
+        <section class="content">
+            <div class="container-fluid">
+                <!-- Required Fields Info -->
+                <div class="alert alert-info mb-4">
+                    <h5><i class="icon fas fa-info"></i> Important Information</h5>
+                    All fields marked with <span class="text-danger">*</span> are required.
+                </div>
+
+                <form action="{{ route('sector.livestock_plans.store') }}" method="POST" class="needs-validation" novalidate id="mainForm">
+                    @csrf
+
+                    <!-- Year Selection -->
+                    <div class="card card-success">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <i class="fas fa-calendar-alt mr-2"></i>
+                                Year Selection
+                            </h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="yearSelect">Year <span class="text-danger">*</span></label>
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text">
+                                                    <i class="fas fa-calendar"></i>
+                                                </span>
+                                            </div>
+                                            <select name="year" class="form-control select2" id="yearSelect" required style="width: 100%;">
+                                                <option value="">-- Select Year --</option>
+                                                @foreach ($years as $year)
+                                                    <option value="{{ $year }}">{{ $year }} EC</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                        @error('year')
+                                            <span class="text-danger">{{ $message }}</span>
+                                        @enderror
+                                    </div>
+                                </div>
                             </div>
-                            @error('year')
-                                <div class="text-danger small mt-1">{{ $message }}</div>
+                        </div>
+                    </div>
+
+                    <!-- Supplies -->
+                    <div class="card card-success mt-4">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <i class="fas fa-truck mr-2"></i>
+                                Livestock Supplies <span class="text-warning">*</span>
+                            </h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="callout callout-info mb-4">
+                                <h5><i class="fas fa-info-circle mr-2"></i> Required Information</h5>
+                                <p class="mb-0">Check at least one supply item and enter amount with unit</p>
+                            </div>
+                            
+                            <div class="row" id="suppliesContainer">
+                                @foreach ($supplies as $supply)
+                                    <div class="col-md-6 mb-3">
+                                        <div class="card supply-item">
+                                            <div class="card-body">
+                                                <div class="custom-control custom-checkbox mb-3">
+                                                    <input class="custom-control-input supply-checkbox" 
+                                                           type="checkbox" 
+                                                           value="{{ $supply->name }}" 
+                                                           id="supply-{{ $supply->id }}"
+                                                           data-supply-name="{{ $supply->name }}">
+                                                    <label class="custom-control-label font-weight-bold" for="supply-{{ $supply->id }}">
+                                                        {{ $supply->name }}
+                                                    </label>
+                                                </div>
+
+                                                <div class="supply-fields" style="display: none;">
+                                                    <div class="row">
+                                                        <div class="col-12 mb-3">
+                                                            <label class="form-label">Amount <span class="text-danger">*</span></label>
+                                                            <input type="number" step="0.01" 
+                                                                   class="form-control supply-amount" 
+                                                                   placeholder="0.00" min="0" disabled>
+                                                        </div>
+                                                        <div class="col-12">
+                                                            <label class="form-label">Unit <span class="text-danger">*</span></label>
+                                                            <select class="form-control select2 supply-unit" disabled style="width: 100%;">
+                                                                <option value="">-- Select Unit --</option>
+                                                                <option value="kg">kg</option>
+                                                                <option value="liter">Liter</option>
+                                                                <option value="piece">Piece</option>
+                                                                <option value="bag">Bag</option>
+                                                                <option value="quintal">Quintal</option>
+                                                                <option value="ton">Ton</option>
+                                                                <option value="box">Box</option>
+                                                                <option value="bottle">Bottle</option>
+                                                                <option value="pack">Pack</option>
+                                                                <option value="unit">Unit</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+                            
+                            <div class="alert alert-danger supplies-error mt-3" style="display: none;">
+                                <i class="fas fa-exclamation-triangle mr-2"></i>
+                                Please select at least one supply item and fill the amount and unit
+                            </div>
+                            
+                            @error('supply_data')
+                                <div class="alert alert-danger mt-3">{{ $message }}</div>
                             @enderror
                         </div>
                     </div>
-                </div>
-            </div>
 
-            <!-- Supplies -->
-            <div class="card border-0 shadow-sm mb-4">
-                <div class="card-header bg-success text-white py-3">
-                    <h5 class="mb-0"><i class="bi bi-truck me-2"></i>Livestock Supplies <span class="text-warning">*</span></h5>
-                </div>
-                <div class="card-body p-4">
-                    <div class="alert alert-info py-2 mb-3">
-                        <i class="bi bi-info-circle me-2"></i>
-                        <strong>Required:</strong> Check at least one supply item and enter amount with unit
-                    </div>
-                    <div class="row g-3" id="suppliesContainer">
-                        @foreach ($supplies as $supply)
-                            <div class="col-md-6">
-                                <div class="card border supply-item">
-                                    <div class="card-body">
-                                        <div class="form-check mb-3">
-                                            <input class="form-check-input supply-checkbox"
-                                                   type="checkbox"
-                                                   value="{{ $supply->name }}"
-                                                   id="supply-{{ $supply->id }}"
-                                                   data-supply-name="{{ $supply->name }}">
-                                            <label class="form-check-label fw-semibold" for="supply-{{ $supply->id }}">
-                                                {{ $supply->name }}
-                                            </label>
-                                        </div>
-
-                                        <div class="supply-fields" style="display: none;">
-                                            <div class="row g-2">
-                                                <div class="col-12">
-                                                    <label class="form-label small">Amount <span class="text-danger">*</span></label>
-                                                    <input type="number" step="0.01"
-                                                           class="form-control supply-amount"
-                                                           placeholder="0.00" min="0" disabled>
+                    <!-- Products (optional) -->
+                    <div class="card card-success mt-4">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <i class="fas fa-box mr-2"></i>
+                                Livestock Products (Optional)
+                            </h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="callout callout-info mb-4">
+                                <h5><i class="fas fa-info-circle mr-2"></i> Optional Information</h5>
+                                <p class="mb-0">Check product items if you want to include them in your plan</p>
+                            </div>
+                            
+                            <div class="row" id="productsContainer">
+                                @foreach ($products as $product)
+                                    <div class="col-md-6 mb-3">
+                                        <div class="card product-item">
+                                            <div class="card-body">
+                                                <div class="custom-control custom-checkbox mb-3">
+                                                    <input class="custom-control-input product-checkbox" 
+                                                           type="checkbox" 
+                                                           value="{{ $product->name }}" 
+                                                           id="product-{{ $product->id }}"
+                                                           data-product-name="{{ $product->name }}">
+                                                    <label class="custom-control-label font-weight-bold" for="product-{{ $product->id }}">
+                                                        {{ $product->name }}
+                                                    </label>
                                                 </div>
-                                                <div class="col-12">
-                                                    <label class="form-label small">Unit <span class="text-danger">*</span></label>
-                                                    <select class="form-select supply-unit" disabled>
-                                                        <option value="">-- Select Unit --</option>
-                                                        <option value="kg">kg</option>
-                                                        <option value="liter">Liter</option>
-                                                        <option value="piece">Piece</option>
-                                                        <option value="bag">Bag</option>
-                                                        <option value="quintal">Quintal</option>
-                                                        <option value="ton">Ton</option>
-                                                        <option value="box">Box</option>
-                                                        <option value="bottle">Bottle</option>
-                                                        <option value="pack">Pack</option>
-                                                        <option value="unit">Unit</option>
-                                                    </select>
+
+                                                <div class="product-fields" style="display: none;">
+                                                    <div class="row">
+                                                        <div class="col-12 mb-3">
+                                                            <label class="form-label">Amount</label>
+                                                            <input type="number" step="0.01" 
+                                                                   class="form-control product-amount" 
+                                                                   placeholder="0.00" min="0" disabled>
+                                                        </div>
+                                                        <div class="col-12">
+                                                            <label class="form-label">Unit</label>
+                                                            <select class="form-control select2 product-unit" disabled style="width: 100%;">
+                                                                <option value="">-- Select Unit --</option>
+                                                                <option value="kg">kg</option>
+                                                                <option value="liter">Liter</option>
+                                                                <option value="piece">Piece</option>
+                                                                <option value="bag">Bag</option>
+                                                                <option value="quintal">Quintal</option>
+                                                                <option value="ton">Ton</option>
+                                                                <option value="box">Box</option>
+                                                                <option value="bottle">Bottle</option>
+                                                                <option value="pack">Pack</option>
+                                                                <option value="unit">Unit</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
+                                @endforeach
                             </div>
-                        @endforeach
+                            
+                            @error('product_data')
+                                <div class="alert alert-danger mt-3">{{ $message }}</div>
+                            @enderror
+                        </div>
                     </div>
-                    <div class="text-danger small mt-2 supplies-error" style="display: none;">
-                        <i class="bi bi-exclamation-triangle me-1"></i>
-                        Please select at least one supply item and fill the amount and unit
-                    </div>
-                    @error('supply_data')
-                        <div class="text-danger small mt-2">{{ $message }}</div>
-                    @enderror
-                </div>
-            </div>
 
-            <!-- Products (optional) -->
-            <div class="card border-0 shadow-sm mb-4">
-                <div class="card-header bg-warning text-dark py-3">
-                    <h5 class="mb-0"><i class="bi bi-box-seam me-2"></i>Livestock Products (Optional)</h5>
-                </div>
-                <div class="card-body p-4">
-                    <div class="alert alert-info py-2 mb-3">
-                        <i class="bi bi-info-circle me-2"></i>
-                        <strong>Optional:</strong> Check product items if you want to include them in your plan
-                    </div>
-                    <div class="row g-3" id="productsContainer">
-                        @foreach ($products as $product)
-                            <div class="col-md-6">
-                                <div class="card border product-item">
-                                    <div class="card-body">
-                                        <div class="form-check mb-3">
-                                            <input class="form-check-input product-checkbox"
-                                                   type="checkbox"
-                                                   value="{{ $product->name }}"
-                                                   id="product-{{ $product->id }}"
-                                                   data-product-name="{{ $product->name }}">
-                                            <label class="form-check-label fw-semibold" for="product-{{ $product->id }}">
-                                                {{ $product->name }}
-                                            </label>
-                                        </div>
-
-                                        <div class="product-fields" style="display: none;">
-                                            <div class="row g-2">
-                                                <div class="col-12">
-                                                    <label class="form-label small">Amount</label>
-                                                    <input type="number" step="0.01" 
-                                                           class="form-control product-amount" 
-                                                           placeholder="0.00" min="0" disabled>
-                                                </div>
-                                                <div class="col-12">
-                                                    <label class="form-label small">Unit</label>
-                                                    <select class="form-select product-unit" disabled>
-                                                        <option value="">-- Select Unit --</option>
-                                                        <option value="kg">kg</option>
-                                                        <option value="liter">Liter</option>
-                                                        <option value="piece">Piece</option>
-                                                        <option value="bag">Bag</option>
-                                                        <option value="quintal">Quintal</option>
-                                                        <option value="ton">Ton</option>
-                                                        <option value="box">Box</option>
-                                                        <option value="bottle">Bottle</option>
-                                                        <option value="pack">Pack</option>
-                                                        <option value="unit">Unit</option>
-                                                    </select>
-                                                </div>
-                                            </div>
-                                        </div>
+                    <!-- Buttons -->
+                    <div class="card mt-4">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="float-right">
+                                        <a href="{{ route('sector.livestock_plans.index') }}" class="btn btn-default mr-2">
+                                            <i class="fas fa-arrow-left mr-2"></i>Cancel
+                                        </a>
+                                        <button type="submit" class="btn btn-success px-4" id="submitBtn" disabled>
+                                            <i class="fas fa-save mr-2"></i>Save Plan
+                                        </button>
                                     </div>
                                 </div>
                             </div>
-                        @endforeach
+                        </div>
                     </div>
-                    @error('product_data')
-                        <div class="text-danger small mt-2">{{ $message }}</div>
-                    @enderror
-                </div>
+                </form>
             </div>
-
-            <!-- Buttons -->
-            <div class="d-flex justify-content-end gap-3 border-top pt-4">
-                <a href="{{ route('sector.livestock_plans.index') }}" class="btn btn-outline-secondary">
-                    <i class="bi bi-arrow-left me-2"></i>Cancel
-                </a>
-                <button type="submit" class="btn btn-success px-4" id="submitBtn" disabled>
-                    <i class="bi bi-save me-2"></i>Save Plan
-                </button>
-            </div>
-        </form>
+        </section>
     </div>
 
+    @section('scripts')
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const yearSelect = document.getElementById('yearSelect');
-            const submitBtn = document.getElementById('submitBtn');
-            const suppliesError = document.querySelector('.supplies-error');
-            const mainForm = document.getElementById('mainForm');
+        $(function () {
+            // Initialize Select2
+            $('.select2').select2();
+
+            const yearSelect = $('#yearSelect');
+            const submitBtn = $('#submitBtn');
+            const suppliesError = $('.supplies-error');
+            const mainForm = $('#mainForm');
 
             let selectedSupplies = new Map();
             let selectedProducts = new Map();
 
             // Supply checkbox event listeners
-            document.querySelectorAll('.supply-checkbox').forEach(checkbox => {
-                checkbox.addEventListener('change', function() {
-                    const supplyName = this.getAttribute('data-supply-name');
-                    const fieldsContainer = this.closest('.supply-item').querySelector('.supply-fields');
-                    const amountInput = fieldsContainer.querySelector('.supply-amount');
-                    const unitSelect = fieldsContainer.querySelector('.supply-unit');
+            $('.supply-checkbox').on('change', function() {
+                const supplyName = $(this).data('supply-name');
+                const fieldsContainer = $(this).closest('.supply-item').find('.supply-fields');
+                const amountInput = fieldsContainer.find('.supply-amount');
+                const unitSelect = fieldsContainer.find('.supply-unit');
 
-                    if (this.checked) {
-                        fieldsContainer.style.display = 'block';
-                        amountInput.disabled = false;
-                        unitSelect.disabled = false;
-                        this.closest('.supply-item').classList.add('checked');
-                        selectedSupplies.set(supplyName, {
-                            amountInput: amountInput,
-                            unitSelect: unitSelect,
-                            isValid: false
-                        });
-                    } else {
-                        fieldsContainer.style.display = 'none';
-                        amountInput.disabled = true;
-                        unitSelect.disabled = true;
-                        this.closest('.supply-item').classList.remove('checked');
-                        amountInput.value = '';
-                        unitSelect.value = '';
-                        amountInput.classList.remove('is-valid', 'is-invalid');
-                        unitSelect.classList.remove('is-valid', 'is-invalid');
-                        selectedSupplies.delete(supplyName);
-                    }
-                    validateForm();
-                });
-            });
-
-            // Product checkbox event listeners
-            document.querySelectorAll('.product-checkbox').forEach(checkbox => {
-                checkbox.addEventListener('change', function() {
-                    const productName = this.getAttribute('data-product-name');
-                    const fieldsContainer = this.closest('.product-item').querySelector('.product-fields');
-                    const amountInput = fieldsContainer.querySelector('.product-amount');
-                    const unitSelect = fieldsContainer.querySelector('.product-unit');
-
-                    if (this.checked) {
-                        fieldsContainer.style.display = 'block';
-                        amountInput.disabled = false;
-                        unitSelect.disabled = false;
-                        this.closest('.product-item').classList.add('checked');
-                        selectedProducts.set(productName, {
-                            amountInput: amountInput,
-                            unitSelect: unitSelect
-                        });
-                    } else {
-                        fieldsContainer.style.display = 'none';
-                        amountInput.disabled = true;
-                        unitSelect.disabled = true;
-                        this.closest('.product-item').classList.remove('checked');
-                        amountInput.value = '';
-                        unitSelect.value = '';
-                        amountInput.classList.remove('is-valid', 'is-invalid');
-                        unitSelect.classList.remove('is-valid', 'is-invalid');
-                        selectedProducts.delete(productName);
-                    }
-                });
-            });
-
-            // Input validation for supplies
-            document.addEventListener('input', function(e) {
-                if (e.target.classList.contains('supply-amount') || e.target.classList.contains('supply-unit')) {
-                    validateSupplyItem(e.target);
+                if (this.checked) {
+                    fieldsContainer.show();
+                    amountInput.prop('disabled', false);
+                    unitSelect.prop('disabled', false).trigger('change');
+                    $(this).closest('.supply-item').addClass('checked');
+                    selectedSupplies.set(supplyName, {
+                        amountInput: amountInput,
+                        unitSelect: unitSelect,
+                        isValid: false
+                    });
+                } else {
+                    fieldsContainer.hide();
+                    amountInput.prop('disabled', true);
+                    unitSelect.prop('disabled', true).trigger('change');
+                    $(this).closest('.supply-item').removeClass('checked');
+                    amountInput.val('');
+                    unitSelect.val('').trigger('change');
+                    amountInput.removeClass('is-valid is-invalid');
+                    unitSelect.removeClass('is-valid is-invalid');
+                    selectedSupplies.delete(supplyName);
                 }
                 validateForm();
             });
 
-            // Input validation for products
-            document.addEventListener('input', function(e) {
-                if (e.target.classList.contains('product-amount') || e.target.classList.contains('product-unit')) {
-                    validateProductItem(e.target);
+            // Product checkbox event listeners
+            $('.product-checkbox').on('change', function() {
+                const productName = $(this).data('product-name');
+                const fieldsContainer = $(this).closest('.product-item').find('.product-fields');
+                const amountInput = fieldsContainer.find('.product-amount');
+                const unitSelect = fieldsContainer.find('.product-unit');
+
+                if (this.checked) {
+                    fieldsContainer.show();
+                    amountInput.prop('disabled', false);
+                    unitSelect.prop('disabled', false).trigger('change');
+                    $(this).closest('.product-item').addClass('checked');
+                    selectedProducts.set(productName, {
+                        amountInput: amountInput,
+                        unitSelect: unitSelect
+                    });
+                } else {
+                    fieldsContainer.hide();
+                    amountInput.prop('disabled', true);
+                    unitSelect.prop('disabled', true).trigger('change');
+                    $(this).closest('.product-item').removeClass('checked');
+                    amountInput.val('');
+                    unitSelect.val('').trigger('change');
+                    amountInput.removeClass('is-valid is-invalid');
+                    unitSelect.removeClass('is-valid is-invalid');
+                    selectedProducts.delete(productName);
                 }
+            });
+
+            // Input validation for supplies
+            $(document).on('input change', '.supply-amount, .supply-unit', function() {
+                validateSupplyItem($(this));
+                validateForm();
+            });
+
+            // Input validation for products
+            $(document).on('input change', '.product-amount, .product-unit', function() {
+                validateProductItem($(this));
             });
 
             function validateSupplyItem(input) {
                 const supplyItem = input.closest('.supply-item');
-                const supplyName = supplyItem.querySelector('.supply-checkbox').getAttribute('data-supply-name');
-                const amountInput = supplyItem.querySelector('.supply-amount');
-                const unitSelect = supplyItem.querySelector('.supply-unit');
+                const supplyName = supplyItem.find('.supply-checkbox').data('supply-name');
+                const amountInput = supplyItem.find('.supply-amount');
+                const unitSelect = supplyItem.find('.supply-unit');
 
-                const amount = parseFloat(amountInput.value);
-                const unit = unitSelect.value;
+                const amount = parseFloat(amountInput.val());
+                const unit = unitSelect.val();
 
                 const isValid = !isNaN(amount) && amount > 0 && unit !== '';
 
                 // Update visual feedback
-                if (amountInput.value !== '') {
-                    amountInput.classList.toggle('is-valid', !isNaN(amount) && amount > 0);
-                    amountInput.classList.toggle('is-invalid', isNaN(amount) || amount <= 0);
+                if (amountInput.val() !== '') {
+                    amountInput.toggleClass('is-valid', !isNaN(amount) && amount > 0);
+                    amountInput.toggleClass('is-invalid', isNaN(amount) || amount <= 0);
                 } else {
-                    amountInput.classList.remove('is-valid', 'is-invalid');
+                    amountInput.removeClass('is-valid is-invalid');
                 }
 
-                if (unitSelect.value !== '') {
-                    unitSelect.classList.toggle('is-valid', unit !== '');
-                    unitSelect.classList.toggle('is-invalid', unit === '');
+                if (unitSelect.val() !== '') {
+                    unitSelect.toggleClass('is-valid', unit !== '');
+                    unitSelect.toggleClass('is-invalid', unit === '');
                 } else {
-                    unitSelect.classList.remove('is-valid', 'is-invalid');
+                    unitSelect.removeClass('is-valid is-invalid');
                 }
 
                 // Update selected supplies map
@@ -309,30 +350,30 @@
 
             function validateProductItem(input) {
                 const productItem = input.closest('.product-item');
-                const amountInput = productItem.querySelector('.product-amount');
-                const unitSelect = productItem.querySelector('.product-unit');
+                const amountInput = productItem.find('.product-amount');
+                const unitSelect = productItem.find('.product-unit');
 
-                const amount = parseFloat(amountInput.value);
-                const unit = unitSelect.value;
+                const amount = parseFloat(amountInput.val());
+                const unit = unitSelect.val();
 
                 // Update visual feedback
-                if (amountInput.value !== '') {
-                    amountInput.classList.toggle('is-valid', !isNaN(amount) && amount > 0);
-                    amountInput.classList.toggle('is-invalid', isNaN(amount) || amount < 0);
+                if (amountInput.val() !== '') {
+                    amountInput.toggleClass('is-valid', !isNaN(amount) && amount > 0);
+                    amountInput.toggleClass('is-invalid', isNaN(amount) || amount < 0);
                 } else {
-                    amountInput.classList.remove('is-valid', 'is-invalid');
+                    amountInput.removeClass('is-valid is-invalid');
                 }
 
-                if (unitSelect.value !== '') {
-                    unitSelect.classList.toggle('is-valid', unit !== '');
-                    unitSelect.classList.toggle('is-invalid', unit === '');
+                if (unitSelect.val() !== '') {
+                    unitSelect.toggleClass('is-valid', unit !== '');
+                    unitSelect.toggleClass('is-invalid', unit === '');
                 } else {
-                    unitSelect.classList.remove('is-valid', 'is-invalid');
+                    unitSelect.removeClass('is-valid is-invalid');
                 }
             }
 
             function validateForm() {
-                const yearSelected = yearSelect.value !== '';
+                const yearSelected = yearSelect.val() !== '';
                 
                 // Check if at least one supply is selected and valid
                 let atLeastOneValidSupply = false;
@@ -344,34 +385,36 @@
 
                 const canSubmit = yearSelected && atLeastOneValidSupply;
                 
-                submitBtn.disabled = !canSubmit;
+                submitBtn.prop('disabled', !canSubmit);
                 
                 // Show/hide error message
                 if (yearSelected && !atLeastOneValidSupply && selectedSupplies.size > 0) {
-                    suppliesError.style.display = 'block';
+                    suppliesError.show();
                 } else {
-                    suppliesError.style.display = 'none';
+                    suppliesError.hide();
                 }
 
                 // Visual feedback for submit button
-                if (submitBtn.disabled) {
-                    submitBtn.classList.remove('btn-success');
-                    submitBtn.classList.add('btn-secondary');
+                if (submitBtn.prop('disabled')) {
+                    submitBtn.removeClass('btn-success').addClass('btn-secondary');
                 } else {
-                    submitBtn.classList.remove('btn-secondary');
-                    submitBtn.classList.add('btn-success');
+                    submitBtn.removeClass('btn-secondary').addClass('btn-success');
                 }
 
                 return canSubmit;
             }
 
-            yearSelect.addEventListener('change', validateForm);
+            yearSelect.on('change', validateForm);
 
             // Handle form submission
-            mainForm.addEventListener('submit', function(e) {
+            mainForm.on('submit', function(e) {
                 if (!validateForm()) {
                     e.preventDefault();
-                    alert('Please fill all required fields correctly before submitting.');
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Validation Error',
+                        text: 'Please fill all required fields correctly before submitting.'
+                    });
                     return;
                 }
 
@@ -381,8 +424,8 @@
                     if (supply.isValid) {
                         supplyData.push({
                             name: supplyName,
-                            amount: parseFloat(supply.amountInput.value),
-                            unit: supply.unitSelect.value
+                            amount: parseFloat(supply.amountInput.val()),
+                            unit: supply.unitSelect.val()
                         });
                     }
                 });
@@ -390,8 +433,8 @@
                 // Prepare product data (only if products are selected and have valid data)
                 const productData = [];
                 selectedProducts.forEach((product, productName) => {
-                    const amount = parseFloat(product.amountInput.value) || 0;
-                    const unit = product.unitSelect.value;
+                    const amount = parseFloat(product.amountInput.val()) || 0;
+                    const unit = product.unitSelect.val();
                     
                     // Only include products with valid data
                     if (amount > 0 && unit !== '') {
@@ -404,42 +447,42 @@
                 });
 
                 // Remove any existing hidden inputs
-                const existingSupplyInput = document.querySelector('input[name="supply_data"]');
-                const existingProductInput = document.querySelector('input[name="product_data"]');
-                if (existingSupplyInput) existingSupplyInput.remove();
-                if (existingProductInput) existingProductInput.remove();
+                $('input[name="supply_data"], input[name="product_data"]').remove();
 
                 // Create hidden input for supply data
-                const supplyInput = document.createElement('input');
-                supplyInput.type = 'hidden';
-                supplyInput.name = 'supply_data';
-                supplyInput.value = JSON.stringify(supplyData);
-                this.appendChild(supplyInput);
+                const supplyInput = $('<input>', {
+                    type: 'hidden',
+                    name: 'supply_data',
+                    value: JSON.stringify(supplyData)
+                });
+                $(this).append(supplyInput);
 
                 // Create hidden input for product data only if there are products
                 if (productData.length > 0) {
-                    const productInput = document.createElement('input');
-                    productInput.type = 'hidden';
-                    productInput.name = 'product_data';
-                    productInput.value = JSON.stringify(productData);
-                    this.appendChild(productInput);
+                    const productInput = $('<input>', {
+                        type: 'hidden',
+                        name: 'product_data',
+                        value: JSON.stringify(productData)
+                    });
+                    $(this).append(productInput);
                 }
             });
 
             // Bootstrap form validation
             (function () {
                 'use strict'
-                var forms = document.querySelectorAll('.needs-validation')
-                Array.prototype.slice.call(forms)
-                    .forEach(function (form) {
+                window.addEventListener('load', function () {
+                    var forms = document.getElementsByClassName('needs-validation')
+                    var validation = Array.prototype.filter.call(forms, function (form) {
                         form.addEventListener('submit', function (event) {
-                            if (!form.checkValidity()) {
+                            if (form.checkValidity() === false) {
                                 event.preventDefault()
                                 event.stopPropagation()
                             }
                             form.classList.add('was-validated')
                         }, false)
                     })
+                }, false)
             })()
         });
     </script>
@@ -448,33 +491,61 @@
         .supply-item, .product-item {
             transition: all 0.3s ease;
             cursor: pointer;
+            border: 1px solid #dee2e6;
         }
         .supply-item:hover, .product-item:hover {
             background-color: #f8f9fa;
             transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
         .supply-item.checked, .product-item.checked {
-            border-color: #198754;
+            border-color: #28a745;
             background-color: #f8fff9;
         }
-        .form-check-input:checked ~ .form-check-label {
-            color: #198754;
+        .custom-control-input:checked ~ .custom-control-label {
+            color: #28a745;
             font-weight: bold;
         }
         .is-valid {
-            border-color: #198754 !important;
+            border-color: #28a745 !important;
         }
         .is-invalid {
             border-color: #dc3545 !important;
         }
         .supply-fields, .product-fields {
-            border-left: 3px solid #0dcaf0;
+            border-left: 3px solid #17a2b8;
             padding-left: 15px;
             margin-left: -5px;
         }
         .btn:disabled {
             cursor: not-allowed;
+            opacity: 0.65;
+        }
+        
+        /* AdminLTE card header custom styling */
+        .card-success:not(.card-outline) > .card-header {
+            background-color: #28a745;
+            color: white;
+        }
+        
+        .card-success:not(.card-outline) > .card-header .card-title {
+            color: white;
+        }
+        
+        /* Ensure all card headers are green */
+        .card > .card-header {
+            background-color: #28a745 !important;
+            color: white !important;
+        }
+        
+        .card > .card-header .card-title {
+            color: white !important;
         }
     </style>
+    
+    <!-- Include SweetAlert2 for better alerts -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    @endsection
 </x-layout>
