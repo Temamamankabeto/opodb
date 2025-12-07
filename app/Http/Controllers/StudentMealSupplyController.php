@@ -21,10 +21,14 @@ class StudentMealSupplyController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name' => 'required|unique:student_meal_supplies,name',
-        ]);
+    'ammount' => 'required|numeric',
+    'unit' => 'nullable|string',
+    'source' => 'required|string',
+    'cost' => 'required|numeric',
+    'cost_unit' => 'nullable|string',
+]);
 
-        StudentMealSupply::create($request->only('name'));
+StudentMealSupply::create($request->only('ammount', 'unit', 'source', 'cost', 'cost_unit'));
 
         return redirect()->route('student_meal_supply.index')
                          ->with('success', 'Student Meal Supply created successfully.');
@@ -40,11 +44,15 @@ class StudentMealSupplyController extends Controller
     {
         $item = StudentMealSupply::findOrFail($id);
 
-        $request->validate([
-            'name' => 'required|unique:student_meal_supplies,name,' . $item->id,
-        ]);
+      $request->validate([
+    'ammount' => 'required|numeric',
+    'unit' => 'nullable|string',
+    'source' => 'required|string',
+    'cost' => 'required|numeric',
+    'cost_unit' => 'nullable|string',
+]);
 
-        $item->update($request->only('name'));
+$item->update($request->only('ammount', 'unit', 'source', 'cost', 'cost_unit'));
 
         return redirect()->route('student_meal_supply.index')
                          ->with('success', 'Updated successfully.');

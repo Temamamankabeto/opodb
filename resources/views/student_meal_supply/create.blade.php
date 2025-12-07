@@ -1,20 +1,128 @@
 <x-layout>
-<div class="container py-4">
+    <div class="content-header">
+        <!-- Content Header (Page header) -->
+        <section class="content-header">
+            <div class="container-fluid">
+                <div class="row mb-2">
+                    <div class="col-sm-6">
+                        <h1>Add Student Meal Supply</h1>
+                    </div>
+                    <div class="col-sm-6">
+                        <ol class="breadcrumb float-sm-right">
+                            <li class="breadcrumb-item"><a href="#">Home</a></li>
+                            <li class="breadcrumb-item"><a href="{{ route('student_meal_supply.index') }}">Student Meal Supply</a></li>
+                            <li class="breadcrumb-item active">Add New</li>
+                        </ol>
+                    </div>
+                </div>
+            </div><!-- /.container-fluid -->
+        </section>
 
-    <h3>Add Student Meal Supply</h3>
+        <!-- Main content -->
+        <section class="content">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="card card-primary">
+                            <div class="card-header">
+                                <h3 class="card-title">Create New Student Meal Supply</h3>
+                            </div>
+                            <!-- /.card-header -->
+                            <!-- form start -->
+                            <form action="{{ route('student_meal_supply.store') }}" method="POST">
+                                @csrf
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label for="ammount">Hanga Nyaataa Dhiyaatu *</label>
+                                                <div class="input-group">
+                                                    <input type="number" 
+                                                           step="0.01" 
+                                                           name="ammount" 
+                                                           id="ammount"
+                                                           value="{{ old('ammount') }}" 
+                                                           class="form-control @error('ammount') is-invalid @enderror" 
+                                                           placeholder="Enter amount" 
+                                                           required>
+                                                    <div class="input-group-append">
+                                                        <span class="input-group-text">Kunt</span>
+                                                    </div>
+                                                </div>
+                                                @error('ammount')
+                                                    <span class="invalid-feedback d-block">{{ $message }}</span>
+                                                @enderror
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label for="cost">Cost *</label>
+                                                <div class="input-group">
+                                                    <input type="number" 
+                                                           step="0.01" 
+                                                           name="cost" 
+                                                           id="cost"
+                                                           value="{{ old('cost') }}" 
+                                                           class="form-control @error('cost') is-invalid @enderror" 
+                                                           placeholder="Enter cost" 
+                                                           required>
+                                                    <div class="input-group-append">
+                                                        <span class="input-group-text">Birr</span>
+                                                    </div>
+                                                </div>
+                                                @error('cost')
+                                                    <span class="invalid-feedback d-block">{{ $message }}</span>
+                                                @enderror
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="form-group">
+                                                <label for="source">Source *</label>
+                                                <select name="source" 
+                                                        id="source"
+                                                        class="form-control @error('source') is-invalid @enderror" 
+                                                        required>
+                                                    <option value="">Select Source</option>
+                                                    <option value="Kan manni barumsaa oomishe" {{ old('source') == 'Kan manni barumsaa oomishe' ? 'selected' : '' }}>
+                                                        Kan manni barumsaa oomishe
+                                                    </option>
+                                                    <option value="Kan hawaasarraa sassaabame" {{ old('source') == 'Kan hawaasarraa sassaabame' ? 'selected' : '' }}>
+                                                        Kan hawaasarraa sassaabame
+                                                    </option>
+                                                </select>
+                                                @error('source')
+                                                    <span class="invalid-feedback d-block">{{ $message }}</span>
+                                                @enderror
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Hidden fields to store units -->
+                                    <input type="hidden" name="unit" value="Kunt">
+                                    <input type="hidden" name="cost_unit" value="Birr">
+                                </div>
+                                <!-- /.card-body -->
 
-    <form action="{{ route('student_meal_supply.store') }}" method="POST">
-        @csrf
-
-        <div class="mb-3">
-            <label class="fw-bold">Name</label>
-            <input type="text" name="name" value="{{ old('name') }}" class="form-control" required>
-            @error('name') <span class="text-danger">{{ $message }}</span> @enderror
-        </div>
-
-        <button class="btn btn-success">Save</button>
-        <a href="{{ route('student_meal_supply.index') }}" class="btn btn-secondary">Cancel</a>
-    </form>
-
-</div>
+                                <div class="card-footer">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-save"></i> Save
+                                    </button>
+                                    <a href="{{ route('student_meal_supply.index') }}" class="btn btn-secondary">
+                                        <i class="fas fa-times"></i> Cancel
+                                    </a>
+                                </div>
+                            </form>
+                        </div>
+                        <!-- /.card -->
+                    </div>
+                </div>
+                <!-- /.row -->
+            </div><!-- /.container-fluid -->
+        </section>
+        <!-- /.content -->
+    </div>
 </x-layout>

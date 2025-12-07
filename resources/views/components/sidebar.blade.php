@@ -48,6 +48,21 @@
                               <p>Dhaabbilee</p>
                           </a>
                       </li>
+
+                      <li class="nav-item">
+                          <a href="{{url('admin/educational-participations')}}" class="nav-link">
+                              <i class="far fa-circle nav-icon"></i>
+                              <p>Gochaalee Barnootaa</p>
+                          </a>
+                      </li>
+
+                        <li class="nav-item">
+                          <a href="{{url('admin/student-meal-supplies')}}" class="nav-link">
+                              <i class="far fa-circle nav-icon"></i>
+                              <p>Nyaata Barattootaa</p>
+                          </a>
+                      </li>
+                      
                   </ul>
               </li>
 

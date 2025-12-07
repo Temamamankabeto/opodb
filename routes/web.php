@@ -10,6 +10,7 @@ use App\Http\Controllers\UnionController;
 use App\Http\Controllers\FarmerController;
 use App\Http\Controllers\HealthController;
 use App\Http\Controllers\KaroorController;
+use App\Http\Controllers\BarnootaController;
 use App\Http\Controllers\SoilTypeController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\StructureController;
@@ -33,6 +34,7 @@ use App\Http\Controllers\AssociationTypeController;
 use App\Http\Controllers\CulturalRevivalController;
 use App\Http\Controllers\LivestockSupplyController;
 use App\Http\Controllers\NaturalResourceController;
+use App\Http\Controllers\woredadashboardController;
 use App\Http\Controllers\LivestockProductController;
 use App\Http\Controllers\Setting\LanguageController;
 use App\Http\Controllers\CropConfigurationController;
@@ -50,7 +52,6 @@ use App\Http\Controllers\BuildingPowerInstitutionPlanController;
 use App\Http\Controllers\RegistrationOfCivilCertificateController;
 use App\Http\Controllers\BuildingEconomicInstitutionPlanController;
 use App\Http\Controllers\BuildingCommunityInstitutionPlanController;
-use App\Http\Controllers\woredadashboardController;
 
 Route::middleware([SecurityHeaders::class])->group(function () {
     // Public routes
@@ -169,13 +170,7 @@ Route::get('/educational-participations/edit/{id}', [EducationalParticipationCon
 Route::put('/educational-participations/update/{id}', [EducationalParticipationController::class, 'update'])->name('educational_participations.update');
 Route::delete('/educational-participations/delete/{id}', [EducationalParticipationController::class, 'destroy'])->name('educational_participations.destroy');
 
-    Route::get('/educational-effectiveness', [EducationalEffectivenessController::class, 'index'])->name('educational_effectiveness.index');
-    Route::get('/educational-effectiveness/create', [EducationalEffectivenessController::class, 'create'])->name('educational_effectiveness.create');
-    Route::post('/educational-effectiveness/store', [EducationalEffectivenessController::class, 'store'])->name('educational_effectiveness.store');
-    Route::get('/educational-effectiveness/edit/{id}', [EducationalEffectivenessController::class, 'edit'])->name('educational_effectiveness.edit');
-    Route::put('/educational-effectiveness/update/{id}', [EducationalEffectivenessController::class, 'update'])->name('educational_effectiveness.update');
-    Route::delete('/educational-effectiveness/delete/{id}', [EducationalEffectivenessController::class, 'destroy'])->name('educational_effectiveness.delete');
-
+   
      Route::get('/student-meal-supplies', [StudentMealSupplyController::class, 'index'])->name('student_meal_supply.index');
     Route::get('/student-meal-supplies/create', [StudentMealSupplyController::class, 'create'])->name('student_meal_supply.create');
     Route::post('/student-meal-supplies/store', [StudentMealSupplyController::class, 'store'])->name('student_meal_supply.store');
@@ -544,9 +539,15 @@ Route::delete('/enterprise-work/{id}', [EnterpriseWorkController::class, 'destro
             Route::get('/{id}', [MechanizationController::class, 'show'])->name('mechanizations.show');
             Route::delete('/{id}', [MechanizationController::class, 'destroy'])->name('mechanizations.destroy');
 
-
-
         });
+            Route::get('/barnoota', [BarnootaController::class, 'index'])->name('barnoota.index');
+        Route::get('/barnoota/create', [BarnootaController::class, 'create'])->name('barnoota.create');
+        Route::post('/barnoota/store', [BarnootaController::class, 'store'])->name('barnoota.store');
+        Route::get('/barnoota/{id}/edit', [BarnootaController::class, 'edit'])->name('barnoota.edit');
+        Route::put('/barnoota/{id}/update', [BarnootaController::class, 'update'])->name('barnoota.update');
+        Route::delete('/barnoota/{id}/delete', [BarnootaController::class, 'destroy'])->name('barnoota.destroy');
+        Route::get('/barnoota/{id}', [BarnootaController::class, 'show'])->name('barnoota.show');
+
 
           // Environmental Protection Plans
             Route::get('/environmental-plans', [EnvironmentalProtectionPlanController::class, 'index'])->name('environmental-plans.index');

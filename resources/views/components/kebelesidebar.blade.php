@@ -256,20 +256,68 @@
                         <p>{{ __('Ce`uumsa Diinagdee') }}</p>
                     </a>
                 </li>
-{{-- 
+ 
+
+            </ul>
+        </li>
+
+
+
+        {{-- Misooma Hawaasummaa  --}}
+        <li class="nav-item">
+            <a href="#" class="nav-link">
+                <i class="fas fa-seedling nav-icon"></i>
+                <p>
+                    {{ __('Misooma Hawaasummaa') }}
+                    <i class="fas fa-angle-left right"></i>
+                </p>
+            </a>
+
+            <ul class="nav nav-treeview">
+
                 <li class="nav-item">
-                    <a href="{{ url('sector/gabbina-biyyee') }}" class="nav-link">
-                        <i class="fas fa-mountain nav-icon"></i>
-                        <p>{{ __('Gabbina Biyyoo') }}</p>
+                    <a href="{{ url('sector/barnoota') }}" class="nav-link">
+                        <i class="fas fa-leaf nav-icon"></i>
+                        <p>{{ __('Barnootaa') }}</p>
+                    </a>
+                </li>
+
+                
+
+                  {{-- <li class="nav-item">
+                    <a href="{{ url('sector/building-economic-institution-plans') }}" class="nav-link">
+                        <i class="fas fa-cogs nav-icon"></i>
+                        <p>{{ __('Fayyaa') }}</p>
+                    </a>
+                </li>
+
+                  <li class="nav-item">
+                    <a href="{{ url('sector/building-economic-institution-plans') }}" class="nav-link">
+                        <i class="fas fa-cogs nav-icon"></i>
+                        <p>{{ __('Aadaa Fi Aartii') }}</p>
+                    </a>
+                </li>
+
+                   <li class="nav-item">
+                    <a href="{{ url('sector/building-economic-institution-plans') }}" class="nav-link">
+                        <i class="fas fa-cogs nav-icon"></i>
+                        <p>{{ __('Ragaalee Civilii') }}</p>
                     </a>
                 </li>
 
                 <li class="nav-item">
-                    <a href="{{ url('sector/seedling-preparations') }}" class="nav-link">
-                        <i class="fas fa-tree nav-icon"></i>
-                        <p>{{ __('Biqiltuuwwan') }}</p>
+                    <a href="{{ url('sector/building-economic-institution-plans') }}" class="nav-link">
+                        <i class="fas fa-cogs nav-icon"></i>
+                        <p>{{ __('Horata Mootummaai') }}</p>
+                    </a>
+                </li>
+                 <li class="nav-item">
+                    <a href="{{ url('sector/building-economic-institution-plans') }}" class="nav-link">
+                        <i class="fas fa-cogs nav-icon"></i>
+                        <p>{{ __('Carraa Hojii') }}</p>
                     </a>
                 </li> --}}
+ 
 
             </ul>
         </li>

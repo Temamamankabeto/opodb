@@ -13,7 +13,11 @@ return new class extends Migration
     {
         Schema::create('student_meal_supplies', function (Blueprint $table) {
             $table->id();
-              $table->string('name')->unique();
+              $table->string('ammount')->required();
+              $table->string('unit')->nullable();
+            $table->string('source')->required();
+            $table->string('cost')->required();
+             $table->string('cost_unit')->default('Birr');
             $table->timestamps();
         });
     }
