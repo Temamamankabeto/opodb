@@ -79,7 +79,7 @@ public function store(Request $request)
     // 🚫 Prevent creating duplicate year for same kebele
     $yearExists = LivestockPlan::where('year', $request->year)
         ->where('kebele_id', $user->kebele_id)
-        ->where('sector_id', $user->sector_id)
+        
         ->exists();
 
     if ($yearExists) {
@@ -104,7 +104,7 @@ public function store(Request $request)
         'year' => $request->year,
         'supply_data' => $supplyData,
         'product_data' => $productData,
-        'sector_id' => $user->sector_id,
+        // 'sector_id' => $user->sector_id,
         'kebele_id' => $user->kebele_id,
         'woreda_id' => $user->woreda_id,
         'zone_id' => $user->zone_id,
