@@ -56,7 +56,7 @@ class HealthPlanController extends Controller
             'created_by' => Auth::id(),
         ]);
 
-        return redirect()->route('health_plans.index')->with('success', 'Health Plan created successfully.');
+        return redirect()->route('sector.health_plans.index')->with('success', 'Health Plan created successfully.');
     }
 
     public function edit($id)
