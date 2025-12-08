@@ -181,7 +181,7 @@ class EmploymentOpportunityPlanController extends Controller
 
     public function update(Request $request, $id)
     {
-        $plan = EmploymentOpportunityPlan::where('sector_id', Auth::user()->sector_id)
+        $plan = EmploymentOpportunityPlan::where('kebele_id', Auth::user()->kebele_id)
             ->findOrFail($id);
 
         // Validate basic fields
