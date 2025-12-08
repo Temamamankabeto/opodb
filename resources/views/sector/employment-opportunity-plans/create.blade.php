@@ -1,202 +1,206 @@
 <x-layout>
-    <div class="container py-5">
-        <h2 class="mb-4">
-            <i class="bi bi-briefcase text-primary me-2"></i>
-            Create Employment Opportunity Plan
-        </h2>
+    <div class="content-header">
+        <section class="content">
+            <div class="container-fluid py-3">
+                <h2 class="mb-4">
+                    <i class="fas fa-briefcase text-primary mr-2"></i>
+                    Create Employment Opportunity Plan
+                </h2>
 
-        @if ($errors->any())
-            <div class="alert alert-danger">
-                <ul class="mb-0">
-                    @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
-        @endif
+                @if ($errors->any())
+                    <div class="alert alert-danger">
+                        <ul class="mb-0">
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
 
-        <form action="{{ route('sector.employment-opportunity-plans.store') }}" method="POST" id="mainForm">
-            @csrf
+                <form action="{{ route('sector.employment-opportunity-plans.store') }}" method="POST" id="mainForm">
+                    @csrf
 
-            <!-- Year Selection -->
-            <div class="card border-0 shadow-sm mb-4">
-                <div class="card-header bg-primary text-white py-3">
-                    <h5 class="mb-0"><i class="bi bi-calendar3 me-2"></i>Year Selection</h5>
-                </div>
-                <div class="card-body p-4">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <label class="form-label fw-semibold">Year <span class="text-danger">*</span></label>
-                            <select name="year" class="form-select" id="yearSelect" required>
-                                <option value="">-- Select Year --</option>
-                                @foreach ($years as $year)
-                                    <option value="{{ $year }}" {{ old('year') == $year ? 'selected' : '' }}>
-                                        {{ $year }} EC
-                                    </option>
-                                @endforeach
-                            </select>
-                            @error('year')
-                                <div class="text-danger small mt-1">{{ $message }}</div>
-                            @enderror
+                    <!-- Year Selection -->
+                    <div class="card border-0 shadow-sm mb-4">
+                        <div class="card-header bg-primary text-white py-3">
+                            <h5 class="mb-0"><i class="fas fa-calendar-alt mr-2"></i>Year Selection</h5>
+                        </div>
+                        <div class="card-body p-4">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <label class="form-label font-weight-bold">Year <span class="text-danger">*</span></label>
+                                    <select name="year" class="form-control" id="yearSelect" required>
+                                        <option value="">-- Select Year --</option>
+                                        @foreach ($years as $year)
+                                            <option value="{{ $year }}" {{ old('year') == $year ? 'selected' : '' }}>
+                                                {{ $year }} EC
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    @error('year')
+                                        <div class="text-danger small mt-1">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
                         </div>
                     </div>
-                </div>
-            </div>
 
-            <!-- Existing Plans Alert -->
-            <div class="alert alert-warning" id="existingPlansAlert" style="display: none;">
-                <i class="bi bi-exclamation-triangle me-2"></i>
-                <span id="existingPlansMessage"></span>
-            </div>
-
-            <!-- Job Opportunities -->
-            <div class="card border-0 shadow-sm mb-4">
-                <div class="card-header bg-info text-white py-3">
-                    <h5 class="mb-0"><i class="bi bi-briefcase me-2"></i>Job Opportunities & Enterprise Works</h5>
-                </div>
-                <div class="card-body p-4">
-                    <div class="alert alert-info py-2 mb-3">
-                        <i class="bi bi-info-circle me-2"></i>
-                        Select job opportunities and assign enterprise works to them. Fill in the employment details for each enterprise work.
+                    <!-- Existing Plans Alert -->
+                    <div class="alert alert-warning" id="existingPlansAlert" style="display: none;">
+                        <i class="fas fa-exclamation-triangle mr-2"></i>
+                        <span id="existingPlansMessage"></span>
                     </div>
 
-                    <div id="opportunitiesContainer">
-                        @foreach ($jobOpportunities as $jobOpportunity)
-                            <div class="card border mb-3 opportunity-item">
-                                <div class="card-body">
-                                    <div class="form-check mb-3">
-                                        <input class="form-check-input opportunity-checkbox" type="checkbox" 
-                                            value="{{ $jobOpportunity->id }}" 
-                                            id="opportunity-{{ $jobOpportunity->id }}"
-                                            data-opportunity-name="{{ $jobOpportunity->name }}">
-                                        <label class="form-check-label fw-semibold" for="opportunity-{{ $jobOpportunity->id }}">
-                                            {{ $jobOpportunity->name }}
-                                        </label>
-                                        @if ($jobOpportunity->description)
-                                            <div class="form-text small text-muted">{{ $jobOpportunity->description }}</div>
-                                        @endif
-                                    </div>
+                    <!-- Job Opportunities -->
+                    <div class="card border-0 shadow-sm mb-4">
+                        <div class="card-header bg-info text-white py-3">
+                            <h5 class="mb-0"><i class="fas fa-briefcase mr-2"></i>Job Opportunities & Enterprise Works</h5>
+                        </div>
+                        <div class="card-body p-4">
+                            <div class="alert alert-info py-2 mb-3">
+                                <i class="fas fa-info-circle mr-2"></i>
+                                Select job opportunities and assign enterprise works to them. Fill in the employment details for each enterprise work.
+                            </div>
 
-                                    <!-- Enterprise Works Selection -->
-                                    <div class="enterprise-works-container" style="display: none;">
-                                        <label class="form-label fw-semibold mb-2">Select Enterprise Works for this Opportunity:</label>
-                                        @foreach ($enterpriseWorks as $enterpriseWork)
-                                            <div class="card border mt-2 enterprise-work-item">
-                                                <div class="card-body">
-                                                    <div class="form-check mb-3">
-                                                        <input class="form-check-input enterprise-work-checkbox" type="checkbox" 
-                                                            value="{{ $enterpriseWork->id }}"
-                                                            id="work-{{ $jobOpportunity->id }}-{{ $enterpriseWork->id }}"
-                                                            data-work-name="{{ $enterpriseWork->name }}"
-                                                            data-opportunity-id="{{ $jobOpportunity->id }}">
-                                                        <label class="form-check-label fw-semibold" for="work-{{ $jobOpportunity->id }}-{{ $enterpriseWork->id }}">
-                                                            {{ $enterpriseWork->name }}
-                                                        </label>
-                                                        @if ($enterpriseWork->description)
-                                                            <div class="form-text small text-muted">{{ $enterpriseWork->description }}</div>
-                                                        @endif
-                                                    </div>
+                            <div id="opportunitiesContainer">
+                                @foreach ($jobOpportunities as $jobOpportunity)
+                                    <div class="card border mb-3 opportunity-item">
+                                        <div class="card-body">
+                                            <div class="form-check mb-3">
+                                                <input class="form-check-input opportunity-checkbox" type="checkbox" 
+                                                    value="{{ $jobOpportunity->id }}" 
+                                                    id="opportunity-{{ $jobOpportunity->id }}"
+                                                    data-opportunity-name="{{ $jobOpportunity->name }}">
+                                                <label class="form-check-label font-weight-bold" for="opportunity-{{ $jobOpportunity->id }}">
+                                                    {{ $jobOpportunity->name }}
+                                                </label>
+                                                @if ($jobOpportunity->description)
+                                                    <div class="form-text small text-muted">{{ $jobOpportunity->description }}</div>
+                                                @endif
+                                            </div>
 
-                                                    <!-- Input Fields -->
-                                                    <div class="enterprise-work-fields" style="display: none;">
-                                                        <div class="row g-3">
-                                                            <div class="col-md-3">
-                                                                <label class="form-label small">Number of Enterprises <span class="text-danger">*</span></label>
-                                                                <input type="number" class="form-control enterprise-number" 
-                                                                    placeholder="0" min="0" disabled>
+                                            <!-- Enterprise Works Selection -->
+                                            <div class="enterprise-works-container" style="display: none;">
+                                                <label class="form-label font-weight-bold mb-2">Select Enterprise Works for this Opportunity:</label>
+                                                @foreach ($enterpriseWorks as $enterpriseWork)
+                                                    <div class="card border mt-2 enterprise-work-item">
+                                                        <div class="card-body">
+                                                            <div class="form-check mb-3">
+                                                                <input class="form-check-input enterprise-work-checkbox" type="checkbox" 
+                                                                    value="{{ $enterpriseWork->id }}"
+                                                                    id="work-{{ $jobOpportunity->id }}-{{ $enterpriseWork->id }}"
+                                                                    data-work-name="{{ $enterpriseWork->name }}"
+                                                                    data-opportunity-id="{{ $jobOpportunity->id }}">
+                                                                <label class="form-check-label font-weight-bold" for="work-{{ $jobOpportunity->id }}-{{ $enterpriseWork->id }}">
+                                                                    {{ $enterpriseWork->name }}
+                                                                </label>
+                                                                @if ($enterpriseWork->description)
+                                                                    <div class="form-text small text-muted">{{ $enterpriseWork->description }}</div>
+                                                                @endif
                                                             </div>
-                                                            <div class="col-md-3">
-                                                                <label class="form-label small">Male Members <span class="text-danger">*</span></label>
-                                                                <input type="number" class="form-control male-members" 
-                                                                    placeholder="0" min="0" disabled>
-                                                            </div>
-                                                            <div class="col-md-3">
-                                                                <label class="form-label small">Female Members <span class="text-danger">*</span></label>
-                                                                <input type="number" class="form-control female-members" 
-                                                                    placeholder="0" min="0" disabled>
-                                                            </div>
-                                                            <div class="col-md-3">
-                                                                <label class="form-label small">Total Members</label>
-                                                                <input type="text" class="form-control total-members" 
-                                                                    placeholder="0" readonly style="background-color: #f8f9fa;">
+
+                                                            <!-- Input Fields -->
+                                                            <div class="enterprise-work-fields" style="display: none;">
+                                                                <div class="row">
+                                                                    <div class="col-md-3">
+                                                                        <label class="form-label small">Number of Enterprises <span class="text-danger">*</span></label>
+                                                                        <input type="number" class="form-control enterprise-number" 
+                                                                            placeholder="0" min="0" disabled>
+                                                                    </div>
+                                                                    <div class="col-md-3">
+                                                                        <label class="form-label small">Male Members <span class="text-danger">*</span></label>
+                                                                        <input type="number" class="form-control male-members" 
+                                                                            placeholder="0" min="0" disabled>
+                                                                    </div>
+                                                                    <div class="col-md-3">
+                                                                        <label class="form-label small">Female Members <span class="text-danger">*</span></label>
+                                                                        <input type="number" class="form-control female-members" 
+                                                                            placeholder="0" min="0" disabled>
+                                                                    </div>
+                                                                    <div class="col-md-3">
+                                                                        <label class="form-label small">Total Members</label>
+                                                                        <input type="text" class="form-control total-members" 
+                                                                            placeholder="0" readonly style="background-color: #f8f9fa;">
+                                                                    </div>
+                                                                </div>
                                                             </div>
                                                         </div>
                                                     </div>
-                                                </div>
+                                                @endforeach
                                             </div>
-                                        @endforeach
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+
+                            @if ($jobOpportunities->isEmpty())
+                                <div class="alert alert-warning">
+                                    <i class="fas fa-exclamation-triangle mr-2"></i>
+                                    No job opportunities found.
+                                </div>
+                            @endif
+
+                            @if ($enterpriseWorks->isEmpty())
+                                <div class="alert alert-warning">
+                                    <i class="fas fa-exclamation-triangle mr-2"></i>
+                                    No enterprise works found.
+                                </div>
+                            @endif
+
+                            <input type="hidden" name="opportunity_data" id="opportunity_data">
+                        </div>
+                    </div>
+
+                    <!-- Summary Card -->
+                    <div class="card border-0 shadow-sm mb-4">
+                        <div class="card-header bg-secondary text-white py-3">
+                            <h5 class="mb-0"><i class="fas fa-calculator mr-2"></i>Employment Summary</h5>
+                        </div>
+                        <div class="card-body p-4">
+                            <div class="row text-center">
+                                <div class="col-md-3">
+                                    <div class="border rounded p-3 bg-light">
+                                        <h6 class="text-primary mb-1">Total Enterprises</h6>
+                                        <h4 class="text-primary mb-0" id="totalEnterprises">0</h4>
+                                        <small class="text-muted">across all works</small>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="border rounded p-3 bg-light">
+                                        <h6 class="text-success mb-1">Male Members</h6>
+                                        <h4 class="text-success mb-0" id="totalMaleMembers">0</h4>
+                                        <small class="text-muted">employed</small>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="border rounded p-3 bg-light">
+                                        <h6 class="text-warning mb-1">Female Members</h6>
+                                        <h4 class="text-warning mb-0" id="totalFemaleMembers">0</h4>
+                                        <small class="text-muted">employed</small>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="border rounded p-3 bg-light">
+                                        <h6 class="text-info mb-1">Total Members</h6>
+                                        <h4 class="text-info mb-0" id="grandTotalMembers">0</h4>
+                                        <small class="text-muted">employed</small>
                                     </div>
                                 </div>
                             </div>
-                        @endforeach
-                    </div>
-
-                    @if ($jobOpportunities->isEmpty())
-                        <div class="alert alert-warning">
-                            <i class="bi bi-exclamation-triangle me-2"></i>
-                            No job opportunities found.
-                        </div>
-                    @endif
-
-                    @if ($enterpriseWorks->isEmpty())
-                        <div class="alert alert-warning">
-                            <i class="bi bi-exclamation-triangle me-2"></i>
-                            No enterprise works found.
-                        </div>
-                    @endif
-
-                    <input type="hidden" name="opportunity_data" id="opportunity_data">
-                </div>
-            </div>
-
-            <!-- Summary Card -->
-            <div class="card border-0 shadow-sm mb-4">
-                <div class="card-header bg-secondary text-white py-3">
-                    <h5 class="mb-0"><i class="bi bi-calculator me-2"></i>Employment Summary</h5>
-                </div>
-                <div class="card-body p-4">
-                    <div class="row text-center">
-                        <div class="col-md-3">
-                            <div class="border rounded p-3 bg-light">
-                                <h6 class="text-primary mb-1">Total Enterprises</h6>
-                                <h4 class="text-primary mb-0" id="totalEnterprises">0</h4>
-                                <small class="text-muted">across all works</small>
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="border rounded p-3 bg-light">
-                                <h6 class="text-success mb-1">Male Members</h6>
-                                <h4 class="text-success mb-0" id="totalMaleMembers">0</h4>
-                                <small class="text-muted">employed</small>
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="border rounded p-3 bg-light">
-                                <h6 class="text-warning mb-1">Female Members</h6>
-                                <h4 class="text-warning mb-0" id="totalFemaleMembers">0</h4>
-                                <small class="text-muted">employed</small>
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="border rounded p-3 bg-light">
-                                <h6 class="text-info mb-1">Total Members</h6>
-                                <h4 class="text-info mb-0" id="grandTotalMembers">0</h4>
-                                <small class="text-muted">employed</small>
-                            </div>
                         </div>
                     </div>
-                </div>
-            </div>
 
-            <div class="d-flex justify-content-end gap-3 border-top pt-4">
-                <a href="{{ route('sector.employment-opportunity-plans.index') }}" class="btn btn-outline-secondary">
-                    <i class="bi bi-arrow-left me-2"></i>Cancel
-                </a>
-                <button type="submit" class="btn btn-primary px-4" id="submitBtn" disabled>
-                    <i class="bi bi-save me-2"></i>Save Employment Plan
-                </button>
+                    <div class="d-flex justify-content-end border-top pt-4">
+                        <a href="{{ route('sector.employment-opportunity-plans.index') }}" class="btn btn-outline-secondary mr-3">
+                            <i class="fas fa-arrow-left mr-2"></i>Cancel
+                        </a>
+                        <button type="submit" class="btn btn-primary px-4" id="submitBtn" disabled>
+                            <i class="fas fa-save mr-2"></i>Save Employment Plan
+                        </button>
+                    </div>
+                </form>
             </div>
-        </form>
+        </section>
     </div>
 
     <script>

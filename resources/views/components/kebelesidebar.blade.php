@@ -305,18 +305,18 @@
                     </a>
                 </li>
 
-                {{-- <li class="nav-item">
-                    <a href="{{ url('sector/building-economic-institution-plans') }}" class="nav-link">
+                <li class="nav-item">
+                    <a href="{{ url('sector/kebele-asset-plans') }}" class="nav-link">
                         <i class="fas fa-cogs nav-icon"></i>
-                        <p>{{ __('Horata Mootummaai') }}</p>
+                        <p>{{ __('Horata Mootummaa') }}</p>
                     </a>
                 </li>
                  <li class="nav-item">
-                    <a href="{{ url('sector/building-economic-institution-plans') }}" class="nav-link">
+                    <a href="{{ url('sector/employment-opportunity-plans') }}" class="nav-link">
                         <i class="fas fa-cogs nav-icon"></i>
                         <p>{{ __('Carraa Hojii') }}</p>
                     </a>
-                </li> --}}
+                </li>
  
 
             </ul>

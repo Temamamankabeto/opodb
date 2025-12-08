@@ -83,7 +83,24 @@
                           </a>
                       </li>
 
-                      
+                        <li class="nav-item">
+                          <a href="{{url('admin/government-properties')}}" class="nav-link">
+                              <i class="far fa-circle nav-icon"></i>
+                              <p>Horataalee Gandaa</p>
+                          </a>
+                      </li>
+                       
+                          <li class="nav-item">
+                              <a href="{{url('admin/job-opportunities')}}" class="nav-link">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Carraa Hojii</p>
+                              </a>  
+                            </li>
+
+
+  
+
+                     
                       
                       
                       

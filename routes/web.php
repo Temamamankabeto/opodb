@@ -34,6 +34,7 @@ use App\Http\Controllers\ParcelCropPlanController;
 use App\Http\Controllers\WeeklyLandPlanController;
 use App\Http\Controllers\AssociationTypeController;
 use App\Http\Controllers\CulturalRevivalController;
+use App\Http\Controllers\KebeleAssetPlanController;
 use App\Http\Controllers\LivestockSupplyController;
 use App\Http\Controllers\NaturalResourceController;
 use App\Http\Controllers\woredadashboardController;
@@ -205,14 +206,14 @@ Route::delete('/educational-participations/delete/{id}', [EducationalParticipati
     
     Route::delete('/civil-certificates/{id}', [RegistrationOfCivilCertificateController::class, 'destroy'])->name('civil.destroy');
 
-Route::get('/government-properties', [KebeleGovernmentPropertyController::class, 'index'])->name('govprop.index');
-Route::get('/government-properties/create', [KebeleGovernmentPropertyController::class, 'create'])->name('govprop.create');
-Route::post('/government-properties', [KebeleGovernmentPropertyController::class, 'store'])->name('govprop.store');
-
-Route::get('/government-properties/{id}/edit', [KebeleGovernmentPropertyController::class, 'edit'])->name('govprop.edit');
-Route::post('/government-properties/{id}', [KebeleGovernmentPropertyController::class, 'update'])->name('govprop.update');
-
-Route::delete('/government-properties/{id}', [KebeleGovernmentPropertyController::class, 'destroy'])->name('govprop.destroy');
+ Route::get('/government-properties', [KebeleGovernmentPropertyController::class, 'index'])->name('govprop.index');
+    Route::get('/government-properties/create', [KebeleGovernmentPropertyController::class, 'create'])->name('govprop.create');
+    Route::post('/government-properties', [KebeleGovernmentPropertyController::class, 'store'])->name('govprop.store');
+    
+    Route::get('/government-properties/{id}/edit', [KebeleGovernmentPropertyController::class, 'edit'])->name('govprop.edit');
+    Route::put('/government-properties/{id}', [KebeleGovernmentPropertyController::class, 'update'])->name('govprop.update'); // Changed from post to put
+    
+    Route::delete('/government-properties/{id}', [KebeleGovernmentPropertyController::class, 'destroy'])->name('govprop.destroy');
 
 Route::get('/job-opportunities', [JobOpportunityController::class, 'index'])->name('job.index');
 Route::get('/job-opportunities/create', [JobOpportunityController::class, 'create'])->name('job.create');
@@ -588,6 +589,19 @@ Route::middleware(['auth'])->prefix('civil-registration-plans')->name('civil_reg
     Route::put('/update/{id}', [CivilRegistrationPlanController::class, 'update'])->name('update');
 
     Route::delete('/delete/{id}', [CivilRegistrationPlanController::class, 'destroy'])->name('destroy');
+});
+
+Route::middleware(['auth'])->prefix('kebele-asset-plans')->name('kebele-asset-plans.')->group(function () {
+
+    Route::get('/', [KebeleAssetPlanController::class, 'index'])->name('index');
+    Route::get('/create', [KebeleAssetPlanController::class, 'create'])->name('create');
+    Route::post('/store', [KebeleAssetPlanController::class, 'store'])->name('store');
+
+    Route::get('/edit/{id}', [KebeleAssetPlanController::class, 'edit'])->name('edit');
+    Route::put('/update/{id}', [KebeleAssetPlanController::class, 'update'])->name('update');
+
+    Route::delete('/delete/{id}', [KebeleAssetPlanController::class, 'destroy'])->name('delete');
+
 });
           // Environmental Protection Plans
             Route::get('/environmental-plans', [EnvironmentalProtectionPlanController::class, 'index'])->name('environmental-plans.index');

@@ -19,7 +19,7 @@ class EmploymentOpportunityPlanController extends Controller
                 'kebele',
                 'createdBy'
             ])
-            ->where('sector_id', Auth::user()->sector_id)
+            ->where('kebele_id', Auth::user()->kebele_id)
             ->orderBy('year', 'desc')
             ->orderBy('created_at', 'desc')
             ->get();
@@ -124,7 +124,7 @@ class EmploymentOpportunityPlanController extends Controller
                     $existingPlan = EmploymentOpportunityPlan::where('year', $request->year)
                         ->where('job_opportunity_id', $jobOpportunityId)
                         ->where('enterprise_work_id', $enterpriseWorkId)
-                        ->where('sector_id', $user->sector_id)
+                        // ->where('sector_id', $user->sector_id)
                         ->where('kebele_id', $user->kebele_id)
                         ->first();
 
@@ -143,7 +143,7 @@ class EmploymentOpportunityPlanController extends Controller
                             'female_members' => $work['female_members'],
                             'total_members' => $work['male_members'] + $work['female_members']
                         ],
-                        'sector_id' => $user->sector_id,
+                        // 'sector_id' => $user->sector_id,
                         'kebele_id' => $user->kebele_id,
                         'woreda_id' => $user->woreda_id,
                         'zone_id' => $user->zone_id,
@@ -223,7 +223,7 @@ class EmploymentOpportunityPlanController extends Controller
 
     public function destroy($id)
     {
-        $plan = EmploymentOpportunityPlan::where('sector_id', Auth::user()->sector_id)
+        $plan = EmploymentOpportunityPlan::where('kebele_id', Auth::user()->kebele_id)
             ->findOrFail($id);
 
         $plan->delete();
@@ -239,7 +239,7 @@ class EmploymentOpportunityPlanController extends Controller
 
         $existingPlans = EmploymentOpportunityPlan::with(['jobOpportunity', 'enterpriseWork'])
             ->where('year', $year)
-            ->where('sector_id', $user->sector_id)
+            // ->where('sector_id', $user->sector_id)
             ->where('kebele_id', $user->kebele_id)
             ->get();
 

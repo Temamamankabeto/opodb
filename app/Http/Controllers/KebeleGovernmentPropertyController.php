@@ -21,11 +21,13 @@ class KebeleGovernmentPropertyController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name' => 'required|max:255|unique:kebele_government_properties,name'
+            'name' => 'required|max:255|unique:kebele_government_properties,name',
+            'unit' => 'nullable|string|max:100',
         ]);
 
         KebeleGovernmentProperty::create([
-            'name' => $request->name
+            'name' => $request->name,
+            'unit' => $request->unit,
         ]);
 
         return redirect()->route('govprop.index')->with('success', 'Added Successfully!');
@@ -42,11 +44,13 @@ class KebeleGovernmentPropertyController extends Controller
         $item = KebeleGovernmentProperty::findOrFail($id);
 
         $request->validate([
-            'name' => 'required|max:255|unique:kebele_government_properties,name,' . $item->id
+            'name' => 'required|max:255|unique:kebele_government_properties,name,' . $item->id,
+            'unit' => 'nullable|string|max:100',
         ]);
 
         $item->update([
-            'name' => $request->name
+            'name' => $request->name,
+            'unit' => $request->unit,
         ]);
 
         return redirect()->route('govprop.index')->with('success', 'Updated Successfully!');
