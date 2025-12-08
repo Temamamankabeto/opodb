@@ -2,47 +2,71 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class HealthPlan extends Model
 {
-    //
+    use HasFactory;
+
     protected $fillable = [
-        'baseline_year',
-        'plan_year',
-        'pregnant_followed_baseline',
-        'pregnant_followed_plan',
-        'institution_delivery_baseline',
-        'institution_delivery_plan',
-        'postpartum_followup_baseline',
-        'postpartum_followup_plan',
-        'balanced_food_support_baseline',
-        'balanced_food_support_plan',
-        'newborn_vaccination_followup_baseline',
-        'newborn_vaccination_followup_plan',
-        'under5_campaign_vaccine_baseline',
-        'under5_campaign_vaccine_plan',
-        'under5_diarrhea_baseline',
-        'under5_diarrhea_plan',
-        'malaria_site_cleaned_baseline',
-        'malaria_site_cleaned_plan',
-        'family_planning_service_baseline',
-        'family_planning_service_plan',
-        'community_insurance_spouses_baseline',
-        'community_insurance_spouses_plan',
-        'community_insurance_contribution_baseline',
-        'community_insurance_contribution_plan',
-        'child_development_centers_baseline',
-        'child_development_centers_plan',
-        'ecd_food_low_income_baseline',
-        'ecd_food_low_income_plan',
-        'ecd_centers_baseline',
-        'ecd_centers_plan',
-        'idaama_baseline',
-        'idaama_plan',
-        'zone_id',
+        'year',
+        'health_activity_name',
+        'sector_id',
         'kebele_id',
         'woreda_id',
-        'user_id',
+        'zone_id',
+        'region_id',
+        'created_by',
+        'updated_by',
+        'status',
     ];
+
+    /**
+     * Cast JSON fields
+     */
+    protected $casts = [
+        'health_activity_name' => 'array', // auto convert json <-> array
+    ];
+
+    /*
+    |--------------------------------------------------------------------------
+    | Relationships
+    |--------------------------------------------------------------------------
+    */
+
+    public function sector()
+    {
+        return $this->belongsTo(KebeleSectors::class, 'sector_id');
+    }
+
+    public function kebele()
+    {
+        return $this->belongsTo(Kebele::class);
+    }
+
+    public function woreda()
+    {
+        return $this->belongsTo(Woreda::class);
+    }
+
+    public function zone()
+    {
+        return $this->belongsTo(Zone::class);
+    }
+
+    public function region()
+    {
+        return $this->belongsTo(Region::class);
+    }
+
+    public function creator()
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function updater()
+    {
+        return $this->belongsTo(User::class, 'updated_by');
+    }
 }

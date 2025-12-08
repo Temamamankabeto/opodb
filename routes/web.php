@@ -16,6 +16,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\StructureController;
 use App\Http\Controllers\FederationController;
 use App\Http\Controllers\FertilizerController;
+use App\Http\Controllers\HealthPlanController;
 use App\Http\Controllers\WeeklyPlanController;
 use App\Http\Controllers\AssociationController;
 use App\Http\Controllers\InstitutionController;
@@ -547,6 +548,20 @@ Route::delete('/enterprise-work/{id}', [EnterpriseWorkController::class, 'destro
         Route::put('/barnoota/{id}/update', [BarnootaController::class, 'update'])->name('barnoota.update');
         Route::delete('/barnoota/{id}/delete', [BarnootaController::class, 'destroy'])->name('barnoota.destroy');
         Route::get('/barnoota/{id}', [BarnootaController::class, 'show'])->name('barnoota.show');
+
+
+        Route::middleware(['auth'])->prefix('health-plans')->name('health_plans.')->group(function () {
+
+        Route::get('/', [HealthPlanController::class, 'index'])->name('index');
+        Route::get('/create', [HealthPlanController::class, 'create'])->name('create');
+        Route::post('/store', [HealthPlanController::class, 'store'])->name('store');
+
+        Route::get('/edit/{id}', [HealthPlanController::class, 'edit'])->name('edit');
+        Route::put('/update/{id}', [HealthPlanController::class, 'update'])->name('update');
+    
+
+        Route::delete('/delete/{id}', [HealthPlanController::class, 'destroy'])->name('destroy');
+        });
 
 
           // Environmental Protection Plans

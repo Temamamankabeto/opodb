@@ -3,10 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Health;
-use App\Models\CropType;
-use App\Models\HealthPlan;
 use Illuminate\Http\Request;
-use App\Models\YearlyCropPlan;
 use Illuminate\Support\Facades\Auth;
 
 class HealthController extends Controller
@@ -26,9 +23,11 @@ class HealthController extends Controller
     {
         $request->validate([
             'name' => 'required|unique:healths,name',
+            'unit' => 'required|string|max:50',
+            'type' => 'required|string|max:100',
         ]);
 
-        Health::create($request->only('name'));
+        Health::create($request->only('name', 'unit', 'type'));
 
         return redirect()->route('health.index')
                          ->with('success', 'Health entry created successfully.');
@@ -46,9 +45,11 @@ class HealthController extends Controller
 
         $request->validate([
             'name' => 'required|unique:healths,name,' . $item->id,
+            'unit' => 'required|string|max:50',
+            'type' => 'required|string|max:100',
         ]);
 
-        $item->update($request->only('name'));
+        $item->update($request->only('name', 'unit', 'type'));
 
         return redirect()->route('health.index')
                          ->with('success', 'Updated successfully.');

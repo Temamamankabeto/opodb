@@ -14,6 +14,8 @@ return new class extends Migration
         Schema::create('healths', function (Blueprint $table) {
             $table->id();
              $table->string('name')->unique();
+                $table->string('unit');
+                $table->string('type')->nullable();
             $table->timestamps();
         });
     }
