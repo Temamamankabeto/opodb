@@ -168,7 +168,7 @@ class EmploymentOpportunityPlanController extends Controller
     public function edit($id)
     {
         $plan = EmploymentOpportunityPlan::with(['jobOpportunity', 'enterpriseWork'])
-            ->where('sector_id', Auth::user()->sector_id)
+            ->where('kebele_id', Auth::user()->kebele_id)
             ->findOrFail($id);
 
         $jobOpportunities = JobOpportunity::all();
