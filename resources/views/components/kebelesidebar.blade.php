@@ -291,14 +291,14 @@
                     </a>
                 </li>
 
-                  {{-- <li class="nav-item">
-                    <a href="{{ url('sector/building-economic-institution-plans') }}" class="nav-link">
+                  <li class="nav-item">
+                    <a href="{{ url('sector/cultural-plans') }}" class="nav-link">
                         <i class="fas fa-cogs nav-icon"></i>
                         <p>{{ __('Aadaa Fi Aartii') }}</p>
                     </a>
                 </li>
 
-                   <li class="nav-item">
+                   {{-- <li class="nav-item">
                     <a href="{{ url('sector/building-economic-institution-plans') }}" class="nav-link">
                         <i class="fas fa-cogs nav-icon"></i>
                         <p>{{ __('Ragaalee Civilii') }}</p>
