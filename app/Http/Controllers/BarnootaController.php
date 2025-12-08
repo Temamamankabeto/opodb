@@ -58,12 +58,8 @@ class BarnootaController extends Controller
         $buaaQabeessummaaItems = $allItems;
     }
     
-    // Get years
-    $currentYear = date('Y');
-    $years = [];
-    for ($i = $currentYear; $i >= $currentYear - 10; $i--) {
-        $years[$i] = $i;
-    }
+    $currentYear = \App\Helpers\EthiopianYear::now();
+        $years = range($currentYear - 2, $currentYear + 3);
     
     return view('barnoota.create', compact(
         'hirmaannaaItems',

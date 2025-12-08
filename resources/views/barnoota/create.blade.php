@@ -31,14 +31,15 @@
                                         <div class="col-md-4">
                                             <div class="form-group">
                                                 <label for="year">Year *</label>
-                                                <select name="year" id="year" class="form-control" required>
-                                                    <option value="">Select Year</option>
-                                                    @foreach($years as $value)
-                                                        <option value="{{ $value }}" {{ old('year') == $value ? 'selected' : '' }}>
-                                                            {{ $value }}
-                                                        </option>
-                                                    @endforeach
-                                                </select>
+                                                <select name="year" class="form-control @error('year') is-invalid @enderror" 
+                                                id="yearSelect" required>
+                                            <option value="">-- Select Year --</option>
+                                            @foreach ($years as $year)
+                                                <option value="{{ $year }}" {{ old('year') == $year ? 'selected' : '' }}>
+                                                    {{ $year }} EC
+                                                </option>
+                                            @endforeach
+                                        </select>
                                                 @error('year')
                                                     <span class="text-danger">{{ $message }}</span>
                                                 @enderror
