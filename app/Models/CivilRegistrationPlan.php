@@ -2,19 +2,71 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class CivilRegistrationPlan extends Model
 {
-    //
-    protected $table='civil_registration_plans';
+    use HasFactory;
+
     protected $fillable = [
-        'baseline_year', 'plan_year',
-        'birth_cert_baseline', 'birth_cert_plan',
-        'marriage_cert_baseline', 'marriage_cert_plan',
-        'id_card_baseline', 'id_card_plan',
-        'divorce_cert_baseline', 'divorce_cert_plan',
-        'death_cert_baseline', 'death_cert_plan',
-        'zone_id', 'woreda_id', 'kebele_id'
+        'year',
+        'civil_registration_activities',
+        'sector_id',
+        'kebele_id',
+        'woreda_id',
+        'zone_id',
+        'region_id',
+        'created_by',
+        'updated_by',
+        'status',
     ];
+
+    /**
+     * Cast JSON fields
+     */
+    protected $casts = [
+        'civil_registration_activities' => 'array',
+    ];
+
+    /*
+    |--------------------------------------------------------------------------
+    | Relationships
+    |--------------------------------------------------------------------------
+    */
+
+    public function sector()
+    {
+        return $this->belongsTo(KebeleSectors::class, 'sector_id');
+    }
+
+    public function kebele()
+    {
+        return $this->belongsTo(Kebele::class);
+    }
+
+    public function woreda()
+    {
+        return $this->belongsTo(Woreda::class);
+    }
+
+    public function zone()
+    {
+        return $this->belongsTo(Zone::class);
+    }
+
+    public function region()
+    {
+        return $this->belongsTo(Region::class);
+    }
+
+    public function creator()
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function updater()
+    {
+        return $this->belongsTo(User::class, 'updated_by');
+    }
 }

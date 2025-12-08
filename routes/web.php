@@ -44,6 +44,7 @@ use App\Http\Controllers\StudentMealSupplyController;
 use App\Http\Controllers\KebeleEconomicPlanController;
 use App\Http\Controllers\NaturalResourcePlanController;
 use App\Http\Controllers\SeedlingPreparationController;
+use App\Http\Controllers\CivilRegistrationPlanController;
 use App\Http\Controllers\AssociationExpansionPlanController;
 use App\Http\Controllers\EducationalEffectivenessController;
 use App\Http\Controllers\EducationalParticipationController;
@@ -195,14 +196,14 @@ Route::delete('/educational-participations/delete/{id}', [EducationalParticipati
     Route::delete('/cultural-revival/delete/{id}', [CulturalRevivalController::class, 'destroy'])->name('cultural_revival.delete');
 
 
-    Route::get('/civil-certificates', [RegistrationOfCivilCertificateController::class, 'index'])->name('civil.index');
-Route::get('/civil-certificates/create', [RegistrationOfCivilCertificateController::class, 'create'])->name('civil.create');
-Route::post('/civil-certificates', [RegistrationOfCivilCertificateController::class, 'store'])->name('civil.store');
-
-Route::get('/civil-certificates/{id}/edit', [RegistrationOfCivilCertificateController::class, 'edit'])->name('civil.edit');
-Route::post('/civil-certificates/{id}', [RegistrationOfCivilCertificateController::class, 'update'])->name('civil.update');
-
-Route::delete('/civil-certificates/{id}', [RegistrationOfCivilCertificateController::class, 'destroy'])->name('civil.destroy');
+   Route::get('/civil-certificates', [RegistrationOfCivilCertificateController::class, 'index'])->name('civil.index');
+    Route::get('/civil-certificates/create', [RegistrationOfCivilCertificateController::class, 'create'])->name('civil.create');
+    Route::post('/civil-certificates', [RegistrationOfCivilCertificateController::class, 'store'])->name('civil.store');
+    
+    Route::get('/civil-certificates/{id}/edit', [RegistrationOfCivilCertificateController::class, 'edit'])->name('civil.edit');
+    Route::put('/civil-certificates/{id}', [RegistrationOfCivilCertificateController::class, 'update'])->name('civil.update'); // Changed from post to put
+    
+    Route::delete('/civil-certificates/{id}', [RegistrationOfCivilCertificateController::class, 'destroy'])->name('civil.destroy');
 
 Route::get('/government-properties', [KebeleGovernmentPropertyController::class, 'index'])->name('govprop.index');
 Route::get('/government-properties/create', [KebeleGovernmentPropertyController::class, 'create'])->name('govprop.create');
@@ -576,6 +577,18 @@ Route::delete('/enterprise-work/{id}', [EnterpriseWorkController::class, 'destro
     Route::delete('/delete/{id}', [CulturalPlanController::class, 'destroy'])->name('destroy');
 });
 
+
+Route::middleware(['auth'])->prefix('civil-registration-plans')->name('civil_registration_plans.')->group(function () {
+
+    Route::get('/', [CivilRegistrationPlanController::class, 'index'])->name('index');
+    Route::get('/create', [CivilRegistrationPlanController::class, 'create'])->name('create');
+    Route::post('/store', [CivilRegistrationPlanController::class, 'store'])->name('store');
+
+    Route::get('/edit/{id}', [CivilRegistrationPlanController::class, 'edit'])->name('edit');
+    Route::put('/update/{id}', [CivilRegistrationPlanController::class, 'update'])->name('update');
+
+    Route::delete('/delete/{id}', [CivilRegistrationPlanController::class, 'destroy'])->name('destroy');
+});
           // Environmental Protection Plans
             Route::get('/environmental-plans', [EnvironmentalProtectionPlanController::class, 'index'])->name('environmental-plans.index');
             Route::get('/environmental-plans/create', [EnvironmentalProtectionPlanController::class, 'create'])->name('environmental-plans.create');

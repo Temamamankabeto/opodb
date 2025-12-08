@@ -25,6 +25,7 @@ class RegistrationOfCivilCertificateController extends Controller
     {
         $request->validate([
             'name' => 'required|unique:registration_of_civil_certificates|max:255'
+            
         ]);
 
         RegistrationOfCivilCertificate::create([

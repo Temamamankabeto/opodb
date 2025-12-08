@@ -75,6 +75,15 @@
                               <p>Aadaa Fi Aartii</p>
                           </a>
                       </li>
+
+                       <li class="nav-item">
+                          <a href="{{url('admin/civil-certificates')}}" class="nav-link">
+                              <i class="far fa-circle nav-icon"></i>
+                              <p>Ragaalee Civilii</p>
+                          </a>
+                      </li>
+
+                      
                       
                       
                       
