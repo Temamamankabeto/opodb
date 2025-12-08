@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('cultural_revivals', function (Blueprint $table) {
             $table->id();
              $table->string('name')->unique();
+                $table->string('unit')->nullable();
             $table->timestamps();
         });
     }

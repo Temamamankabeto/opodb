@@ -68,6 +68,14 @@
                               <p>Health</p>
                           </a>
                       </li>
+
+ <li class="nav-item">
+                          <a href="{{url('admin/cultural-revival')}}" class="nav-link">
+                              <i class="far fa-circle nav-icon"></i>
+                              <p>Aadaa Fi Aartii</p>
+                          </a>
+                      </li>
+                      
                       
                       
                   </ul>

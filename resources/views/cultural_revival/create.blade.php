@@ -1,20 +1,59 @@
 <x-layout>
-<div class="container py-4">
+    <div class="content-header">
+        <section class="content">
+            <div class="container-fluid">
+                <div class="row mb-2">
+                    <div class="col-sm-6">
+                        <h1>Add Cultural Revival</h1>
+                    </div>
+                </div>
+            </div>
+        </section>
 
-    <h3>Add Cultural Revival</h3>
+        <section class="content">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card card-primary">
+                            <div class="card-header">
+                                <h3 class="card-title">Create Cultural Revival Activity</h3>
+                            </div>
+                            
+                            <form action="{{ route('cultural_revival.store') }}" method="POST">
+                                @csrf
+                                
+                                <div class="card-body">
+                                    <div class="form-group">
+                                        <label class="font-weight-bold">Name</label>
+                                        <input type="text" name="name" value="{{ old('name') }}" class="form-control" required>
+                                        @error('name') 
+                                            <span class="text-danger">{{ $message }}</span> 
+                                        @enderror
+                                    </div>
 
-    <form action="{{ route('cultural_revival.store') }}" method="POST">
-        @csrf
+                                    <div class="form-group">
+                                        <label class="font-weight-bold">Unit</label>
+                                        <input type="text" name="unit" value="{{ old('unit') }}" class="form-control" placeholder="e.g., kg, liter, person, etc.">
+                                        @error('unit') 
+                                            <span class="text-danger">{{ $message }}</span> 
+                                        @enderror
+                                        <small class="text-muted">Optional: Enter the unit of measurement for this cultural activity</small>
+                                    </div>
+                                </div>
 
-        <div class="mb-3">
-            <label class="fw-bold">Name</label>
-            <input type="text" name="name" value="{{ old('name') }}" class="form-control" required>
-            @error('name') <span class="text-danger">{{ $message }}</span> @enderror
-        </div>
-
-        <button class="btn btn-success">Save</button>
-        <a href="{{ route('cultural_revival.index') }}" class="btn btn-secondary">Cancel</a>
-    </form>
-
-</div>
+                                <div class="card-footer">
+                                    <button type="submit" class="btn btn-success">
+                                        <i class="fas fa-save"></i> Save
+                                    </button>
+                                    <a href="{{ route('cultural_revival.index') }}" class="btn btn-secondary">
+                                        <i class="fas fa-times"></i> Cancel
+                                    </a>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
 </x-layout>

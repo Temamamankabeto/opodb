@@ -9,7 +9,7 @@ class CulturalRevivalController extends Controller
 {
     public function index()
     {
-        $items =  CulturalRevival::orderBy('id', 'DESC')->get();
+        $items = CulturalRevival::orderBy('id', 'DESC')->get();
         return view('cultural_revival.index', compact('items'));
     }
 
@@ -22,9 +22,10 @@ class CulturalRevivalController extends Controller
     {
         $request->validate([
             'name' => 'required|unique:cultural_revivals,name',
+            'unit' => 'nullable|string|max:100',
         ]);
 
-        CulturalRevival::create($request->only('name'));
+        CulturalRevival::create($request->only('name', 'unit'));
 
         return redirect()->route('cultural_revival.index')
                          ->with('success', 'Cultural Revival added successfully.');
@@ -42,9 +43,10 @@ class CulturalRevivalController extends Controller
 
         $request->validate([
             'name' => 'required|unique:cultural_revivals,name,' . $item->id,
+            'unit' => 'nullable|string|max:100',
         ]);
 
-        $item->update($request->only('name'));
+        $item->update($request->only('name', 'unit'));
 
         return redirect()->route('cultural_revival.index')
                          ->with('success', 'Updated successfully.');
