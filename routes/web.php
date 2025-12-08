@@ -22,6 +22,7 @@ use App\Http\Controllers\AssociationController;
 use App\Http\Controllers\InstitutionController;
 use App\Http\Controllers\JobCreationController;
 use App\Http\Controllers\KebeleAdminController;
+use App\Http\Controllers\CulturalPlanController;
 use App\Http\Controllers\GabbinaBiyyeeController;
 use App\Http\Controllers\LivestockPlanController;
 use App\Http\Controllers\MechanizationController;
@@ -563,6 +564,17 @@ Route::delete('/enterprise-work/{id}', [EnterpriseWorkController::class, 'destro
         Route::delete('/delete/{id}', [HealthPlanController::class, 'destroy'])->name('destroy');
         });
 
+
+        Route::middleware(['auth'])->prefix('cultural-plans')->name('cultural_plans.')->group(function () {
+    Route::get('/', [CulturalPlanController::class, 'index'])->name('index');
+    Route::get('/create', [CulturalPlanController::class, 'create'])->name('create');
+    Route::post('/store', [CulturalPlanController::class, 'store'])->name('store');
+
+    Route::get('/edit/{id}', [CulturalPlanController::class, 'edit'])->name('edit');
+    Route::put('/update/{id}', [CulturalPlanController::class, 'update'])->name('update');
+
+    Route::delete('/delete/{id}', [CulturalPlanController::class, 'destroy'])->name('destroy');
+});
 
           // Environmental Protection Plans
             Route::get('/environmental-plans', [EnvironmentalProtectionPlanController::class, 'index'])->name('environmental-plans.index');
