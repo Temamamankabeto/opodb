@@ -90,9 +90,7 @@
                     <div class="container-fluid">
                         <a class="navbar-brand" href="#">Kebele Agricultural Dashboard</a>
                         <div class="d-flex ms-auto align-items-center">
-                            <button class="btn btn-outline-secondary me-2"><i class="bi bi-brightness-high"></i></button>
-                            <button class="btn btn-outline-secondary me-2"><i class="bi bi-bell"></i></button>
-                            <button class="btn btn-outline-secondary"><i class="bi bi-person-circle"></i></button>
+                            
                         </div>
                     </div>
                 </nav>
