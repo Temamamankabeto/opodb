@@ -89,9 +89,7 @@
                 <nav class="navbar navbar-expand-lg navbar-light bg-light mb-4">
                     <div class="container-fluid">
                         <a class="navbar-brand" href="#">Kebele Agricultural Dashboard</a>
-                        <div class="d-flex ms-auto align-items-center">
-                            
-                        </div>
+                        
                     </div>
                 </nav>
 
