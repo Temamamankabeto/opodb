@@ -341,29 +341,15 @@
                                             <!-- Actions -->
                                             <td class="action-group">
                                                 <div class="btn-group btn-group-sm">
-                                                    <a href="{{ route('sector.crop-plans.editcrop', $plan->id) }}" 
-                                                       class="btn btn-warning" title="Edit">
+                                                    <button type="button"
+                                                            class="btn btn-warning disabled"
+                                                            title="Edit (Disabled)"
+                                                            disabled>
                                                         <i class="fas fa-edit"></i>
-                                                    </a>
-                                                    <a href="{{ route('sector.crop-plans.activityplan', $plan->id ) }}" 
-                                                       class="btn btn-info" title="Schedule">
-                                                        <i class="fas fa-calendar-alt"></i>
-                                                    </a>
-                                                    <div class="btn-group">
-                                                        <button type="button" class="btn btn-info dropdown-toggle dropdown-icon" 
-                                                                data-toggle="dropdown" title="More Actions">
-                                                        </button>
-                                                        <div class="dropdown-menu">
-                                                            <a class="dropdown-item" href="{{ route('sector.crop-plans.productionactivityplan', $plan->id ) }}">
-                                                                <i class="fas fa-industry mr-2"></i>Production Schedule
-                                                            </a>
-                                                            <a class="dropdown-item" href="{{ route('sector.fertilizer-plans.edit', $plan->id ) }}">
-                                                                <i class="fas fa-flask mr-2"></i>Fertilizer Plan
-                                                            </a>
-                                                        </div>
-                                                    </div>
+                                                    </button>
                                                 </div>
                                             </td>
+
                                         </tr>
                                     @endforeach
                                 </tbody>

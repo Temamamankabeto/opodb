@@ -61,7 +61,37 @@
                                 <input type="hidden" name="expected_yield" value="{{ $plan->expected_yield }}">
 
                                 <div class="card-body">
-                                     
+                                    <!-- Modern Progress Stepper -->
+                                    <div class="row mb-4">
+                                        <div class="col-12">
+                                            <div class="stepper">
+                                                <div class="step active" data-step="1">
+                                                    <div class="step-icon">
+                                                        <i class="fas fa-calendar-quarter"></i>
+                                                    </div>
+                                                    <div class="step-label">{{ __('Select Quarters') }}</div>
+                                                    <span class="step-badge" id="selectedQuartersBadge">0</span>
+                                                </div>
+                                                <div class="step" data-step="2">
+                                                    <div class="step-icon">
+                                                        <i class="fas fa-calendar-month"></i>
+                                                    </div>
+                                                    <div class="step-label">{{ __('Plan Distribution') }}</div>
+                                                    <span class="step-badge" id="selectedWeeksBadge">0</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Instructions -->
+                                    <div class="row mb-4">
+                                        <div class="col-12">
+                                            <div class="callout callout-info">
+                                                <h6><i class="fas fa-info-circle mr-2"></i>{{ __('Instructions') }}</h6>
+                                                <p class="mb-0">{{ __('Click on quarter cards to expand and see months. Click on month cards to expand and plan weekly distribution. Total area available:') }} <strong>{{ number_format($plan->area_to_plant, 2) }} {{ __('ha') }}</strong>.</p>
+                                            </div>
+                                        </div>
+                                    </div>
 
                                     <!-- Main Planning Container - Expandable Cards -->
                                     <div class="planning-container" id="planningContainer">
