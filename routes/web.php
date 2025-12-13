@@ -56,6 +56,7 @@ use App\Http\Controllers\BuildingPowerInstitutionPlanController;
 use App\Http\Controllers\RegistrationOfCivilCertificateController;
 use App\Http\Controllers\BuildingEconomicInstitutionPlanController;
 use App\Http\Controllers\BuildingCommunityInstitutionPlanController;
+use App\Http\Controllers\KaroraController;
 
 Route::middleware([SecurityHeaders::class])->group(function () {
     // Public routes
@@ -407,6 +408,20 @@ Route::delete('/enterprise-work/{id}', [EnterpriseWorkController::class, 'destro
         // Logout
         Route::get('/logout', [UserController::class, 'logout'])->name('logout');
     });
+
+
+    // karoora torbanii 
+Route::middleware(['auth', 'role:5,4'])->prefix('sector')->name('sector.')->group(function () {
+    // Main index route
+    Route::get('karoora-torbanii/midhaan', [KaroraController::class, 'index'])->name('crop-karora.index');
+    
+    // AJAX routes with correct paths
+    Route::get('karoora-torbanii/midhaan/get-seasons', [KaroraController::class, 'getSeasons'])
+         ->name('crop-karora.get-seasons');
+    
+    Route::get('karoora-torbanii/midhaan/get-crops', [KaroraController::class, 'getCrops'])
+         ->name('crop-karora.get-crops');
+});
 
     Route::middleware(['auth', 'role:5,4'])->prefix('sector')->name('sector.')->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'sectorDashboard'])->name('sector.dashboard');
