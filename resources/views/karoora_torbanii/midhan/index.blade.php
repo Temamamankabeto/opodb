@@ -6,7 +6,7 @@
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6">
-                    <h6><i class="fas fa-seedling text-success mr-2"></i>Kebele Crop Plans Summary</h6>
+                    <h6><i class="fas fa-seedling text-success mr-2"></i>{{ __('Karoora Torbanii') }}</h6>
                 </div>
             </div>
         </div>

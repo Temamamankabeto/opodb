@@ -414,6 +414,7 @@ Route::delete('/enterprise-work/{id}', [EnterpriseWorkController::class, 'destro
 Route::middleware(['auth', 'role:5,4'])->prefix('sector')->name('sector.')->group(function () {
     // Main index route
     Route::get('karoora-torbanii/midhaan', [KaroraController::class, 'index'])->name('crop-karora.index');
+    Route::get('rawwii-torbanii/midhaan', [KaroraController::class, 'indexrawwii'])->name('crop-rawwii.index');
     
     // AJAX routes with correct paths
     Route::get('karoora-torbanii/midhaan/get-seasons', [KaroraController::class, 'getSeasons'])
@@ -440,6 +441,12 @@ Route::middleware(['auth', 'role:5,4'])->prefix('sector')->name('sector.')->grou
         Route::get('crop-plans/{id}/edit', [KebeleCropPlanController::class, 'edit'])->name('crop-plans.editcrop');
         Route::put('crop-plans/{id}', [KebeleCropPlanController::class, 'update'])->name('crop-plans.update');
 
+        Route::put('crop-plans/{id}/update-production-plan', [KebeleCropPlanController::class, 'updateProductionPlan'])
+    ->name('crop-plans.update-production-plan');
+
+    Route::put('crop-plans/{id}/update-land-preparation', [KebeleCropPlanController::class, 'updateLandPreparation'])
+    ->name('crop-plans.update-land-preparation');
+
 
         Route::get('activityplan-plans/{id}', [KebeleCropPlanController::class, 'activityplan'])->name('crop-plans.activityplan');
         Route::get('achivement-land-plans/{id}', [KebeleCropPlanController::class, 'achivement'])->name('crop-plans.achivement');
@@ -459,7 +466,9 @@ Route::middleware(['auth', 'role:5,4'])->prefix('sector')->name('sector.')->grou
           // Fertilizer distribution routes
         Route::get('/fertilizer-plans/{id}/edit', [KebeleCropPlanController::class, 'fertilizerPlan'])->name('fertilizer-plans.edit');
         Route::get('/fertilizer-achivement/{id}/edit', [KebeleCropPlanController::class, 'fertilizerachivement'])->name('fertilizer-achivement.edit');
-        Route::put('/fertilizer-plans/{id}', [KebeleCropPlanController::class, 'updateFertilizerDistribution'])->name('fertilizer-plans.update');
+
+        Route::put('crop-plans/{id}/update-fertilizer-distribution', [KebeleCropPlanController::class, 'updateFertilizerDistribution'])
+    ->name('crop-plans.update-fertilizer-distribution');
             // OR if you want CSV
             Route::get('/crop-plans/export/csv', [KebeleCropPlanController::class, 'exportCsv'])->name('crop-plans.export.csv');
 

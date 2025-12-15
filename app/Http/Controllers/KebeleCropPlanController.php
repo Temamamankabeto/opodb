@@ -767,7 +767,7 @@ class KebeleCropPlanController extends Controller
     private function transformPlanDataForTable($plan)
     {
         // Extract timeline data from plan division details
-        $planDivisionDetails = $plan->plandivision_details ?? [];
+        $planDivisionDetails = $plan->productionplan_details ?? [];
 
         // Initialize timeline data structure
         $timelineData = [
@@ -865,6 +865,7 @@ class KebeleCropPlanController extends Controller
             'seed_required' => 'required|numeric|min:0',
             'plandivision_details' => 'sometimes|json',
             'productionplan_details' => 'sometimes|json',
+            
 
 
         ]);
@@ -926,6 +927,52 @@ class KebeleCropPlanController extends Controller
             ->with('success', '✅ Kebele Crop Plan updated successfully!');
     }
 
+    public function updateProductionPlan(Request $request, $id)
+{
+    $user = Auth::user();
+    $cropPlan = KebeleCropPlan::findOrFail($id);
+    
+    // Validate only the field we want to update
+    $validated = $request->validate([
+        'productionplan_details' => 'sometimes|json',
+    ]);
+    
+    // Parse production plan details
+    $productionplanDetails = json_decode($request->productionplan_details, true) ?? [];
+    
+    // Update ONLY the productionplan_details field
+    $cropPlan->update([
+        'productionplan_details' => $productionplanDetails,
+        'updated_by' => $user->id,
+    ]);
+    
+    return redirect()->route('sector.crop-karora.index')
+        ->with('success', '✅ Production plan updated successfully!');
+}
+
+
+public function updateLandPreparation(Request $request, $id)
+{
+    $user = Auth::user();
+    $cropPlan = KebeleCropPlan::findOrFail($id);
+    
+    // Validate only the field we want to update
+    $validated = $request->validate([
+        'plandivision_details' => 'sometimes|json',
+    ]);
+    
+    // Parse land preparation details
+    $plandivisionDetails = json_decode($request->plandivision_details, true) ?? [];
+    
+    // Update ONLY the plandivision_details field
+    $cropPlan->update([
+        'plandivision_details' => $plandivisionDetails,
+        'updated_by' => $user->id,
+    ]);
+    
+    return redirect()->route('sector.crop-karora.index')
+        ->with('success', '✅ Land preparation plan updated successfully!');
+}
 
 // production division
 
@@ -2139,27 +2186,27 @@ class KebeleCropPlanController extends Controller
         ];
     }
 
-    public function updateFertilizerDistribution(Request $request, $id)
-    {
-        $user = Auth::user();
-        $cropPlan = KebeleCropPlan::findOrFail($id);
-
-        $validated = $request->validate([
-            'fertilizer_distribution_details' => 'sometimes|json',
-        ]);
-
-        // Parse fertilizer distribution details
-        $fertilizerDistributionDetails = json_decode($request->fertilizer_distribution_details, true) ?? [];
-
-        // Update the crop plan with fertilizer distribution details
-        $cropPlan->update([
-            'fertilizer_distribution_details' => $fertilizerDistributionDetails,
-            'updated_by' => $user->id,
-        ]);
-
-        return redirect()->route('sector.crop-plans.index')
-            ->with('success', '✅ Fertilizer distribution plan updated successfully!');
-    }
-
+   public function updateFertilizerDistribution(Request $request, $id)
+{
+    $user = Auth::user();
+    $cropPlan = KebeleCropPlan::findOrFail($id);
+    
+    // Validate only the field we want to update
+    $validated = $request->validate([
+        'fertilizer_distribution_details' => 'sometimes|json',
+    ]);
+    
+    // Parse fertilizer distribution details
+    $fertilizerDistributionDetails = json_decode($request->fertilizer_distribution_details, true) ?? [];
+    
+    // Update ONLY the fertilizer_distribution_details field
+    $cropPlan->update([
+        'fertilizer_distribution_details' => $fertilizerDistributionDetails,
+        'updated_by' => $user->id,
+    ]);
+    
+    return redirect()->route('sector.crop-karora.index')
+        ->with('success', '✅ Fertilizer distribution plan updated successfully!');
+}
 
 }

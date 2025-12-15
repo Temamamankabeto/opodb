@@ -348,7 +348,7 @@
                                                         <i class="fas fa-edit"></i>
                                                     </button>
                                                 </div>
-                                            </td>
+                                           </td>
 
                                         </tr>
                                     @endforeach
