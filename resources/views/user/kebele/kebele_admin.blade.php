@@ -1,16 +1,16 @@
 <x-layout>
     <div class="container-fluid">
-        <div class="card shadow-sm">
-            <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
-                <h4 class="mb-0">User Kebele admin List</h4>
-                <button class="btn btn-light btn-sm" data-bs-toggle="modal" data-bs-target="#createUserModal">
-                    + Add User
+        <div class="card card-success card-outline shadow-sm">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h4 class="card-title mb-0">User Kebele Admin List</h4>
+                <button class="btn btn-success btn-flat btn-sm" data-toggle="modal" data-target="#createUserModal">
+                    <i class="fas fa-user-plus"></i> Add User
                 </button>
             </div>
             <div class="card-body">
                 <div class="table-responsive">
-                    <table class="table table-hover align-middle text-center table-bordered">
-                        <thead class="table-primary">
+                    <table class="table table-hover table-bordered text-center">
+                        <thead class="table-success">
                         <tr>
                             <th>#</th>
                             <th>Name</th>
@@ -56,31 +56,92 @@
                                 </td>
                                 <td>{{ optional($user->role)->name ?? '-' }}</td>
                                 <td>{{ $user->employee_id ?? '-' }}</td>
-                                <td> jj
-                                    <a href="{{ route('zone.user.edit', $user->uuid) }}"
-                                       class="btn btn-sm btn-outline-primary">
-                                        <i class="bi bi-pencil-square"></i> Edit
-                                    </a>
-                                    {{-- <form action="{{ route('users.destroy', $user->uuid) }}" method="POST"
-                                          class="d-inline" onsubmit="return confirm('Are you sure to delete?')">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button class="btn btn-sm btn-outline-danger">
-                                            <i class="bi bi-trash3"></i> Delete
-                                        </button>
-                                    </form> --}}
+                                <td>
+                                    <!-- Edit button triggers modal -->
+                                    <button class="btn btn-outline-primary btn-flat btn-sm" data-toggle="modal" data-target="#editUserModal{{ $user->uuid }}">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
                                 </td>
                             </tr>
+
+                            <!-- Edit User Modal -->
+                            <div class="modal fade" id="editUserModal{{ $user->uuid }}" tabindex="-1" role="dialog" aria-labelledby="editUserModalLabel{{ $user->uuid }}" aria-hidden="true">
+                                <div class="modal-dialog modal-lg modal-dialog-scrollable" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header bg-warning">
+                                            <h5 class="modal-title text-white" id="editUserModalLabel{{ $user->uuid }}">Edit User</h5>
+                                            <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <form action="{{ route('kebele.user.update', $user->uuid) }}" method="POST">
+                                            @csrf
+                                            @method('PUT')
+                                            <div class="modal-body">
+                                                @if ($errors->any())
+                                                    <div class="alert alert-danger">
+                                                        <ul class="mb-0">
+                                                            @foreach ($errors->all() as $error)
+                                                                <li>• {{ $error }}</li>
+                                                            @endforeach
+                                                        </ul>
+                                                    </div>
+                                                @endif
+
+                                                <div class="row g-3">
+                                                    <div class="col-md-6">
+                                                        <label class="form-label">Name <span class="text-danger">*</span></label>
+                                                        <input type="text" name="name" value="{{ old('name', $user->name) }}" required class="form-control form-control-sm">
+                                                    </div>
+
+                                                    <div class="col-md-6">
+                                                        <label class="form-label">Email <span class="text-danger">*</span></label>
+                                                        <input type="email" name="email" value="{{ old('email', $user->email) }}" required class="form-control form-control-sm">
+                                                    </div>
+
+                                                    <div class="col-md-6">
+                                                        <label class="form-label">Gender</label>
+                                                        <select name="gender" class="form-select form-select-sm">
+                                                            <option value="">Select Gender</option>
+                                                            <option value="male" {{ old('gender', $user->gender) == 'male' ? 'selected' : '' }}>Male</option>
+                                                            <option value="female" {{ old('gender', $user->gender) == 'female' ? 'selected' : '' }}>Female</option>
+                                                            <option value="other" {{ old('gender', $user->gender) == 'other' ? 'selected' : '' }}>Other</option>
+                                                        </select>
+                                                    </div>
+
+                                                    <div class="col-md-6">
+                                                        <label class="form-label">Woreda</label>
+                                                        <input type="text" class="form-control form-control-sm" value="{{ $user->woreda->name }}" readonly>
+                                                    </div>
+
+                                                    <div class="col-md-6">
+                                                        <label class="form-label">Kebele</label>
+                                                        <input type="text" class="form-control form-control-sm" value="{{ optional($user->kebele)->name }}" readonly>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="modal-footer justify-content-between">
+                                                <button type="submit" class="btn btn-warning btn-flat btn-sm">
+                                                    <i class="fas fa-check-circle me-1"></i> Update User
+                                                </button>
+                                                <button type="button" class="btn btn-secondary btn-flat btn-sm" data-dismiss="modal">
+                                                    Cancel
+                                                </button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
                         @empty
                             <tr>
-                                <td colspan="11" class="text-muted">No users found.</td>
+                                <td colspan="12" class="text-muted">No users found.</td>
                             </tr>
                         @endforelse
                         </tbody>
                     </table>
                 </div>
 
-                <!-- Pagination -->
                 <div class="mt-3">
                     {{ $users->links() }}
                 </div>
@@ -89,15 +150,16 @@
     </div>
 
     <!-- Modal: Create User -->
-    <div class="modal fade" id="createUserModal" tabindex="-1" aria-labelledby="createUserModalLabel"
-         aria-hidden="true">
-        <div class="modal-dialog modal-lg modal-dialog-scrollable">
+    <div class="modal fade" id="createUserModal" tabindex="-1" role="dialog" aria-labelledby="createUserModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-scrollable" role="document">
             <div class="modal-content">
-                <div class="modal-header bg-primary text-white">
-                    <h5 class="modal-title" id="createUserModalLabel">Create New User</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <div class="modal-header bg-success">
+                    <h5 class="modal-title text-white" id="createUserModalLabel">Create New User</h5>
+                    <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
                 </div>
-                <form action="{{ route('users.kebele.admin.store') }}" method="POST">
+                <form action="{{ route('kebele.admin.store') }}" method="POST">
                     @csrf
                     <div class="modal-body">
                         @if ($errors->any())
@@ -113,70 +175,74 @@
                         <div class="row g-3">
                             <div class="col-md-6">
                                 <label class="form-label">Name <span class="text-danger">*</span></label>
-                                <input type="text" name="name" value="{{ old('name') }}" required class="form-control">
+                                <input type="text" name="name" value="{{ old('name') }}" required class="form-control form-control-sm">
                             </div>
+
                             <div class="col-md-6">
                                 <label class="form-label">Email <span class="text-danger">*</span></label>
-                                <input type="email" name="email" value="{{ old('email') }}" required
-                                       class="form-control">
+                                <input type="email" name="email" value="{{ old('email') }}" required class="form-control form-control-sm">
                             </div>
+
                             <div class="col-md-6">
-                                <label class="form-label">Phone</label>
-                                <input type="text" name="phone" value="{{ old('phone') }}" class="form-control">
+                                <label class="form-label">Phone <span class="text-danger">*</span></label>
+                                <input type="text" name="phone" value="{{ old('phone') }}" required class="form-control form-control-sm">
                             </div>
+
                             <div class="col-md-6">
                                 <label class="form-label">Gender</label>
-                                <select name="gender" class="form-select">
+                                <select name="gender" class="form-select form-select-sm">
                                     <option value="">Select Gender</option>
                                     <option value="male" {{ old('gender') == 'male' ? 'selected' : '' }}>Male</option>
-                                    <option value="female" {{ old('gender') == 'female' ? 'selected' : '' }}>Female
-                                    </option>
-                                    <option value="other" {{ old('gender') == 'other' ? 'selected' : '' }}>Other
-                                    </option>
+                                    <option value="female" {{ old('gender') == 'female' ? 'selected' : '' }}>Female</option>
+                                    <option value="other" {{ old('gender') == 'other' ? 'selected' : '' }}>Other</option>
                                 </select>
                             </div>
+
                             <div class="col-md-6">
                                 <label class="form-label">Woreda</label>
-                                <select name="woreda_id" id="woreda" class="form-select">
-                                    <option value="">Select Woreda</option>
-                                    @foreach ($woredas as $woreda)
-                                        <option value="{{ $woreda->id }}">{{ $woreda->name }}</option>
+                                <input type="text" class="form-control form-control-sm" value="{{ $woreda->name }}" readonly>
+                                <input type="hidden" name="woreda_id" value="{{ $woreda->id }}">
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label">Kebele</label>
+                                <select name="kebele_id" class="form-select form-select-sm" required>
+                                    <option value="">Select Kebele</option>
+                                    @foreach($kebeles as $kebele)
+                                        <option value="{{ $kebele->id }}">{{ $kebele->name }}</option>
                                     @endforeach
                                 </select>
                             </div>
-                            <div class="col-md-6">
-                                <label class="form-label">Kebele</label>
-                                <select name="kebele_id" id="kebele_id" class="form-select">
-                                    <option value="">Select Kebele</option>
-                                </select>
-                            </div>
+
                             <div class="col-md-6">
                                 <label class="form-label">Role</label>
-                                <select name="role_id" class="form-select">
+                                <select name="role_id" class="form-select form-select-sm" required>
                                     <option value="">Select Role</option>
                                     @foreach ($roles as $role)
-                                        <option
-                                            value="{{ $role->id }}" {{ old('role_id') == $role->id ? 'selected' : '' }}>
+                                        <option value="{{ $role->id }}" {{ old('role_id') == $role->id ? 'selected' : '' }}>
                                             {{ $role->name }}
                                         </option>
                                     @endforeach
                                 </select>
                             </div>
+
                             <div class="col-md-6">
                                 <label class="form-label">Password <span class="text-danger">*</span></label>
-                                <input type="password" name="password" required class="form-control">
+                                <input type="password" name="password" required class="form-control form-control-sm">
                             </div>
+
                             <div class="col-md-6">
                                 <label class="form-label">Confirm Password <span class="text-danger">*</span></label>
-                                <input type="password" name="password_confirmation" required class="form-control">
+                                <input type="password" name="password_confirmation" required class="form-control form-control-sm">
                             </div>
                         </div>
                     </div>
-                    <div class="modal-footer">
-                        <button type="submit" class="btn btn-success">
-                            <i class="bi bi-check-circle me-1"></i> Save User
+
+                    <div class="modal-footer justify-content-between">
+                        <button type="submit" class="btn btn-success btn-flat btn-sm">
+                            <i class="fas fa-check-circle me-1"></i> Save User
                         </button>
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <button type="button" class="btn btn-secondary btn-flat btn-sm" data-dismiss="modal">
                             Cancel
                         </button>
                     </div>
@@ -186,55 +252,5 @@
     </div>
 
     <!-- Dependencies -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
-    <script>
-        // Load kebeles based on zone
-        $('#zone_id').on('change', function () {
-            const zoneId = $(this).val();
-            $('#woreda_id').html('<option value="">Loading...</option>');
-            $('#kebele_id').html('<option value="">Select Kebele</option>'); // clear kebeles
-
-            if (zoneId) {
-                $.ajax({
-                    url: '/zones/get-woredas/' + zoneId,
-                    type: 'GET',
-                    success: function (data) {
-                        $('#woreda_id').empty().append('<option value="">Select Woreda</option>');
-                        data.forEach(woreda => {
-                            $('#woreda_id').append(`<option value="${woreda.id}">${woreda.name}</option>`);
-                        });
-                    }
-                });
-            } else {
-                $('#woreda_id').html('<option value="">Select Woreda</option>');
-            }
-        });
-    </script>
-    <script>
-        $('#woreda').on('change', function () {
-            const woredaId = $(this).val();
-            $('#kebele_id').html('<option value="">Loading...</option>');
-
-            if (woredaId) {
-                $.ajax({
-                    url: '/zones/get-kebeles/' + woredaId,
-                    type: 'GET',
-                    success: function (data) {
-                        $('#kebele_id').empty().append('<option value="">Select Kebele</option>');
-                        data.forEach(kebele => {
-                            $('#kebele_id').append(`<option value="${kebele.id}">${kebele.name}</option>`);
-                        });
-                    },
-                    error: function () {
-                        $('#kebele_id').html('<option value="">Error loading kebeles</option>');
-                    }
-                });
-            } else {
-                $('#kebele_id').html('<option value="">Select Kebele</option>');
-            }
-        });
-    </script>
-
 </x-layout>

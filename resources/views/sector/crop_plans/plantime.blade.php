@@ -5,7 +5,7 @@
             <div class="container-fluid">
                 <div class="row mb-2">
                     <div class="col-sm-6">
-                        <h6>Crop Plan Area Distribution</h6>
+                        <h6>Land Preparation Area Distribution</h6>
                     </div>
                     <div class="col-sm-6">
                          
@@ -23,7 +23,7 @@
                             <div class="card-header">
                                 <h3 class="card-title">
                                     <i class="fas fa-calendar-alt mr-2"></i>
-                                    Crop Plan Area Distribution - Grouped by Year & Crop Type
+                                    Land Preparation Area Distribution - Grouped by Year & Crop Type
                                 </h3>
                                 <div class="card-tools">
                                     <button class="btn btn-sm btn-light" onclick="exportToExcel()" title="Export to Excel">
@@ -36,7 +36,7 @@
                             </div>
                             <div class="card-body p-0">
                                 <div class="table-responsive" style="max-height: 70vh;">
-                                    <table class="table table-bordered table-hover table-head-fixed text-nowrap mb-0" id="cropPlanTable">
+                                    <table class="table table-bordered table-hover table-head-fixed text-nowrap mb-0" id="landPrepTable">
                                         <thead class="thead-light sticky-top">
                                             <tr>
                                                 <th rowspan="4" class="text-center align-middle bg-gray">#</th>
@@ -49,15 +49,15 @@
                                                 <th rowspan="4" class="text-center align-middle bg-gray">Total Area (ha)</th>
 
                                                 @php
-                                                    // Define months for each quarter - Pagumen has no weeks
+                                                    // Define months for each quarter
                                                     $quarters = [
                                                         'Q1' => ['Meskerem', 'Tikimt', 'Hidar'],
                                                         'Q2' => ['Tahsas', 'Tir', 'Yekatit'],
                                                         'Q3' => ['Megabit', 'Miyazia', 'Ginbot'],
-                                                        'Q4' => ['Sene', 'Hamle', 'Nehase', 'Pagumen']
+                                                        'Q4' => ['Sene', 'Hamle', 'Nehase']
                                                     ];
                                                     
-                                                    // Define months that have weeks (all except Pagumen)
+                                                    // All months have 4 weeks
                                                     $monthsWithWeeks = ['Meskerem', 'Tikimt', 'Hidar', 'Tahsas', 'Tir', 'Yekatit', 'Megabit', 'Miyazia', 'Ginbot', 'Sene', 'Hamle', 'Nehase'];
                                                 @endphp
                                                 
@@ -65,11 +65,7 @@
                                                     @php
                                                         $colspan = 1; // Quarter total column
                                                         foreach($months as $month) {
-                                                            if (in_array($month, $monthsWithWeeks)) {
-                                                                $colspan += 5; // Month total + 4 weeks
-                                                            } else {
-                                                                $colspan += 1; // Only month total (no weeks for Pagumen)
-                                                            }
+                                                            $colspan += 5; // Month total + 4 weeks
                                                         }
                                                     @endphp
                                                     <!-- Quarter Header spans all months and weeks in the quarter -->
@@ -85,13 +81,8 @@
                                                     <th class="text-center bg-primary">{{ $quarter }} Total</th>
                                                     
                                                     @foreach($months as $month)
-                                                        @if(in_array($month, $monthsWithWeeks))
-                                                            <!-- Month Header spans all weeks in the month -->
-                                                            <th colspan="5" class="text-center bg-success">{{ $month }}</th>
-                                                        @else
-                                                            <!-- Pagumen - only month header, no weeks -->
-                                                            <th class="text-center bg-success">{{ $month }}</th>
-                                                        @endif
+                                                        <!-- Month Header spans all weeks in the month -->
+                                                        <th colspan="5" class="text-center bg-success">{{ $month }}</th>
                                                     @endforeach
                                                 @endforeach
 
@@ -108,12 +99,10 @@
                                                         <!-- Month Total -->
                                                         <th class="text-center bg-teal">{{ $month }} Total</th>
                                                         
-                                                        <!-- Weeks for this Month (only for months with weeks) -->
-                                                        @if(in_array($month, $monthsWithWeeks))
-                                                            @for($week = 1; $week <= 4; $week++)
-                                                                <th class="text-center bg-olive">W{{ $week }}</th>
-                                                            @endfor
-                                                        @endif
+                                                        <!-- Weeks for this Month -->
+                                                        @for($week = 1; $week <= 4; $week++)
+                                                            <th class="text-center bg-olive">W{{ $week }}</th>
+                                                        @endfor
                                                     @endforeach
                                                 @endforeach
 
@@ -157,11 +146,9 @@
                                                 foreach($quarters as $quarterMonths) {
                                                     foreach($quarterMonths as $month) {
                                                         $monthTotals[$month] = ['area' => 0];
-                                                        if (in_array($month, $monthsWithWeeks)) {
-                                                            for($week = 1; $week <= 4; $week++) {
-                                                                $weekKey = $month . ' W' . $week;
-                                                                $weekTotals[$weekKey] = ['area' => 0];
-                                                            }
+                                                        for($week = 1; $week <= 4; $week++) {
+                                                            $weekKey = $month . ' W' . $week;
+                                                            $weekTotals[$weekKey] = ['area' => 0];
                                                         }
                                                     }
                                                 }
@@ -186,7 +173,7 @@
                                                         // Calculate crop type totals
                                                         foreach($cropTypePlans as $plan) {
                                                             $cropTypeTotalArea += $plan['area_to_plant'];
-                                                            $cropTypeDistributedArea += $plan['timeline_data']['total_distributed_area'] ?? 0;
+                                                            $cropTypeDistributedArea += $plan['total_distributed_area'] ?? 0;
                                                         }
                                                         
                                                         if (!isset($yearTotals[$year])) {
@@ -203,14 +190,10 @@
                                                     
                                                     @foreach($cropTypePlans as $plan)
                                                         @php
-                                                            $timelineData = $plan['timeline_data'];
-                                                            $quartersData = $timelineData['quarters'] ?? [];
-                                                            $monthsData = $timelineData['months'] ?? [];
-                                                            $weeksData = $timelineData['weeks'] ?? [];
-                                                            $weeklyDistribution = $plan['plandivision_details']['weekly_distribution'] ?? [];
-                                                            $preparationYear = $timelineData['preparation_year'] ?? 'N/A';
-
-                                                            $distributedArea = $timelineData['total_distributed_area'] ?? 0;
+                                                            $quartersData = $plan['quarters_data'] ?? [];
+                                                            $monthsData = $plan['months_data'] ?? [];
+                                                            $weeksData = $plan['weeks_data'] ?? [];
+                                                            $distributedArea = $plan['total_distributed_area'] ?? 0;
                                                             $remainingArea = $plan['area_to_plant'] - $distributedArea;
 
                                                             $totalArea += $plan['area_to_plant'];
@@ -219,43 +202,19 @@
                                                             // Process weekly distribution data
                                                             $weekDataByMonth = [];
                                                             
-                                                            // Method 1: Process from the structured weeks data (backend processed)
+                                                            // Process from the structured weeks data
                                                             foreach ($weeksData as $weekKey => $weekItem) {
                                                                 // Handle "Ginbot_week_1" format
                                                                 if (preg_match('/^(.+)_week_(\d+)$/', $weekKey, $matches)) {
                                                                     $monthName = $matches[1];
                                                                     $weekNum = (int)$matches[2];
-                                                                    $area = $weekItem['area'] ?? 0;
+                                                                    $area = $weekItem['planned_area'] ?? 0;
                                                                     
                                                                     if ($monthName && $weekNum >= 1 && $weekNum <= 4) {
                                                                         if (!isset($weekDataByMonth[$monthName])) {
                                                                             $weekDataByMonth[$monthName] = [];
                                                                         }
                                                                         $weekDataByMonth[$monthName][$weekNum] = $area;
-                                                                    }
-                                                                }
-                                                            }
-                                                            
-                                                            // Method 2: Process from raw weekly_distribution array (if weeksData is empty)
-                                                            if (empty($weekDataByMonth) && !empty($weeklyDistribution)) {
-                                                                foreach ($weeklyDistribution as $weekItem) {
-                                                                    if (is_array($weekItem)) {
-                                                                        $monthName = $weekItem['month'] ?? '';
-                                                                        $weekText = $weekItem['week'] ?? '';
-                                                                        $area = $weekItem['area'] ?? 0;
-                                                                        
-                                                                        // Extract week number from "Week 1", "Week 2", etc.
-                                                                        $weekNum = 0;
-                                                                        if (preg_match('/Week\s*(\d+)/i', $weekText, $matches)) {
-                                                                            $weekNum = (int)$matches[1];
-                                                                        }
-                                                                        
-                                                                        if ($monthName && $weekNum >= 1 && $weekNum <= 4) {
-                                                                            if (!isset($weekDataByMonth[$monthName])) {
-                                                                                $weekDataByMonth[$monthName] = [];
-                                                                            }
-                                                                            $weekDataByMonth[$monthName][$weekNum] = $area;
-                                                                        }
                                                                     }
                                                                 }
                                                             }
@@ -283,8 +242,8 @@
                                                             
                                                             <!-- Individual plan data -->
                                                             <td class="font-weight-bold text-primary">{{ $plan['crop_name'] }}</td>
-                                                            <td class="text-center">{{ $plan['unit'] }}</td>
-                                                            <td class="text-center font-weight-bold text-info">{{ $preparationYear }}</td>
+                                                            <td class="text-center">ha</td>
+                                                            <td class="text-center font-weight-bold text-info">{{ $plan['preparation_year'] }}</td>
                                                             <td class="text-center">{{ $plan['season'] }}</td>
                                                             <td class="text-right font-weight-bold">{{ number_format($plan['area_to_plant'], 2) }}</td>
 
@@ -295,7 +254,7 @@
                                                                     $quarterArea = 0;
                                                                     if (isset($quartersData[$quarter])) {
                                                                         if (is_array($quartersData[$quarter])) {
-                                                                            $quarterArea = $quartersData[$quarter]['area'] ?? 0;
+                                                                            $quarterArea = $quartersData[$quarter]['planned_area'] ?? 0;
                                                                         } else {
                                                                             $quarterArea = floatval($quartersData[$quarter]);
                                                                         }
@@ -315,7 +274,7 @@
                                                                         $monthArea = 0;
                                                                         if (isset($monthsData[$month])) {
                                                                             if (is_array($monthsData[$month])) {
-                                                                                $monthArea = $monthsData[$month]['area'] ?? 0;
+                                                                                $monthArea = $monthsData[$month]['planned_area'] ?? 0;
                                                                             } else {
                                                                                 $monthArea = floatval($monthsData[$month]);
                                                                             }
@@ -328,25 +287,23 @@
                                                                         {{ number_format($monthArea, 2) }}
                                                                     </td>
                                                                     
-                                                                    <!-- Week Data for this Month (only for months with weeks) -->
-                                                                    @if(in_array($month, $monthsWithWeeks))
-                                                                        @for($week = 1; $week <= 4; $week++)
-                                                                            @php
-                                                                                $weekKey = $month . ' W' . $week;
-                                                                                $weekArea = 0;
-                                                                                
-                                                                                // Get week data from the processed weekly distribution
-                                                                                if (isset($weekDataByMonth[$month][$week])) {
-                                                                                    $weekArea = $weekDataByMonth[$month][$week];
-                                                                                }
-                                                                                
-                                                                                $weekTotals[$weekKey]['area'] += $weekArea;
-                                                                            @endphp
-                                                                            <td class="text-right {{ $weekArea > 0 ? 'bg-olive' : '' }}">
-                                                                                {{ number_format($weekArea, 2) }}
-                                                                            </td>
-                                                                        @endfor
-                                                                    @endif
+                                                                    <!-- Week Data for this Month -->
+                                                                    @for($week = 1; $week <= 4; $week++)
+                                                                        @php
+                                                                            $weekKey = $month . ' W' . $week;
+                                                                            $weekArea = 0;
+                                                                            
+                                                                            // Get week data from the processed weekly distribution
+                                                                            if (isset($weekDataByMonth[$month][$week])) {
+                                                                                $weekArea = $weekDataByMonth[$month][$week];
+                                                                            }
+                                                                            
+                                                                            $weekTotals[$weekKey]['area'] += $weekArea;
+                                                                        @endphp
+                                                                        <td class="text-right {{ $weekArea > 0 ? 'bg-olive' : '' }}">
+                                                                            {{ number_format($weekArea, 2) }}
+                                                                        </td>
+                                                                    @endfor
                                                                 @endforeach
                                                             @endforeach
 
@@ -378,14 +335,12 @@
                                                     @foreach($months as $month)
                                                         <td class="text-right bg-success">{{ number_format($monthTotals[$month]['area'], 2) }}</td>
                                                         
-                                                        @if(in_array($month, $monthsWithWeeks))
-                                                            @for($week = 1; $week <= 4; $week++)
-                                                                @php
-                                                                    $weekKey = $month . ' W' . $week;
-                                                                @endphp
-                                                                <td class="text-right bg-olive">{{ number_format($weekTotals[$weekKey]['area'], 2) }}</td>
-                                                            @endfor
-                                                        @endif
+                                                        @for($week = 1; $week <= 4; $week++)
+                                                            @php
+                                                                $weekKey = $month . ' W' . $week;
+                                                            @endphp
+                                                            <td class="text-right bg-olive">{{ number_format($weekTotals[$weekKey]['area'], 2) }}</td>
+                                                        @endfor
                                                     @endforeach
                                                 @endforeach
                                                 
@@ -420,13 +375,13 @@
 
     <script>
         function exportToExcel() {
-            const table = document.getElementById('cropPlanTable');
+            const table = document.getElementById('landPrepTable');
             const html = table.outerHTML;
             const blob = new Blob([html], { type: 'application/vnd.ms-excel' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = 'crop-plan-grouped-' + new Date().toISOString().split('T')[0] + '.xls';
+            a.download = 'land-preparation-plan-' + new Date().toISOString().split('T')[0] + '.xls';
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
@@ -443,7 +398,7 @@
             });
 
             // Hover effect for rows
-            $('#cropPlanTable tbody tr').hover(
+            $('#landPrepTable tbody tr').hover(
                 function() {
                     $(this).addClass('bg-gray');
                 },
@@ -452,16 +407,13 @@
                 }
             );
 
-            // Week visibility toggle (only for months with weeks)
-            $('#cropPlanTable thead th.bg-success').each(function() {
-                const monthName = $(this).text().trim();
-                if (monthName !== 'Pagumen') {
-                    $(this).css('cursor', 'pointer');
-                    $(this).attr('title', 'Click to toggle weeks visibility');
-                    $(this).click(function() {
-                        toggleWeeksVisibility(monthName);
-                    });
-                }
+            // Week visibility toggle for months
+            $('#landPrepTable thead th.bg-success').each(function() {
+                $(this).css('cursor', 'pointer');
+                $(this).attr('title', 'Click to toggle weeks visibility');
+                $(this).click(function() {
+                    toggleWeeksVisibility($(this).text().trim());
+                });
             });
 
             // Initialize tooltips
@@ -472,7 +424,7 @@
         });
 
         function toggleWeeksVisibility(month) {
-            const allHeaders = $('#cropPlanTable thead th, #cropPlanTable thead td');
+            const allHeaders = $('#landPrepTable thead th, #landPrepTable thead td');
             let weekColumns = [];
             
             allHeaders.each(function(index) {
@@ -493,10 +445,10 @@
                 
                 if (isHidden) {
                     weekHeader.show();
-                    $('#cropPlanTable tbody tr td').eq(columnIndex).show();
+                    $('#landPrepTable tbody tr td').eq(columnIndex).show();
                 } else {
                     weekHeader.hide();
-                    $('#cropPlanTable tbody tr td').eq(columnIndex).hide();
+                    $('#landPrepTable tbody tr td').eq(columnIndex).hide();
                 }
             });
             

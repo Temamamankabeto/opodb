@@ -390,11 +390,6 @@
         </ul>
 </li>
 
- 
-        
-  
-
-
 <!-- Yeroo Raawwii (Execution Time) -->
 <li class="nav-item">
     <a href="#" class="nav-link">
@@ -450,6 +445,84 @@
         </li>
 
     </ul>
+</li>
+ {{-- gabaasa woggaa  --}}
+<li class="nav-item">
+        <a href="#" class="nav-link">
+            <i class="nav-icon fas fa-calendar-alt"></i>
+            <p>
+                {{ __('Gabaasa ') }}
+                <i class="fas fa-angle-left right"></i>
+            </p>
+        </a>
+
+        <ul class="nav nav-treeview">
+
+            <!-- Misooma Midhaanii (Crop Development) -->
+            <li class="nav-item">
+                <a href="#" class="nav-link">
+                    <i class="fas fa-seedling nav-icon"></i>
+                    <p>
+                        {{ __('Misooma Midhaanii') }}
+                        <i class="fas fa-angle-left right"></i>
+                    </p>
+                </a>
+
+                <ul class="nav nav-treeview">
+
+                    <li class="nav-item">
+                        <a href="{{ url('sector/gabaasa-torbanii/midhaan') }}" class="nav-link">
+                            <i class="fas fa-leaf nav-icon"></i>
+                            <p>{{ __('Midhaan') }}</p>
+                        </a>
+                    </li>
+                     
+                    <li class="nav-item">
+                        <a href="{{ url('sector/gabaasa-torbanii/fertilizer') }}" class="nav-link">
+                            <i class="fas fa-flask nav-icon"></i>
+                            <p>{{ __('Calla Guddiftuu') }}</p>
+                        </a>
+            </ul>
+            </li>
+        </ul>
+</li>
+
+ 
+
+<li class="nav-item">
+        <a href="#" class="nav-link">
+            <i class="nav-icon fas fa-calendar-alt"></i>
+            <p>
+                {{ __('Configuration ') }}
+                <i class="fas fa-angle-left right"></i>
+            </p>
+        </a>
+
+        <ul class="nav nav-treeview">
+
+            <!-- Misooma Midhaanii (Crop Development) -->
+            <li class="nav-item">
+                <a href="#" class="nav-link">
+                    <i class="fas fa-seedling nav-icon"></i>
+                    <p>
+                        {{ __('Crop Configuration') }}
+                        <i class="fas fa-angle-left right"></i>
+                    </p>
+                </a>
+
+                <ul class="nav nav-treeview">
+
+                    <li class="nav-item">
+                        <a href="{{ url('kebele/crop-configurations') }}" class="nav-link">
+                            <i class="fas fa-leaf nav-icon"></i>
+                            <p>{{ __('Productivity') }}</p>
+                        </a>
+                    </li>
+                     
+                   
+            </ul>
+            </li>
+        </ul>
 </li>
 
  

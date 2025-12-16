@@ -1,20 +1,100 @@
- <span class="caret"><i class="fa-solid fa-folder folder-icon"></i><span
-                        class="sidebar-text">{{ __('Reports') }}</span></span>
-                <ul>
-                    <li>
-                        <span class="caret"><i class="fa-solid fa-folder folder-icon"></i><span
-                                class="sidebar-text">{{ __('Crop Related Report') }}</span></span>
-                        <ul>
-                            <li><i class="fa-regular fa-file file-icon"></i><a
-                                    href="{{ url('woredas/woreda/crop-plans/report') }}"><span
-                                        class="sidebar-text">{{ __('Crop Plan') }}</span></a></li>
-<li><i class="fa-regular fa-file file-icon"></i><a
-                                    href="{{ url('woredas/livestock-plans') }}"><span
-                                        class="sidebar-text">{{ __('livestock plans') }}</span></a></li>
+<!-- Dashboard -->
+<li class="nav-item">
+    <a href="{{ url('woreda/dashboard') }}" class="nav-link">
+        <i class="nav-icon fas fa-tachometer-alt"></i>
+        <p>{{ __('Dashboard') }}</p>
+    </a>
+</li>
 
-                                        
-                        </ul>
+<hr>
+
+{{-- woredas/kebele/users --}}
+<li class="nav-item">
+        <a href="#" class="nav-link">
+            <i class="nav-icon fas fa-calendar-alt"></i>
+            <p>
+                {{ __('User Management ') }}
+                <i class="fas fa-angle-left right"></i>
+            </p>
+        </a>
+
+        <ul class="nav nav-treeview">
+
+            <!-- Misooma Midhaanii (Crop Development) -->
+            <li class="nav-item">
+                <a href="#" class="nav-link">
+                    <i class="fas fa-seedling nav-icon"></i>
+                    <p>
+                        {{ __('Kebele Users') }}
+                        <i class="fas fa-angle-left right"></i>
+                    </p>
+                </a>
+
+                <ul class="nav nav-treeview">
+
+                  
+                     
+                    <li class="nav-item">
+                        <a href="{{ url('woredas/kebele/users') }}" class="nav-link">
+                            <i class="fas fa-flask nav-icon"></i>
+                            <p>{{ __('User List') }}</p>
+                        </a>
+            </ul>
+            </li>
+        </ul>
+</li>
+
+ 
+ {{-- gabaasa woggaa  --}}
+<li class="nav-item">
+        <a href="#" class="nav-link">
+            <i class="nav-icon fas fa-calendar-alt"></i>
+            <p>
+                {{ __('Gabaasa ') }}
+                <i class="fas fa-angle-left right"></i>
+            </p>
+        </a>
+
+        <ul class="nav nav-treeview">
+
+            <!-- Misooma Midhaanii (Crop Development) -->
+            <li class="nav-item">
+                <a href="#" class="nav-link">
+                    <i class="fas fa-seedling nav-icon"></i>
+                    <p>
+                        {{ __('Misooma Midhaanii') }}
+                        <i class="fas fa-angle-left right"></i>
+                    </p>
+                </a>
+
+                <ul class="nav nav-treeview">
+
+                    <li class="nav-item">
+                        <a href="{{ url('woredas/gabaasa-torbanii/midhaan') }}" class="nav-link">
+                            <i class="fas fa-leaf nav-icon"></i>
+                            <p>{{ __('Midhaan') }}</p>
+                        </a>
                     </li>
-                </ul>
+                     
+                    <li class="nav-item">
+                        <a href="{{ url('woredas/fertilizer-report') }}" class="nav-link">
+                            <i class="fas fa-flask nav-icon"></i>
+                            <p>{{ __('Calla Guddiftuu') }}</p>
+                        </a>
 
-                
+                    </li>
+
+                     <li class="nav-item">
+                        <a href="{{ url('woredas/mechanization-report') }}" class="nav-link">
+                            <i class="fas fa-flask nav-icon"></i>
+                            <p>{{ __('Mechinization') }}</p>
+                        </a>
+
+                    </li>
+
+                        
+            </ul>
+            </li>
+        </ul>
+</li>
+ 

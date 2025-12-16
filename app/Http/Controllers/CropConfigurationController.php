@@ -43,7 +43,7 @@ class CropConfigurationController extends Controller
     $request->validate([
         'croptype_id' => 'required|exists:crop_types,id',
         'crop_id' => 'required|exists:crops,id',
-        'soil_type_id' => 'required|exists:soil_types,id',
+        'soil_type_id' => 'nullable|exists:soil_types,id',
         'seed_rate_kg_per_ha' => 'nullable|numeric',
         'productivity_per_ha' => 'nullable|numeric',
         'notes' => 'nullable|string',
@@ -57,7 +57,7 @@ class CropConfigurationController extends Controller
         'croptype_id' => $request->croptype_id,
         'crop_id' => $request->crop_id,
         'kebele_id' => $kebeleId,
-        'soil_type_id' => $request->soil_type_id,
+        
         'year' => $request->year,
     ])->first();
 
@@ -121,7 +121,7 @@ class CropConfigurationController extends Controller
             'croptype_id' => 'required|exists:crop_types,id', // Add this validation
             'crop_id' => 'required|exists:crops,id',
             'kebele_id' => 'required|exists:kebeles,id',
-            'soil_type_id' => 'required|exists:soil_types,id',
+           
             'seed_rate_kg_per_ha' => 'nullable|numeric',
             'productivity_per_ha' => 'nullable|numeric',
             'notes' => 'nullable|string',

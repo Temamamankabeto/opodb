@@ -10,6 +10,7 @@ use App\Http\Controllers\UnionController;
 use App\Http\Controllers\FarmerController;
 use App\Http\Controllers\HealthController;
 use App\Http\Controllers\KaroorController;
+use App\Http\Controllers\KaroraController;
 use App\Http\Controllers\BarnootaController;
 use App\Http\Controllers\SoilTypeController;
 use App\Http\Controllers\DashboardController;
@@ -17,12 +18,15 @@ use App\Http\Controllers\StructureController;
 use App\Http\Controllers\FederationController;
 use App\Http\Controllers\FertilizerController;
 use App\Http\Controllers\HealthPlanController;
+use App\Http\Controllers\kebeleUserController;
 use App\Http\Controllers\WeeklyPlanController;
 use App\Http\Controllers\AssociationController;
 use App\Http\Controllers\InstitutionController;
 use App\Http\Controllers\JobCreationController;
 use App\Http\Controllers\KebeleAdminController;
+use App\Http\Controllers\ZonalReportController;
 use App\Http\Controllers\CulturalPlanController;
+use App\Http\Controllers\WoredaReportController;
 use App\Http\Controllers\GabbinaBiyyeeController;
 use App\Http\Controllers\LivestockPlanController;
 use App\Http\Controllers\MechanizationController;
@@ -31,6 +35,7 @@ use App\Http\Controllers\FertilizerTypeController;
 use App\Http\Controllers\JobOpportunityController;
 use App\Http\Controllers\KebeleCropPlanController;
 use App\Http\Controllers\ParcelCropPlanController;
+use App\Http\Controllers\RegionalReportController;
 use App\Http\Controllers\WeeklyLandPlanController;
 use App\Http\Controllers\AssociationTypeController;
 use App\Http\Controllers\CulturalRevivalController;
@@ -56,7 +61,6 @@ use App\Http\Controllers\BuildingPowerInstitutionPlanController;
 use App\Http\Controllers\RegistrationOfCivilCertificateController;
 use App\Http\Controllers\BuildingEconomicInstitutionPlanController;
 use App\Http\Controllers\BuildingCommunityInstitutionPlanController;
-use App\Http\Controllers\KaroraController;
 
 Route::middleware([SecurityHeaders::class])->group(function () {
     // Public routes
@@ -80,7 +84,58 @@ Route::middleware([SecurityHeaders::class])->group(function () {
             Route::put('sectors/{id}', [StructureController::class, 'updateSector'])->name('sectors.update');
             Route::delete('sectors/{id}', [StructureController::class, 'destroySector'])->name('sectors.destroy');
 
+
+             Route::get('/gabaasa/region/fertilizer', [RegionalReportController::class,'index'])
+        ->name('region.fertilizer.report');
+
+    // AJAX dependent dropdowns
+    Route::get('/woredas-by-zone/{zone}', [RegionalReportController::class,'woredasByZone']);
+    Route::get('/kebeles-by-woreda/{woreda}', [RegionalReportController::class,'kebelesByWoreda']);
+
+
+    Route::get('gabaasa-torbanii/midhaan', [RegionalReportController::class, 'crop'])->name('regional-crop-gabaasa.index');
+
+    // Dynamic filters
+    Route::get('filter/zones', [RegionalReportController::class, 'getZones'])->name('region.filter.zones');
+    Route::get('filter/woredas', [RegionalReportController::class, 'getWoredas'])->name('region.filter.woredas');
+    Route::get('filter/kebeles', [RegionalReportController::class, 'getKebeles'])->name('region.filter.kebeles');
+    Route::get('filter/years', [RegionalReportController::class, 'getYears'])->name('region.filter.years');
+    Route::get('filter/seasons', [RegionalReportController::class, 'getSeasons'])->name('region.filter.seasons');
+    Route::get('filter/crop-types', [RegionalReportController::class, 'getCropTypes'])->name('region.filter.crop-types');
+    Route::get('filter/crops', [RegionalReportController::class, 'getCrops'])->name('region.filter.crops');
+
         });
+
+        // for report  
+        Route::middleware('role:2')->prefix('zones')->group(function () {
+
+            Route::get('/gabaasa/zone/fertilizer', [ZonalReportController::class, 'index'])->name('zone.fertilizer.report');
+            Route::get('/kebeles-by-woreda/{woreda}',[ZonalReportController::class, 'kebelesByWoreda'])->name('zone.kebeles.by.woreda');
+
+             
+    // Zonal Crop Report Main Page
+    Route::get('gabaasa-torbanii/midhaan', [ZonalReportController::class, 'crop'])
+        ->name('zonal-crop-gabaasa.index');
+
+    // Dynamic Filters for Cascading Dropdowns
+    Route::get('filter/woredas', [ZonalReportController::class, 'getWoredas'])
+        ->name('zone.filter.woredas');
+
+    Route::get('filter/kebeles', [ZonalReportController::class, 'getKebeles'])
+        ->name('zone.filter.kebeles');
+
+    Route::get('filter/years', [ZonalReportController::class, 'getYears'])
+        ->name('zone.filter.years');
+
+    Route::get('filter/seasons', [ZonalReportController::class, 'getSeasons'])
+        ->name('zone.filter.seasons');
+
+    Route::get('filter/crop-types', [ZonalReportController::class, 'getCropTypes'])
+        ->name('zone.filter.crop-types');
+
+    Route::get('filter/crops', [ZonalReportController::class, 'getCrops'])
+        ->name('zone.filter.crops');
+                });
 
         Route::middleware('role:1,2')->prefix('admin')->group(function () {
 
@@ -279,11 +334,15 @@ Route::delete('/enterprise-work/{id}', [EnterpriseWorkController::class, 'destro
             Route::get('/profile/security/{uuid}', [UserController::class, 'changePasswordForm'])->name('zone.users.password');
             Route::post('/change-password', [UserController::class, 'changePassword'])->name('zone.password.change');
             Route::get('kebeleadmin/{uuid}/edit', [UserController::class, 'kebeleadminedit'])->name('zone.user.edit');
-            Route::put('kebeleadminupdate/{uuid}/', [UserController::class, 'kebeleadminupdate'])->name('kebele.admin.update');
         });
 
         // Woreda Admin only
         Route::middleware('role:3')->prefix('woredas')->group(function () {
+           Route::get('kebele/users', [kebeleUserController::class, 'index'])->name('users.index');
+            Route::get('kebele-users', [kebeleUserController::class, 'kebeleadmin'])->name('admin.kebele.users.index');
+            Route::post('user-kebele/save', [kebeleUserController::class, 'kebeleadminstore'])->name('kebele.admin.store');
+            Route::put('kebeleusernupdate/{uuid}/', [UserController::class, 'kebeleadminupdate'])->name('kebele.user.update');
+
             // add more woreda admin routes here
             Route::get('/woreda-dashboard', [DashboardController::class, 'woredaDashboard'])->name('woreda.dashboard');
             // Route::get('profile/{uuid}/edit', [UserController::class, 'edit'])->name('woreda.users.edit');
@@ -303,13 +362,28 @@ Route::delete('/enterprise-work/{id}', [EnterpriseWorkController::class, 'destro
 
 
             Route::post('/crop-plans/{id}/feedback', [DashboardController::class, 'storeFeedback']);
+             Route::get('/gabaasa/woreda/fertilizer', [WoredaReportController::class, 'index'])->name('fertilizer.report');
 
+             
+             Route::get('gabaasa-torbanii/midhaan', [WoredaReportController::class, 'indexgabaasa'])->name('crop-gabaasa.index');
 
+            // Dynamic filters
+            Route::get('filter/kebeles', [WoredaReportController::class, 'getKebeles'])->name('woreda.filter.kebeles');
+            Route::get('filter/seasons', [WoredaReportController::class, 'getSeason'])->name('woreda.filter.seasons');
+            Route::get('filter/crop-types', [WoredaReportController::class, 'getCropType'])->name('woreda.filter.crop-types');
+            Route::get('filter/crops', [WoredaReportController::class, 'getCrop'])->name('woreda.filter.crops');
+
+            Route::get('mechanization-report', [WoredaReportController::class, 'mechinization'])
+        ->name('woreda-mechanization-report.index');
 
 
         });
 
-        // Kebele Admin only
+       Route::middleware('role:4')->prefix('kebele')->group(function () {
+    Route::get('mechanization-report', [KaroraController::class, 'mechinization'])
+        ->name('kebele-mechanization-report.index');
+});
+
         Route::middleware('role:4')->prefix('kebele')->group(function () {
             // add more woreda admin routes here
             Route::put('profile/{uuid}', [UserController::class, 'update'])->name('woreda.users.update');
@@ -415,6 +489,15 @@ Route::middleware(['auth', 'role:5,4'])->prefix('sector')->name('sector.')->grou
     // Main index route
     Route::get('karoora-torbanii/midhaan', [KaroraController::class, 'index'])->name('crop-karora.index');
     Route::get('rawwii-torbanii/midhaan', [KaroraController::class, 'indexrawwii'])->name('crop-rawwii.index');
+
+    
+   Route::get('gabaasa-torbanii/midhaan', [KaroraController::class, 'indexgabaasa'])->name('crop-gabaasa.index');
+
+    // Dynamic filter endpoints
+    Route::get('filter/seasons', [KaroraController::class, 'getSeason']);
+    Route::get('filter/crop-types', [KaroraController::class, 'getCropType']);
+    Route::get('filter/crops', [KaroraController::class, 'getCrop']);
+
     
     // AJAX routes with correct paths
     Route::get('karoora-torbanii/midhaan/get-seasons', [KaroraController::class, 'getSeasons'])
@@ -422,6 +505,14 @@ Route::middleware(['auth', 'role:5,4'])->prefix('sector')->name('sector.')->grou
     
     Route::get('karoora-torbanii/midhaan/get-crops', [KaroraController::class, 'getCrops'])
          ->name('crop-karora.get-crops');
+
+
+          Route::get('gabaasa-torbanii/fertilizer',[KaroraController::class, 'fertilizerReport']
+        )->name('fertilizer-gabaasa.index');
+
+        Route::get('filter/fertilizer-seasons', [KaroraController::class, 'fertilizerSeasons']);
+        Route::get('filter/fertilizer-types', [KaroraController::class, 'fertilizerTypes']);
+        Route::get('filter/fertilizers', [KaroraController::class, 'fertilizers']);
 });
 
     Route::middleware(['auth', 'role:5,4'])->prefix('sector')->name('sector.')->group(function () {

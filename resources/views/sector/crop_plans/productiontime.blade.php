@@ -1,29 +1,30 @@
 <x-layout>
     <div class="content-header">
-        <!-- Content Header -->
         <section class="content-header">
             <div class="container-fluid">
                 <div class="row mb-2">
                     <div class="col-sm-6">
-                        <h1>Crop Plan Yield Distribution</h1>
+                        <h6>Production Yield Distribution</h6>
                     </div>
                     <div class="col-sm-6">
-                         
+                        <ol class="breadcrumb float-sm-right">
+                            <li class="breadcrumb-item"><a href="{{ route('sector.crop-plans.index') }}">{{ __('Crop Plans') }}</a></li>
+                            <li class="breadcrumb-item active">{{ __('Production Distribution') }}</li>
+                        </ol>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- Main content -->
         <section class="content">
             <div class="container-fluid">
                 <div class="row">
                     <div class="col-12">
-                        <div class="card card-success">
+                        <div class="card card-primary">
                             <div class="card-header">
                                 <h3 class="card-title">
-                                    <i class="fas fa-chart-bar mr-2"></i>
-                                    Crop Plan Yield Distribution - Grouped by Year & Crop Type
+                                    <i class="fas fa-calendar-alt mr-2"></i>
+                                    Production Yield Distribution - Grouped by Year & Crop Type
                                 </h3>
                                 <div class="card-tools">
                                     <button class="btn btn-sm btn-light" onclick="exportToExcel()" title="Export to Excel">
@@ -36,7 +37,7 @@
                             </div>
                             <div class="card-body p-0">
                                 <div class="table-responsive" style="max-height: 70vh;">
-                                    <table class="table table-bordered table-hover table-head-fixed text-nowrap mb-0" id="productionPlanTable">
+                                    <table class="table table-bordered table-hover table-head-fixed text-nowrap mb-0" id="productionTable">
                                         <thead class="thead-light sticky-top">
                                             <tr>
                                                 <th rowspan="4" class="text-center align-middle bg-gray">#</th>
@@ -72,43 +73,34 @@
                                                             }
                                                         }
                                                     @endphp
-                                                    <!-- Quarter Header spans all months and weeks in the quarter -->
                                                     <th colspan="{{ $colspan }}" class="text-center bg-info">{{ $quarter }}</th>
                                                 @endforeach
 
-                                                <!-- Summary Columns -->
                                                 <th colspan="2" class="text-center bg-warning">Yield Summary</th>
                                             </tr>
                                             <tr>
                                                 @foreach($quarters as $quarter => $months)
-                                                    <!-- Quarter Total -->
                                                     <th class="text-center bg-primary">{{ $quarter }} Total</th>
                                                     
                                                     @foreach($months as $month)
                                                         @if(in_array($month, $monthsWithWeeks))
-                                                            <!-- Month Header spans all weeks in the month -->
                                                             <th colspan="5" class="text-center bg-success">{{ $month }}</th>
                                                         @else
-                                                            <!-- Pagumen - only month header, no weeks -->
                                                             <th class="text-center bg-success">{{ $month }}</th>
                                                         @endif
                                                     @endforeach
                                                 @endforeach
 
-                                                <!-- Summary Sub-columns -->
                                                 <th class="text-center bg-warning">Distributed Yield (qt)</th>
                                                 <th class="text-center bg-warning">Remaining Yield (qt)</th>
                                             </tr>
                                             <tr>
                                                 @foreach($quarters as $quarter => $months)
-                                                    <!-- Quarter Total Sub-columns -->
                                                     <th class="text-center bg-lightblue">Yield (qt)</th>
                                                     
                                                     @foreach($months as $month)
-                                                        <!-- Month Total -->
                                                         <th class="text-center bg-teal">{{ $month }} Total</th>
                                                         
-                                                        <!-- Weeks for this Month (only for months with weeks) -->
                                                         @if(in_array($month, $monthsWithWeeks))
                                                             @for($week = 1; $week <= 4; $week++)
                                                                 <th class="text-center bg-olive">W{{ $week }}</th>
@@ -117,7 +109,6 @@
                                                     @endforeach
                                                 @endforeach
 
-                                                <!-- Summary Sub-columns (duplicated for alignment) -->
                                                 <th class="text-center bg-warning">Yield (qt)</th>
                                                 <th class="text-center bg-warning">Yield (qt)</th>
                                             </tr>
@@ -143,8 +134,6 @@
                                                 }
                                                 
                                                 // Initialize totals arrays
-                                                $yearTotals = [];
-                                                $cropTypeTotals = [];
                                                 $quarterTotals = [
                                                     'Q1' => ['yield' => 0],
                                                     'Q2' => ['yield' => 0],
@@ -186,75 +175,64 @@
                                                         // Calculate crop type totals
                                                         foreach($cropTypePlans as $plan) {
                                                             $cropTypeTotalYield += $plan['expected_yield'];
-                                                            $cropTypeDistributedYield += $plan['production_data']['total_distributed_yield'] ?? 0;
+                                                            $cropTypeDistributedYield += $plan['total_distributed_yield'] ?? 0;
                                                         }
-                                                        
-                                                        if (!isset($yearTotals[$year])) {
-                                                            $yearTotals[$year] = ['yield' => 0, 'distributed' => 0];
-                                                        }
-                                                        if (!isset($cropTypeTotals[$cropType])) {
-                                                            $cropTypeTotals[$cropType] = ['yield' => 0, 'distributed' => 0];
-                                                        }
-                                                        $yearTotals[$year]['yield'] += $cropTypeTotalYield;
-                                                        $yearTotals[$year]['distributed'] += $cropTypeDistributedYield;
-                                                        $cropTypeTotals[$cropType]['yield'] += $cropTypeTotalYield;
-                                                        $cropTypeTotals[$cropType]['distributed'] += $cropTypeDistributedYield;
                                                     @endphp
                                                     
                                                     @foreach($cropTypePlans as $plan)
                                                         @php
-                                                            $productionData = $plan['production_data'];
-                                                            $quartersData = $productionData['quarters'] ?? [];
-                                                            $monthsData = $productionData['months'] ?? [];
-                                                            $weeksData = $productionData['weeks'] ?? [];
-                                                            $weeklyProduction = $plan['productionplan_details']['weekly_production'] ?? [];
-                                                            $productionYear = $productionData['production_year'] ?? $plan['year'];
+                                                            // Use the processed data from controller
+                                                            $quartersData = $plan['quarters_data'] ?? [];
+                                                            $monthsData = $plan['months_data'] ?? [];
+                                                            $weeksData = $plan['weeks_data'] ?? [];
+                                                            $productionplanDetails = $plan['productionplan_details'] ?? [];
+                                                            $productionYear = $plan['production_year'] ?? $plan['year'];
 
-                                                            $distributedYield = $productionData['total_distributed_yield'] ?? 0;
+                                                            $distributedYield = $plan['total_distributed_yield'] ?? 0;
                                                             $remainingYield = $plan['expected_yield'] - $distributedYield;
 
                                                             $totalYield += $plan['expected_yield'];
                                                             $totalDistributedYield += $distributedYield;
                                                             
-                                                            // Process weekly production data
+                                                            // Process weekly production data from the structured data
                                                             $weekDataByMonth = [];
                                                             
-                                                            // Method 1: Process from the structured weeks data (backend processed)
+                                                            // Method 1: Process from the processed weeks data
                                                             foreach ($weeksData as $weekKey => $weekItem) {
-                                                                // Handle "Ginbot_week_1" format
-                                                                if (preg_match('/^(.+)_week_(\d+)$/', $weekKey, $matches)) {
-                                                                    $monthName = $matches[1];
-                                                                    $weekNum = (int)$matches[2];
-                                                                    $yield = $weekItem['yield'] ?? 0;
+                                                                if (isset($weekItem['yield']) && $weekItem['yield'] > 0) {
+                                                                    $monthName = $weekItem['month'] ?? '';
+                                                                    $weekNum = $weekItem['week_number'] ?? 1;
                                                                     
                                                                     if ($monthName && $weekNum >= 1 && $weekNum <= 4) {
                                                                         if (!isset($weekDataByMonth[$monthName])) {
                                                                             $weekDataByMonth[$monthName] = [];
                                                                         }
-                                                                        $weekDataByMonth[$monthName][$weekNum] = $yield;
+                                                                        $weekDataByMonth[$monthName][$weekNum] = $weekItem['yield'];
                                                                     }
                                                                 }
                                                             }
                                                             
-                                                            // Method 2: Process from raw weekly_production array (if weeksData is empty)
-                                                            if (empty($weekDataByMonth) && !empty($weeklyProduction)) {
-                                                                foreach ($weeklyProduction as $weekItem) {
-                                                                    if (is_array($weekItem)) {
-                                                                        $monthName = $weekItem['month'] ?? '';
-                                                                        $weekText = $weekItem['week'] ?? '';
-                                                                        $yield = $weekItem['yield'] ?? 0;
-                                                                        
-                                                                        // Extract week number from "Week 1", "Week 2", etc.
-                                                                        $weekNum = 0;
-                                                                        if (preg_match('/Week\s*(\d+)/i', $weekText, $matches)) {
-                                                                            $weekNum = (int)$matches[1];
-                                                                        }
-                                                                        
-                                                                        if ($monthName && $weekNum >= 1 && $weekNum <= 4) {
-                                                                            if (!isset($weekDataByMonth[$monthName])) {
-                                                                                $weekDataByMonth[$monthName] = [];
+                                                            // Method 2: Process from the original raw data if weeksData is empty
+                                                            if (empty($weekDataByMonth) && isset($productionplanDetails['quarters'])) {
+                                                                foreach ($productionplanDetails['quarters'] as $quarterData) {
+                                                                    if (isset($quarterData['months'])) {
+                                                                        foreach ($quarterData['months'] as $monthData) {
+                                                                            if (isset($monthData['month']) && isset($monthData['weeks'])) {
+                                                                                $monthName = $monthData['month'];
+                                                                                foreach ($monthData['weeks'] as $weekData) {
+                                                                                    if (isset($weekData['week'])) {
+                                                                                        $weekNum = $weekData['week'];
+                                                                                        $yield = floatval($weekData['planned'] ?? 0);
+                                                                                        
+                                                                                        if ($yield > 0) {
+                                                                                            if (!isset($weekDataByMonth[$monthName])) {
+                                                                                                $weekDataByMonth[$monthName] = [];
+                                                                                            }
+                                                                                            $weekDataByMonth[$monthName][$weekNum] = $yield;
+                                                                                        }
+                                                                                    }
+                                                                                }
                                                                             }
-                                                                            $weekDataByMonth[$monthName][$weekNum] = $yield;
                                                                         }
                                                                     }
                                                                 }
@@ -262,17 +240,14 @@
                                                         @endphp
 
                                                         <tr>
-                                                            <!-- Row counter -->
                                                             <td class="text-center font-weight-bold">{{ $counter++ }}</td>
                                                             
-                                                            <!-- Year (with rowspan) -->
                                                             @if($yearFirst && $cropTypeFirst)
                                                                 <td rowspan="{{ $yearRowspan }}" class="text-center align-middle font-weight-bold bg-gray-light">
                                                                     {{ $year }}
                                                                 </td>
                                                             @endif
                                                             
-                                                            <!-- Crop Type (with rowspan) -->
                                                             @if($cropTypeFirst)
                                                                 <td rowspan="{{ $cropTypeRowspan }}" class="text-center align-middle font-weight-bold bg-gray-light">
                                                                     {{ $cropType }}
@@ -281,17 +256,15 @@
                                                                 </td>
                                                             @endif
                                                             
-                                                            <!-- Individual plan data -->
                                                             <td class="font-weight-bold text-primary">{{ $plan['crop_name'] }}</td>
                                                             <td class="text-center">{{ $plan['unit'] }}</td>
                                                             <td class="text-center font-weight-bold text-info">{{ $productionYear }}</td>
                                                             <td class="text-center">{{ $plan['season'] }}</td>
                                                             <td class="text-right font-weight-bold">{{ number_format($plan['expected_yield'], 2) }}</td>
 
-                                                            <!-- Quarter, Month, and Week Data -->
                                                             @foreach($quarters as $quarter => $months)
                                                                 @php
-                                                                    // Quarter data extraction
+                                                                    // Quarter data extraction from processed data
                                                                     $quarterYield = 0;
                                                                     if (isset($quartersData[$quarter])) {
                                                                         if (is_array($quartersData[$quarter])) {
@@ -303,15 +276,13 @@
                                                                     $quarterTotals[$quarter]['yield'] += $quarterYield;
                                                                 @endphp
                                                                 
-                                                                <!-- Quarter Total -->
                                                                 <td class="text-right font-weight-bold {{ $quarterYield > 0 ? 'bg-lightblue' : '' }}">
                                                                     {{ number_format($quarterYield, 2) }}
                                                                 </td>
                                                                 
-                                                                <!-- Month Data for this Quarter -->
                                                                 @foreach($months as $month)
                                                                     @php
-                                                                        // Month data extraction
+                                                                        // Month data extraction from processed data
                                                                         $monthYield = 0;
                                                                         if (isset($monthsData[$month])) {
                                                                             if (is_array($monthsData[$month])) {
@@ -323,12 +294,10 @@
                                                                         $monthTotals[$month]['yield'] += $monthYield;
                                                                     @endphp
                                                                     
-                                                                    <!-- Month Total -->
                                                                     <td class="text-right font-weight-bold {{ $monthYield > 0 ? 'bg-teal' : '' }}">
                                                                         {{ number_format($monthYield, 2) }}
                                                                     </td>
                                                                     
-                                                                    <!-- Week Data for this Month (only for months with weeks) -->
                                                                     @if(in_array($month, $monthsWithWeeks))
                                                                         @for($week = 1; $week <= 4; $week++)
                                                                             @php
@@ -350,7 +319,6 @@
                                                                 @endforeach
                                                             @endforeach
 
-                                                            <!-- Summary Data -->
                                                             <td class="text-right font-weight-bold bg-warning distributed-yield">
                                                                 {{ number_format($distributedYield, 2) }}
                                                             </td>
@@ -366,12 +334,10 @@
                                                 @endforeach
                                             @endforeach
 
-                                            <!-- Grand Total Row -->
                                             <tr class="bg-gray-dark text-white font-weight-bold">
                                                 <td colspan="7" class="text-center">GRAND TOTAL</td>
                                                 <td class="text-right">{{ number_format($totalYield, 2) }}</td>
                                                 
-                                                <!-- Quarter Totals -->
                                                 @foreach($quarters as $quarter => $months)
                                                     <td class="text-right bg-primary">{{ number_format($quarterTotals[$quarter]['yield'], 2) }}</td>
                                                     
@@ -389,7 +355,6 @@
                                                     @endforeach
                                                 @endforeach
                                                 
-                                                <!-- Summary Totals -->
                                                 <td class="text-right bg-warning">{{ number_format($totalDistributedYield, 2) }}</td>
                                                 <td class="text-right bg-warning {{ ($totalYield - $totalDistributedYield) >= 0 ? 'text-success' : 'text-danger' }}">
                                                     {{ number_format($totalYield - $totalDistributedYield, 2) }}
@@ -420,30 +385,27 @@
 
     <script>
         function exportToExcel() {
-            const table = document.getElementById('productionPlanTable');
+            const table = document.getElementById('productionTable');
             const html = table.outerHTML;
             const blob = new Blob([html], { type: 'application/vnd.ms-excel' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = 'production-plan-yield-' + new Date().toISOString().split('T')[0] + '.xls';
+            a.download = 'production-yield-distribution-' + new Date().toISOString().split('T')[0] + '.xls';
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
             
-            // Show success message
             toastr.success('Excel file downloaded successfully!');
         }
 
         $(document).ready(function() {
-            // Make table headers sticky
             $('.table-responsive').on('scroll', function() {
                 $('.sticky-top').css('top', this.scrollTop + 'px');
             });
 
-            // Hover effect for rows
-            $('#productionPlanTable tbody tr').hover(
+            $('#productionTable tbody tr').hover(
                 function() {
                     $(this).addClass('bg-gray');
                 },
@@ -452,8 +414,7 @@
                 }
             );
 
-            // Week visibility toggle (only for months with weeks)
-            $('#productionPlanTable thead th.bg-success').each(function() {
+            $('#productionTable thead th.bg-success').each(function() {
                 const monthName = $(this).text().trim();
                 if (monthName !== 'Pagumen') {
                     $(this).css('cursor', 'pointer');
@@ -464,20 +425,18 @@
                 }
             });
 
-            // Initialize tooltips
             $('[title]').tooltip({
                 placement: 'top',
                 trigger: 'hover'
             });
 
-            // Add highlight for negative remaining yields
             $('.remaining-yield.text-danger').each(function() {
                 $(this).closest('tr').addClass('bg-danger-light');
             });
         });
 
         function toggleWeeksVisibility(month) {
-            const allHeaders = $('#productionPlanTable thead th, #productionPlanTable thead td');
+            const allHeaders = $('#productionTable thead th, #productionTable thead td');
             let weekColumns = [];
             
             allHeaders.each(function(index) {
@@ -498,42 +457,14 @@
                 
                 if (isHidden) {
                     weekHeader.show();
-                    $('#productionPlanTable tbody tr td').eq(columnIndex).show();
+                    $('#productionTable tbody tr td').eq(columnIndex).show();
                 } else {
                     weekHeader.hide();
-                    $('#productionPlanTable tbody tr td').eq(columnIndex).hide();
+                    $('#productionTable tbody tr td').eq(columnIndex).hide();
                 }
             });
             
-            // Show notification
             toastr.info('Week columns for ' + month + ' are now ' + (isHidden ? 'visible' : 'hidden'));
-        }
-
-        // Add filter functionality
-        function filterTable() {
-            const yearFilter = $('#yearFilter').val();
-            const cropTypeFilter = $('#cropTypeFilter').val();
-            
-            $('#productionPlanTable tbody tr:not(.bg-gray-dark)').each(function() {
-                const year = $(this).find('td:nth-child(2)').text().trim();
-                const cropType = $(this).find('td:nth-child(3)').text().trim();
-                
-                let showRow = true;
-                
-                if (yearFilter && year !== yearFilter) {
-                    showRow = false;
-                }
-                
-                if (cropTypeFilter && cropType !== cropTypeFilter) {
-                    showRow = false;
-                }
-                
-                if (showRow) {
-                    $(this).show();
-                } else {
-                    $(this).hide();
-                }
-            });
         }
     </script>
 
@@ -552,7 +483,6 @@
             background-color: #f8f9fa !important;
         }
         
-        /* AdminLTE color overrides for better visibility */
         .bg-info { background-color: #17a2b8 !important; color: white !important; }
         .bg-primary { background-color: #007bff !important; color: white !important; }
         .bg-success { background-color: #28a745 !important; color: white !important; }
@@ -562,7 +492,6 @@
         .bg-olive { background-color: #3d9970 !important; color: white !important; }
         .bg-gray-dark { background-color: #343a40 !important; color: white !important; }
         
-        /* Light background for danger rows */
         .bg-danger-light {
             background-color: rgba(220, 53, 69, 0.1) !important;
         }
@@ -582,10 +511,6 @@
             background-color: #e0a800 !important;
         }
         
-        .card-success .card-header {
-            background: linear-gradient(135deg, #28a745 0%, #20c997 100%) !important;
-        }
-        
         .card {
             box-shadow: 0 0 1px rgba(0,0,0,.125), 0 1px 3px rgba(0,0,0,.2);
         }
@@ -602,7 +527,6 @@
             }
         }
         
-        /* Print styles */
         @media print {
             .card-header .card-tools { 
                 display: none !important; 
@@ -624,7 +548,6 @@
             }
         }
         
-        /* Highlight positive/negative remaining yields */
         .remaining-yield.text-success {
             color: #28a745 !important;
             font-weight: 800 !important;
@@ -635,30 +558,13 @@
             font-weight: 800 !important;
         }
         
-        /* Ensure proper spacing for table headers */
         .table th {
             vertical-align: middle !important;
             text-align: center !important;
         }
         
-        /* Fix for sticky header z-index */
         .sticky-top {
             z-index: 1020 !important;
-        }
-        
-        /* Card success header styling */
-        .card-success:not(.card-outline) .card-header {
-            border-bottom: none;
-        }
-        
-        /* Responsive adjustments */
-        @media (max-width: 576px) {
-            .card-footer .float-left, 
-            .card-footer .float-right {
-                float: none !important;
-                text-align: center;
-                margin-bottom: 5px;
-            }
         }
     </style>
 </x-layout>
