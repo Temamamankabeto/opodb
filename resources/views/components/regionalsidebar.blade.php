@@ -33,7 +33,7 @@
         <a href="#" class="nav-link">
             <i class="nav-icon fas fa-calendar-alt"></i>
             <p>
-                {{ __('Gabaasa ') }}
+                {{ __('Report ') }}
                 <i class="fas fa-angle-left right"></i>
             </p>
         </a>
@@ -45,7 +45,7 @@
                 <a href="#" class="nav-link">
                     <i class="fas fa-seedling nav-icon"></i>
                     <p>
-                        {{ __('Misooma Midhaanii') }}
+                        {{ __('Crop Development') }}
                         <i class="fas fa-angle-left right"></i>
                     </p>
                 </a>
@@ -54,13 +54,13 @@
                     <li class="nav-item">
                         <a href="{{ url('admin/gabaasa-torbanii/midhaan') }}" class="nav-link">
                             <i class="fas fa-flask nav-icon"></i>
-                            <p>{{ __('Midhaan') }}</p>
+                            <p>{{ __('Crop') }}</p>
                         </a>
                         </li>
   <li class="nav-item">
                         <a href="{{ url('admin/gabaasa/region/fertilizer') }}" class="nav-link">
                             <i class="fas fa-flask nav-icon"></i>
-                            <p>{{ __('Calla Guddiftuu') }}</p>
+                            <p>{{ __('Fertilizer') }}</p>
                         </a>
                         </li>
 
@@ -74,7 +74,7 @@
                          <li class="nav-item">
                         <a href="{{ url('admin/compost-report') }}" class="nav-link">
                             <i class="fas fa-flask nav-icon"></i>
-                            <p>{{ __('Gabbina Biyyoo') }}</p>
+                            <p>{{ __('Soil Development') }}</p>
                         </a>
                         </li>
                         
@@ -112,7 +112,7 @@
         <li class="nav-item">
             <a href=" {{ url('admin/association-types') }}" class="nav-link">
                 <i class="far fa-circle nav-icon"></i>
-                <p>{{ __('Akaakuu Woldaalee') }}</p>
+                <p>{{ __('Type of Associations') }}</p>
             </a>
         </li>
         <li class="nav-item">
@@ -173,14 +173,14 @@
         <li class="nav-item">
             <a href="{{ url('fertilizers/type') }}" class="nav-link">
                 <i class="far fa-circle nav-icon"></i>
-                <p>{{ __('Job Opportunities') }}</p>
+                <p>{{ __('fertilizer Type') }}</p>
             </a>
         </li>
 
         <li class="nav-item">
             <a href="{{ url('fertilizers') }}" class="nav-link">
                 <i class="far fa-circle nav-icon"></i>
-                <p>{{ __('Job Opportunities') }}</p>
+                <p>{{ __('Fertilizer') }}</p>
             </a>
         </li>
 
