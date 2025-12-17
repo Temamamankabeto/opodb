@@ -91,6 +91,14 @@
                         </a>
 
                     </li>
+                       <li class="nav-item">
+                        <a href="{{ url('woredas/compost-report') }}" class="nav-link">
+                            <i class="fas fa-flask nav-icon"></i>
+                            <p>{{ __('Gabbina Biyoo') }}</p>
+                        </a>
+
+                    </li>
+                    
 
                         
             </ul>

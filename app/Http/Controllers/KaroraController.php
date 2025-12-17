@@ -2,10 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Zone;
+use App\Models\Kebele;
+use App\Models\Woreda;
 use Illuminate\Http\Request;
+use App\Models\GabbinaBiyyee;
 use App\Models\Mechanization;
 use App\Models\KebeleCropPlan;
 use Illuminate\Support\Facades\DB;
+use App\Models\SeedlingPreparation;
 use Illuminate\Support\Facades\Auth;
 
 class KaroraController extends Controller
@@ -555,6 +560,185 @@ public function fertilizers(Request $request)
             'prevYear',
             'kebeleName'
         ));
+    }
+
+
+
+
+    public function compost(Request $request)
+    {
+        $user = Auth::user();
+    $kebeleId = $user->kebele_id;
+
+    // Fetch distinct years from gabbina_biyyees for this kebele
+    $years = GabbinaBiyyee::where('kebele_id', $kebeleId)
+                ->distinct()
+                ->orderBy('year','desc')
+                ->pluck('year');
+
+    // Selected year, fallback to latest available year
+    $selectedYear = $request->year ?? $years->first();
+    $prevYear = $selectedYear - 1;
+
+    // Current year data for kebele
+    $kebelesData = GabbinaBiyyee::where('kebele_id', $kebeleId)
+        ->where('year', $selectedYear)
+        ->get()
+        ->groupBy('kebele_id');
+
+    // Previous year data for kebele
+    $previousYearDataRaw = GabbinaBiyyee::where('kebele_id', $kebeleId)
+        ->where('year', $prevYear)
+        ->get();
+
+    $previousYearData = [];
+    foreach($previousYearDataRaw as $row){
+        $previousYearData[$row->kebele_id][$row->compost_type] = $row;
+    }
+
+    $kebeles = Kebele::where('id', $kebeleId)->pluck('name','id')->toArray();
+
+        return view('gabaasa_torbanii.compost.kebele_report', compact(
+            'years',
+        'selectedYear',
+        'prevYear',
+        'kebelesData',
+        'previousYearData',
+        'kebeles'
+        ));
+    }
+
+    public function seedling(Request $request)
+    {
+       $user = auth()->user();
+    
+    // Ensure the user has a kebele assigned
+    if (!$user->kebele_id) {
+        abort(403, "No kebele assigned to this user.");
+    }
+
+    // Get available years from seedling preparations for this kebele
+    $availableYears = \App\Models\SeedlingPreparation::where('kebele_id', $user->kebele_id)
+                        ->orderBy('year', 'desc')
+                        ->pluck('year')
+                        ->unique();
+
+    // Selected year from request or latest
+    $selectedYear = $request->input('year', $availableYears->first() ?? now()->year);
+    $previousYear = $selectedYear - 1;
+
+    // Fetch preparations for current and previous year for this kebele only
+    $preparations = \App\Models\SeedlingPreparation::where('kebele_id', $user->kebele_id)
+                        ->whereIn('year', [$selectedYear, $previousYear])
+                        ->get();
+
+    $reportData = [];
+
+    // Initialize totals for the kebele (since this is kebele-level, only one kebele)
+    $current = ['preparation' => ['hanga' => 0, 'participants' => 0, 'days' => 0],
+                'planting' => ['hanga' => 0, 'participants' => 0, 'days' => 0]];
+
+    $previous = ['preparation' => ['hanga' => 0, 'participants' => 0, 'days' => 0],
+                 'planting' => ['hanga' => 0, 'participants' => 0, 'days' => 0]];
+
+    foreach ($preparations as $prep) {
+        // Safe access to arrays
+        $prepData = is_array($prep->preparation_data) ? $prep->preparation_data : json_decode($prep->preparation_data ?? '{}', true);
+        $plantData = is_array($prep->planting_data) ? $prep->planting_data : json_decode($prep->planting_data ?? '{}', true);
+
+        $totalPrepHanga = 0;
+        $totalPrepParticipants = 0;
+        $totalPrepDays = 0;
+
+        $totalPlantHanga = 0;
+        $totalPlantParticipants = 0;
+        $totalPlantDays = 0;
+
+        // Aggregate preparation data
+        foreach ($prepData['selected_seedlings'] ?? [] as $s) {
+            $totalPrepHanga += $s['hanga_qophii'] ?? 0;
+            $totalPrepParticipants += $s['nama_hirmaate_qophii'] ?? 0;
+            $totalPrepDays += $s['baayina_guyyaa_qophii'] ?? 0;
+        }
+
+        // Aggregate planting data
+        foreach ($plantData['selected_seedlings'] ?? [] as $s) {
+            $totalPlantHanga += $s['hanga_dhaabbii'] ?? 0;
+            $totalPlantParticipants += $s['nama_hirmaate_dhaabbii'] ?? 0;
+            $totalPlantDays += $s['baayina_guyyaa_dhaabbii'] ?? 0;
+        }
+
+        if ($prep->year == $selectedYear) {
+            $current['preparation']['hanga'] += $totalPrepHanga;
+            $current['preparation']['participants'] += $totalPrepParticipants;
+            $current['preparation']['days'] += $totalPrepDays;
+
+            $current['planting']['hanga'] += $totalPlantHanga;
+            $current['planting']['participants'] += $totalPlantParticipants;
+            $current['planting']['days'] += $totalPlantDays;
+        } else {
+            $previous['preparation']['hanga'] += $totalPrepHanga;
+            $previous['preparation']['participants'] += $totalPrepParticipants;
+            $previous['preparation']['days'] += $totalPrepDays;
+
+            $previous['planting']['hanga'] += $totalPlantHanga;
+            $previous['planting']['participants'] += $totalPlantParticipants;
+            $previous['planting']['days'] += $totalPlantDays;
+        }
+    }
+
+    // Only one kebele row
+    $reportData[] = [
+        'kebele_name' => $user->kebele->name ?? 'N/A',
+        'current' => $current,
+        'previous' => $previous,
+    ];
+        return view('gabaasa_torbanii.seedling.kebele_report', compact(
+            'availableYears', 'selectedYear', 'previousYear', 'reportData'));
+    }
+
+    private function sumPreparation($preparations)
+    {
+        $totalHanga = 0;
+        $totalParticipants = 0;
+        $totalDays = 0;
+
+        foreach ($preparations as $prep) {
+            $data = $prep->preparation_data['selected_seedlings'] ?? [];
+            foreach ($data as $s) {
+                $totalHanga += $s['hanga_qophii'] ?? 0;
+                $totalParticipants += $s['nama_hirmaate_qophii'] ?? 0;
+                $totalDays += $s['baayina_guyyaa_qophii'] ?? 0;
+            }
+        }
+
+        return [
+            'hanga' => $totalHanga,
+            'participants' => $totalParticipants,
+            'days' => $totalDays,
+        ];
+    }
+
+    private function sumPlanting($preparations)
+    {
+        $totalHanga = 0;
+        $totalParticipants = 0;
+        $totalDays = 0;
+
+        foreach ($preparations as $prep) {
+            $data = $prep->planting_data['selected_seedlings'] ?? [];
+            foreach ($data as $s) {
+                $totalHanga += $s['hanga_dhaabbii'] ?? 0;
+                $totalParticipants += $s['nama_hirmaate_dhaabbii'] ?? 0;
+                $totalDays += $s['baayina_guyyaa_dhaabbii'] ?? 0;
+            }
+        }
+
+        return [
+            'hanga' => $totalHanga,
+            'participants' => $totalParticipants,
+            'days' => $totalDays,
+        ];
     }
 
 }

@@ -72,71 +72,87 @@ public function index()
  
 public function store(Request $request)
 {
-    // Convert JSON string to array for validation
-    $preparationData = json_decode($request->preparation_data, true);
-    
+    /*
+    |--------------------------------------------------------------------------
+    | 1. Normalize preparation_data (JSON or array)
+    |--------------------------------------------------------------------------
+    */
+    $preparationData = $request->preparation_data;
+
+    if (is_string($preparationData)) {
+        $preparationData = json_decode($preparationData, true);
+    }
+
     if (!is_array($preparationData)) {
-        return redirect()->back()->withErrors([
-            'preparation_data' => 'Invalid data format.'
-        ])->withInput();
+        return redirect()->back()
+            ->withErrors(['preparation_data' => 'Invalid data format.'])
+            ->withInput();
     }
 
     $request->merge([
         'preparation_data' => $preparationData
     ]);
 
+    /*
+    |--------------------------------------------------------------------------
+    | 2. Validation
+    |--------------------------------------------------------------------------
+    */
     $request->validate([
         'year' => 'required|string',
         'preparation_data' => 'required|array',
         'preparation_data.seedling_type_id' => 'required|exists:seedling_types,id',
         'preparation_data.selected_seedlings' => 'required|array|min:1',
+
         'preparation_data.selected_seedlings.*.seedling_id' => 'required|exists:seedlings,id',
         'preparation_data.selected_seedlings.*.hanga_qophii' => 'required|numeric|min:0',
         'preparation_data.selected_seedlings.*.nama_hirmaate_qophii' => 'required|numeric|min:0',
         'preparation_data.selected_seedlings.*.baayina_guyyaa_qophii' => 'required|numeric|min:0',
-        
+
         'baayyina_nersery' => 'nullable|numeric|min:0',
         'ballina_nersery' => 'nullable|numeric|min:0',
         'nerserif_nama_hirmaate' => 'nullable|numeric|min:0',
         'nerserif_baayina_guyyaa' => 'nullable|numeric|min:0',
     ]);
 
-    // Get seedling type data
-    $seedlingType = SeedlingType::findOrFail($request->preparation_data['seedling_type_id']);
+    /*
+    |--------------------------------------------------------------------------
+    | 3. Filter seedlings with real data
+    |--------------------------------------------------------------------------
+    */
+    $filteredSeedlings = array_filter(
+        $request->preparation_data['selected_seedlings'],
+        fn ($s) =>
+            $s['hanga_qophii'] > 0 ||
+            $s['nama_hirmaate_qophii'] > 0 ||
+            $s['baayina_guyyaa_qophii'] > 0
+    );
 
-    // Filter out seedlings where all values are 0 (not filled by user)
-    $filteredSeedlings = array_filter($request->preparation_data['selected_seedlings'], function($seedling) {
-        return $seedling['hanga_qophii'] > 0 || 
-               $seedling['nama_hirmaate_qophii'] > 0 || 
-               $seedling['baayina_guyyaa_qophii'] > 0;
-    });
-
-    // Check if at least one seedling has data
     if (empty($filteredSeedlings)) {
-        return redirect()->back()->withErrors([
-            'preparation_data' => 'Please fill preparation details for at least one seedling.'
-        ])->withInput();
+        return redirect()->back()
+            ->withErrors(['preparation_data' => 'Please fill preparation details for at least one seedling.'])
+            ->withInput();
     }
 
-    // Extract seedling IDs from the request
-    $requestSeedlingIds = array_map(function($seedling) {
-        return $seedling['seedling_id'];
-    }, $filteredSeedlings);
+    /*
+    |--------------------------------------------------------------------------
+    | 4. Prevent duplicate seedling for same year + kebele
+    |--------------------------------------------------------------------------
+    */
+    $requestSeedlingIds = array_column($filteredSeedlings, 'seedling_id');
 
-    // Check for duplicate seedlings in existing records
-    $existingPreparations = SeedlingPreparation::where('sector_id', Auth::user()->sector_id)
-        ->where('year', $request->year)
-        ->whereJsonContains('preparation_data->seedling_type->id', $request->preparation_data['seedling_type_id'])
+    $existingPreparations = SeedlingPreparation::where('year', $request->year)
+        ->where('kebele_id', Auth::user()->kebele_id)
         ->get();
 
     $duplicateSeedlings = [];
 
-    foreach ($existingPreparations as $existingPrep) {
-        $existingSeedlings = $existingPrep->preparation_data['selected_seedlings'] ?? [];
-        
-        foreach ($existingSeedlings as $existingSeedling) {
-            if (in_array($existingSeedling['id'], $requestSeedlingIds)) {
-                $seedling = Seedling::find($existingSeedling['id']);
+    foreach ($existingPreparations as $prep) {
+        $existingSeedlings = $prep->preparation_data['selected_seedlings'] ?? [];
+
+        foreach ($existingSeedlings as $existing) {
+            if (in_array($existing['id'], $requestSeedlingIds)) {
+                $seedling = Seedling::find($existing['id']);
                 if ($seedling) {
                     $duplicateSeedlings[] = $seedling->name;
                 }
@@ -144,70 +160,77 @@ public function store(Request $request)
         }
     }
 
-    // Remove duplicates from the array
-    $duplicateSeedlings = array_unique($duplicateSeedlings);
-
-    // If there are duplicate seedlings, return error
     if (!empty($duplicateSeedlings)) {
-        $seedlingList = implode(', ', $duplicateSeedlings);
-        return redirect()->back()->withErrors([
-            'preparation_data' => "The following seedlings already have preparation records for year {$request->year}: {$seedlingList}. Please edit the existing record instead."
-        ])->withInput();
+        return redirect()->back()
+            ->withErrors([
+                'preparation_data' =>
+                    'The following seedlings already exist for year '
+                    . $request->year . ' in this kebele: '
+                    . implode(', ', array_unique($duplicateSeedlings))
+            ])
+            ->withInput();
     }
 
-    // Prepare preparation data for JSON storage
+    /*
+    |--------------------------------------------------------------------------
+    | 5. Build JSON structure
+    |--------------------------------------------------------------------------
+    */
+    $seedlingType = SeedlingType::findOrFail(
+        $request->preparation_data['seedling_type_id']
+    );
+
     $preparationDataJson = [
         'seedling_type' => [
             'id' => $seedlingType->id,
             'name' => $seedlingType->name,
         ],
-        'selected_seedlings' => []
+        'selected_seedlings' => [],
     ];
 
-    // Process preparation seedlings (only those with data)
-    foreach ($filteredSeedlings as $prepSeedling) {
-        $seedling = Seedling::findOrFail($prepSeedling['seedling_id']);
+    foreach ($filteredSeedlings as $item) {
+        $seedling = Seedling::findOrFail($item['seedling_id']);
+
         $preparationDataJson['selected_seedlings'][] = [
             'id' => $seedling->id,
             'name' => $seedling->name,
-            'hanga_qophii' => $prepSeedling['hanga_qophii'],
-            'nama_hirmaate_qophii' => $prepSeedling['nama_hirmaate_qophii'],
-            'baayina_guyyaa_qophii' => $prepSeedling['baayina_guyyaa_qophii'],
+            'hanga_qophii' => $item['hanga_qophii'],
+            'nama_hirmaate_qophii' => $item['nama_hirmaate_qophii'],
+            'baayina_guyyaa_qophii' => $item['baayina_guyyaa_qophii'],
         ];
     }
 
-    // Check for duplicate entry (same seedling type in same year)
-    $exists = SeedlingPreparation::where('sector_id', Auth::user()->sector_id)
-                ->where('year', $request->year)
-                ->whereJsonContains('preparation_data->seedling_type->id', $request->preparation_data['seedling_type_id'])
-                ->exists();
-
-    if ($exists) {
-        return redirect()->back()->withErrors([
-            'preparation_data' => "A seedling preparation record for '{$seedlingType->name}' already exists for year {$request->year} in your sector."
-        ])->withInput();
-    }
-
+    /*
+    |--------------------------------------------------------------------------
+    | 6. Save
+    |--------------------------------------------------------------------------
+    */
     SeedlingPreparation::create([
         'year' => $request->year,
         'preparation_data' => $preparationDataJson,
-        'planting_data' => null, // Planting data will be added later
+        'planting_data' => null,
+
         'baayyina_nersery' => $request->baayyina_nersery,
         'ballina_nersery' => $request->ballina_nersery,
         'nerserif_nama_hirmaate' => $request->nerserif_nama_hirmaate,
         'nerserif_baayina_guyyaa' => $request->nerserif_baayina_guyyaa,
+
         'sector_id' => Auth::user()->sector_id,
         'kebele_id' => Auth::user()->kebele_id,
         'woreda_id' => Auth::user()->woreda_id,
         'zone_id' => Auth::user()->zone_id,
         'region_id' => Auth::user()->region_id,
+
         'created_by' => Auth::id(),
         'phone' => Auth::user()->phone,
-        'status' => 'prepared', // Mark as prepared, ready for planting
+        'status' => 'prepared',
     ]);
 
-    return redirect()->route('sector.seedling-preparations.index')->with('success', 'Seedling preparation created successfully! You can add planting data later.');
+    return redirect()
+        ->route('sector.seedling-preparations.index')
+        ->with('success', 'Seedling preparation created successfully.');
 }
+
 
     
     public function edit($id)

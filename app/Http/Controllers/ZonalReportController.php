@@ -2,7 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Zone;
+use App\Models\Kebele;
+use App\Models\Woreda;
 use Illuminate\Http\Request;
+use App\Models\GabbinaBiyyee;
+use App\Models\Mechanization;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 
@@ -139,11 +145,6 @@ class ZonalReportController extends Controller
             ->orderBy('name')
             ->get(['id','name']);
     }
-
-
-
-
-
 
    public function crop(Request $request)
     {
@@ -300,6 +301,99 @@ class ZonalReportController extends Controller
         if($request->croptype_id) $query->where('kcp.croptype_id',$request->croptype_id);
 
         return response()->json($query->orderBy('crops.name')->get());
+    }
+
+
+
+    public function zoneMechanization(Request $request)
+{
+    $zoneId = Auth::user()->zone_id; // Logged-in zone admin
+
+    // Woreda filter
+    $woredas = Woreda::where('zone_id', $zoneId)->pluck('name','id');
+    $selectedWoreda = $request->woreda_id ?? null;
+
+    // Kebele filter (depends on selected woreda)
+    $kebeles = collect();
+    if($selectedWoreda){
+        $kebeles = Kebele::where('woreda_id', $selectedWoreda)->pluck('name','id');
+    }
+    $selectedKebele = $request->kebele_id ?? null;
+
+    // Year filter
+    $years = Mechanization::where('zone_id', $zoneId)->distinct()->pluck('year');
+    $year = $request->year ?? Carbon::now()->year;
+    $prevYear = $year - 1;
+
+    // Current year data
+    $currentYearDataQuery = Mechanization::where('zone_id', $zoneId)
+        ->where('year', $year);
+
+    if($selectedWoreda) $currentYearDataQuery->where('woreda_id', $selectedWoreda);
+    if($selectedKebele) $currentYearDataQuery->where('kebele_id', $selectedKebele);
+
+    $currentYearData = $currentYearDataQuery->get()->groupBy('woreda_id');
+
+    // Previous year data
+    $previousYearRaw = Mechanization::where('zone_id', $zoneId)
+        ->where('year', $prevYear)
+        ->when($selectedWoreda, fn($q) => $q->where('woreda_id', $selectedWoreda))
+        ->when($selectedKebele, fn($q) => $q->where('kebele_id', $selectedKebele))
+        ->get();
+
+    $previousYearData = [];
+    foreach($previousYearRaw as $row){
+        $previousYearData[$row->mechanization_type.'_'.$row->name.'_'.$row->kebele_id] = $row;
+    }
+
+    return view('gabaasa_torbanii.mechinization.mechinization_zone_report', compact(
+        'woredas','kebeles','selectedWoreda','selectedKebele',
+        'years','year','prevYear','currentYearData','previousYearData'
+    ));
+}
+
+
+public function compost(Request $request)
+    {
+       // Distinct years from compost table
+        $years = GabbinaBiyyee::select('year')->distinct()->orderBy('year','desc')->pluck('year');
+
+        // Selected filters
+        $selectedYear = $request->year ?? $years->first();
+        $selectedWoreda = $request->woreda_id;
+
+        // Woredas list for filter
+        $woredas = Woreda::pluck('name','id');
+
+        // Current year data
+        $query = GabbinaBiyyee::where('year', $selectedYear);
+        if ($selectedWoreda) $query->where('woreda_id', $selectedWoreda);
+        $zonalDataRaw = $query->orderBy('zone_id')->orderBy('woreda_id')->orderBy('kebele_id')->get();
+
+        // Previous year
+        $prevYear = $selectedYear - 1;
+        $prevDataRaw = GabbinaBiyyee::where('year', $prevYear)->get();
+
+        // Group data: woreda -> kebele -> compost type
+        $zonalData = [];
+        foreach ($zonalDataRaw as $row) {
+            $zonalData[$row->woreda_id][$row->kebele_id][] = $row;
+        }
+
+        // Previous year grouped for lookup
+        $previousYearData = [];
+        foreach ($prevDataRaw as $row) {
+            $previousYearData[$row->woreda_id][$row->kebele_id][$row->compost_type] = $row;
+        }
+        return view('gabaasa_torbanii.compost.zonal_report', compact(
+           'years',
+            'selectedYear',
+            'prevYear',
+            'woredas',
+            'selectedWoreda',
+            'zonalData',
+            'previousYearData'
+        ));
     }
     
 }

@@ -50,6 +50,22 @@
                         </a>
 
                     </li>
+                     <li class="nav-item">
+                        <a href="{{ url('zones/zone-mechanization-report') }}" class="nav-link">
+                            <i class="fas fa-flask nav-icon"></i>
+                            <p>{{ __('Mechinization') }}</p>
+                        </a>
+
+                    </li>
+                      <li class="nav-item">
+                        <a href="{{ url('zones/compost-report') }}" class="nav-link">
+                            <i class="fas fa-flask nav-icon"></i>
+                            <p>{{ __('Gabbina Biyyoo') }}</p>
+                        </a>
+
+                    </li>
+                    
+                    
                    
                    
             </ul>

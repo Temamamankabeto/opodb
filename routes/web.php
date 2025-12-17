@@ -75,6 +75,9 @@ Route::middleware([SecurityHeaders::class])->group(function () {
         // Super Admin only
 
         Route::middleware('role:1')->prefix('admin')->group(function () {
+
+             Route::get('/compost-report', [RegionalReportController::class, 'compost'])
+        ->name('regional-compost-report.index');
  Route::get('crop-plans', [DashboardController::class, 'indexregioncrop'])->name('crop-plans.indexa');
             Route::post('sectors/store', [StructureController::class, 'kebelesectorstore'])->name('sectors.store');
             Route::get('sectors/create', [StructureController::class, 'sectorcreate'])->name('sectors.create');
@@ -104,15 +107,26 @@ Route::middleware([SecurityHeaders::class])->group(function () {
     Route::get('filter/crop-types', [RegionalReportController::class, 'getCropTypes'])->name('region.filter.crop-types');
     Route::get('filter/crops', [RegionalReportController::class, 'getCrops'])->name('region.filter.crops');
 
+        Route::get('/regional-mechanization-report', [RegionalReportController::class, 'mechinization'])
+        ->name('regional-mechanization-report.index');
+
+    // AJAX endpoints
+    Route::get('/get-woredas', [RegionalReportController::class, 'getWoreda'])->name('regional.get-woredas');
+    Route::get('/get-kebeles', [RegionalReportController::class, 'getKebele'])->name('regional.get-kebeles');
+
         });
 
         // for report  
         Route::middleware('role:2')->prefix('zones')->group(function () {
 
+              Route::get('/compost-report', [ZonalReportController::class, 'compost'])
+        ->name('zonal-compost-report.index');
+
             Route::get('/gabaasa/zone/fertilizer', [ZonalReportController::class, 'index'])->name('zone.fertilizer.report');
             Route::get('/kebeles-by-woreda/{woreda}',[ZonalReportController::class, 'kebelesByWoreda'])->name('zone.kebeles.by.woreda');
-
-             
+Route::get('/zone-mechanization-report', [ZonalReportController::class, 'zoneMechanization'])
+        ->name('zone-mechanization-report.index');
+           
     // Zonal Crop Report Main Page
     Route::get('gabaasa-torbanii/midhaan', [ZonalReportController::class, 'crop'])
         ->name('zonal-crop-gabaasa.index');
@@ -375,13 +389,19 @@ Route::delete('/enterprise-work/{id}', [EnterpriseWorkController::class, 'destro
 
             Route::get('mechanization-report', [WoredaReportController::class, 'mechinization'])
         ->name('woreda-mechanization-report.index');
-
+ Route::get('/compost-report', [WoredaReportController::class, 'compost'])->name('woreda-compost-report.index');
 
         });
 
        Route::middleware('role:4')->prefix('kebele')->group(function () {
     Route::get('mechanization-report', [KaroraController::class, 'mechinization'])
         ->name('kebele-mechanization-report.index');
+
+        Route::get('compost-report', [KaroraController::class, 'compost'])
+         ->name('kebele-compost-report.index');
+Route::get('seedling-reports/kebele', [KaroraController::class, 'seedling'])
+        ->name('seedling-reports.kebele');
+    
 });
 
         Route::middleware('role:4')->prefix('kebele')->group(function () {

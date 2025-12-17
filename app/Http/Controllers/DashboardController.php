@@ -14,153 +14,49 @@ class DashboardController extends Controller
 {
 
 public function indexregioncrop()
-    {
-        $user = Auth::user();
+{
+    $user = Auth::user();
 
-        // Get all zones under this region
-        $zones = Zone::where('region_id', $user->region_id)->pluck('id');
+    // Current and previous year (Ethiopian year)
+    $currentYear = 2018;
+    $previousYear = $currentYear - 1;
 
-        // Get all woredas under these zones
-        $woredas = Woreda::whereIn('zone_id', $zones)->pluck('id');
+    // Get all zones, woredas, kebeles
+    $zones = Zone::where('region_id', $user->region_id)->pluck('id');
+    $woredas = Woreda::whereIn('zone_id', $zones)->pluck('id');
+    $kebeles = Kebele::whereIn('woreda_id', $woredas)->pluck('id');
 
-        // Get all kebeles under these woredas
-        $kebeles = Kebele::whereIn('woreda_id', $woredas)->pluck('id');
+    // All crop plans in this region
+    $cropPlans = KebeleCropPlan::with(['cropType', 'crop', 'kebele.woreda.zone'])
+        ->whereIn('kebele_id', $kebeles)
+        ->orderBy('year', 'desc')
+        ->orderBy('kebele_id')
+        ->orderBy('season')
+        ->orderBy('croptype_id')
+        ->get();
 
-        // Get all crop plans from all kebeles in this region
-        $cropPlans = KebeleCropPlan::with(['cropType', 'crop', 'kebele.woreda.zone'])
-            ->whereIn('kebele_id', $kebeles)
-            ->orderBy('year', 'desc')
-            ->orderBy('kebele_id')
-            ->orderBy('season')
-            ->orderBy('croptype_id')
-            ->get();
+    // Filter plans by current and previous year
+    $currentYearPlans = $cropPlans->where('year', $currentYear);
+    $previousYearData = $cropPlans->where('year', $previousYear)->groupBy('crop_id');
+    $currentYearData = $currentYearPlans->groupBy('crop_id');
 
-        // Calculate aggregated totals
-        $grandTotalArea = $cropPlans->sum('area_to_plant');
-        $grandTotalYield = $cropPlans->sum('expected_yield');
+    // Aggregate totals
+    $grandTotalArea = $currentYearPlans->sum('area_to_plant');
+    $grandTotalYield = $currentYearPlans->sum('expected_yield');
 
-        // Calculate zone-wise totals
-        $zoneTotals = [];
-        foreach ($cropPlans->groupBy('kebele.woreda.zone_id') as $zoneId => $plans) {
-            $zone = $plans->first()->kebele->woreda->zone;
-            $zoneTotals[$zoneId] = [
-                'zone_name' => $zone->name,
-                'total_area' => $plans->sum('area_to_plant'),
-                'total_yield' => $plans->sum('expected_yield'),
-                'plan_count' => $plans->count(),
-                'woreda_count' => $plans->groupBy('kebele.woreda_id')->count(),
-                'kebele_count' => $plans->groupBy('kebele_id')->count(),
-            ];
-        }
+    return view('regionReport.crops', compact(
+        'cropPlans',
+        'currentYearPlans',
+        'currentYearData',
+        'previousYearData',
+        'grandTotalArea',
+        'grandTotalYield',
+        'currentYear',
+        'previousYear'
+    ));
+}
 
-        // Calculate woreda-wise totals
-        $woredaTotals = [];
-        foreach ($cropPlans->groupBy('kebele.woreda_id') as $woredaId => $plans) {
-            $woreda = $plans->first()->kebele->woreda;
-            $woredaTotals[$woredaId] = [
-                'woreda_name' => $woreda->name,
-                'zone_name' => $woreda->zone->name,
-                'total_area' => $plans->sum('area_to_plant'),
-                'total_yield' => $plans->sum('expected_yield'),
-                'plan_count' => $plans->count(),
-                'kebele_count' => $plans->groupBy('kebele_id')->count(),
-            ];
-        }
 
-        // Calculate kebele-wise totals
-        $kebeleTotals = [];
-        foreach ($cropPlans->groupBy('kebele_id') as $kebeleId => $plans) {
-            $kebele = $plans->first()->kebele;
-            $kebeleTotals[$kebeleId] = [
-                'kebele_name' => $kebele->name,
-                'woreda_name' => $kebele->woreda->name,
-                'zone_name' => $kebele->woreda->zone->name,
-                'total_area' => $plans->sum('area_to_plant'),
-                'total_yield' => $plans->sum('expected_yield'),
-                'plan_count' => $plans->count(),
-            ];
-        }
-
-        // Yearly totals
-        $yearlyTotals = [];
-        foreach ($cropPlans->groupBy('year') as $year => $plansByYear) {
-            $yearlyTotals[$year] = [
-                'total_area' => $plansByYear->sum('area_to_plant'),
-                'total_yield' => $plansByYear->sum('expected_yield'),
-                'zone_count' => $plansByYear->groupBy('kebele.woreda.zone_id')->count(),
-                'woreda_count' => $plansByYear->groupBy('kebele.woreda_id')->count(),
-                'kebele_count' => $plansByYear->groupBy('kebele_id')->count(),
-            ];
-        }
-
-        // For productivity comparison
-        $currentYear = $cropPlans->max('year');
-        $previousYear = $currentYear - 1;
-
-        $currentYearData = $cropPlans->where('year', $currentYear)->groupBy('crop_id');
-        $previousYearData = $cropPlans->where('year', $previousYear)->groupBy('crop_id');
-        $currentYearPlans = $cropPlans->where('year', $currentYear);
-
-        // Fertilizer calculations
-        $cropFertilizers = [];
-        $typeFertilizers = [];
-
-        foreach($currentYearPlans as $plan) {
-            // Crop fertilizer calculation
-            $cropName = $plan->crop->name ?? 'Unknown';
-            $fertilizerDetails = $plan->fertilizer_details ?? [];
-
-            if(!isset($cropFertilizers[$cropName])) {
-                $cropFertilizers[$cropName] = [
-                    'total_fertilizer' => 0,
-                    'total_area' => 0,
-                    'plans' => 0
-                ];
-            }
-
-            $totalFertilizer = 0;
-            if(is_array($fertilizerDetails)) {
-                foreach($fertilizerDetails as $fert) {
-                    $totalFertilizer += ($fert['amount'] ?? 0);
-                }
-            }
-
-            $cropFertilizers[$cropName]['total_fertilizer'] += $totalFertilizer;
-            $cropFertilizers[$cropName]['total_area'] += $plan->area_to_plant;
-            $cropFertilizers[$cropName]['plans']++;
-
-            // Crop type fertilizer calculation
-            $typeName = $plan->cropType->name ?? 'Unknown';
-            if(!isset($typeFertilizers[$typeName])) {
-                $typeFertilizers[$typeName] = [
-                    'total_fertilizer' => 0,
-                    'total_area' => 0,
-                    'plans' => 0
-                ];
-            }
-
-            $typeFertilizers[$typeName]['total_fertilizer'] += $totalFertilizer;
-            $typeFertilizers[$typeName]['total_area'] += $plan->area_to_plant;
-            $typeFertilizers[$typeName]['plans']++;
-        }
-
-        return view('regionReport.crops', compact(
-            'cropPlans',
-            'yearlyTotals',
-            'grandTotalArea',
-            'grandTotalYield',
-            'zoneTotals',
-            'woredaTotals',
-            'kebeleTotals',
-            'currentYear',
-            'previousYear',
-            'currentYearData',
-            'previousYearData',
-            'currentYearPlans',
-            'cropFertilizers',
-            'typeFertilizers'
-        ));
-    }
 
     public function indexzonecrop()
     {

@@ -482,6 +482,22 @@
                             <i class="fas fa-flask nav-icon"></i>
                             <p>{{ __('Calla Guddiftuu') }}</p>
                         </a>
+                        </li>
+ <li class="nav-item">
+                        <a href="{{ url('kebele/mechanization-report') }}" class="nav-link">
+                            <i class="fas fa-flask nav-icon"></i>
+                            <p>{{ __('Calla Guddiftuu') }}</p>
+                        </a>
+                        </li>
+                         <li class="nav-item">
+                        <a href="{{ url('kebele/compost-report') }}" class="nav-link">
+                            <i class="fas fa-flask nav-icon"></i>
+                            <p>{{ __('Gabbina Biyyoo') }}</p>
+                        </a>
+                        </li>
+
+                       
+                        
             </ul>
             </li>
         </ul>

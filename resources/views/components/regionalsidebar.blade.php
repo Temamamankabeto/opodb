@@ -7,6 +7,27 @@
 </li>
 <hr>
 
+
+<li class="nav-item  ">
+    <a href="#" class="nav-link ">
+        <i class="nav-icon fas fa-tachometer-alt"></i>
+        <p>
+            {{ __('User Management') }}
+            <i class="right fas fa-angle-left"></i>
+        </p>
+    </a>
+    <ul class="nav nav-treeview">
+
+        <li class="nav-item">
+            <a href="{{ url('admin/users') }}" class="nav-link">
+                <i class="far fa-circle nav-icon"></i>
+                <p>{{ __('Users') }}</p>
+            </a>
+        </li>
+         
+    </ul>
+</li>
+
  {{-- gabaasa woggaa  --}}
 <li class="nav-item">
         <a href="#" class="nav-link">
@@ -42,14 +63,30 @@
                             <p>{{ __('Calla Guddiftuu') }}</p>
                         </a>
                         </li>
+
+                        <li class="nav-item">
+                        <a href="{{ url('admin/regional-mechanization-report') }}" class="nav-link">
+                            <i class="fas fa-flask nav-icon"></i>
+                            <p>{{ __('Mechinization') }}</p>
+                        </a>
+                        </li>
+
+                         <li class="nav-item">
+                        <a href="{{ url('admin/compost-report') }}" class="nav-link">
+                            <i class="fas fa-flask nav-icon"></i>
+                            <p>{{ __('Gabbina Biyyoo') }}</p>
+                        </a>
+                        </li>
+                        
+                       
                         
             </ul>
             </li>
         </ul>
 </li>
 <!-- Dashboard -->
-<li class="nav-item menu-open">
-    <a href="#" class="nav-link active nav-modern-link">
+<li class="nav-item  ">
+    <a href="#" class="nav-link ">
         <i class="nav-icon fas fa-tachometer-alt"></i>
         <p>
             {{ __('Settings') }}

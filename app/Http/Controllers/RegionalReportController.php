@@ -2,7 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Zone;
+use App\Models\Kebele;
+use App\Models\Woreda;
 use Illuminate\Http\Request;
+use App\Models\GabbinaBiyyee;
+use App\Models\Mechanization;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 
@@ -305,5 +310,116 @@ class RegionalReportController extends Controller
         if($request->season) $query->where('kcp.season',$request->season);
         if($request->croptype_id) $query->where('kcp.croptype_id',$request->croptype_id);
         return response()->json($query->orderBy('crops.name')->get());
+    }
+
+
+
+    public function mechinization(Request $request)
+{
+    // Years available in the Mechanization table
+    $years = Mechanization::distinct()->orderBy('year', 'desc')->pluck('year');
+    
+    $year = $request->year ?? $years->first(); // Default to latest year
+    $prevYear = $year - 1;
+
+    // Filters
+    $selectedZone = $request->zone_id;
+    $selectedWoreda = $request->woreda_id;
+    $selectedKebele = $request->kebele_id;
+
+    $zones = Zone::pluck('name','id');
+
+    // Woredas filtered by selected zone
+    $woredas = collect();
+    if($selectedZone){
+        $woredas = Woreda::where('zone_id', $selectedZone)->pluck('name','id');
+    }
+
+    // Kebeles filtered by selected woreda
+    $kebeles = collect();
+    if($selectedWoreda){
+        $kebeles = Kebele::where('woreda_id', $selectedWoreda)->pluck('name','id');
+    }
+
+    // Current Year Data
+    $currentYearData = Mechanization::with('woreda')
+        ->when($selectedZone, fn($q) => $q->whereHas('woreda', fn($q2) => $q2->where('zone_id', $selectedZone)))
+        ->when($selectedWoreda, fn($q) => $q->where('woreda_id', $selectedWoreda))
+        ->when($selectedKebele, fn($q) => $q->where('kebele_id', $selectedKebele))
+        ->where('year', $year)
+        ->get()
+        ->groupBy('woreda.zone_id'); // group by zone for regional report
+
+    // Previous Year Data
+    $previousYearData = Mechanization::where('year', $prevYear)->get()
+        ->keyBy(fn($item) => $item->mechanization_type.'_'.$item->name.'_'.$item->woreda_id);
+
+    return view('gabaasa_torbanii.mechinization.regional_index', compact(
+        'years','year','prevYear','zones','woredas','kebeles',
+        'selectedZone','selectedWoreda','selectedKebele',
+        'currentYearData','previousYearData'
+    ));
+}
+
+
+    // AJAX endpoint to fetch woredas based on zone
+    public function getWoreda(Request $request)
+    {
+        $zoneId = $request->zone_id;
+        $woredas = Woreda::where('zone_id', $zoneId)->pluck('name','id');
+        return response()->json($woredas);
+    }
+
+    // AJAX endpoint to fetch kebeles based on woreda
+    public function getKebele(Request $request)
+    {
+        $woredaId = $request->woreda_id;
+        $kebeles = Kebele::where('woreda_id', $woredaId)->pluck('name','id');
+        return response()->json($kebeles);
+    }
+
+
+
+    public function compost(Request $request)
+    {
+        // Distinct years
+        $years = GabbinaBiyyee::select('year')->distinct()->orderBy('year','desc')->pluck('year');
+
+        $selectedYear = $request->year ?? $years->first();
+
+        // Zones for filter
+        $zones = Zone::pluck('name','id');
+        $selectedZone = $request->zone_id;
+
+        // Current year data
+        $query = GabbinaBiyyee::where('year', $selectedYear);
+        if ($selectedZone) $query->where('zone_id', $selectedZone);
+        $regionalDataRaw = $query->orderBy('zone_id')->orderBy('woreda_id')->orderBy('kebele_id')->get();
+
+        // Previous year data
+        $prevYear = $selectedYear - 1;
+        $prevDataRaw = GabbinaBiyyee::where('year', $prevYear)->get();
+
+        // Group by Zone → Woreda → Kebele → Compost Type
+        $regionalData = [];
+        foreach ($regionalDataRaw as $row) {
+            $regionalData[$row->zone_id][$row->woreda_id][$row->kebele_id][] = $row;
+        }
+
+        // Previous year lookup
+        $previousYearData = [];
+        foreach ($prevDataRaw as $row) {
+            $previousYearData[$row->zone_id][$row->woreda_id][$row->kebele_id][$row->compost_type] = $row;
+        }
+
+        return view('gabaasa_torbanii.compost.regional_report', compact(
+            'years',
+            'selectedYear',
+            'prevYear',
+            'zones',
+            'selectedZone',
+            'regionalData',
+            'previousYearData'
+        ));
     }
 }

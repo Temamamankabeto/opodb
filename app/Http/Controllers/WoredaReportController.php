@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Kebele;
 use Illuminate\Http\Request;
+use App\Models\GabbinaBiyyee;
 use App\Models\Mechanization;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -350,4 +351,56 @@ public function mechinization(Request $request)
         ));
     }
 
+
+
+
+public function compost(Request $request)
+{
+    $user = Auth::user();
+    $woredaId = $user->woreda_id; // Woreda admin
+
+    // Years available for this woreda
+    $years = GabbinaBiyyee::where('woreda_id', $woredaId)
+                ->distinct()
+                ->orderBy('year','desc')
+                ->pluck('year');
+
+    $selectedYear = $request->year ?? $years->first();
+    $prevYear = $selectedYear - 1;
+
+    // Filter kebele if provided
+    $selectedKebele = $request->kebele_id ?? null;
+
+    // Current year data
+    $woredaDataRaw = GabbinaBiyyee::where('woreda_id', $woredaId)
+        ->when($selectedKebele, fn($q) => $q->where('kebele_id', $selectedKebele))
+        ->where('year', $selectedYear)
+        ->get();
+
+    $woredaData = $woredaDataRaw->groupBy('kebele_id');
+
+    // Previous year data
+    $prevYearDataRaw = GabbinaBiyyee::where('woreda_id', $woredaId)
+        ->when($selectedKebele, fn($q) => $q->where('kebele_id', $selectedKebele))
+        ->where('year', $prevYear)
+        ->get();
+
+    $previousYearData = [];
+    foreach($prevYearDataRaw as $row){
+        $previousYearData[$row->kebele_id][$row->compost_type] = $row;
+    }
+
+    // Kebeles in this woreda
+    $kebeles = Kebele::where('woreda_id', $woredaId)->pluck('name','id')->toArray();
+
+    return view('gabaasa_torbanii.compost.woreda_report', compact(
+       'years',
+        'selectedYear',
+        'prevYear',
+        'woredaData',
+        'previousYearData',
+        'kebeles',
+        'selectedKebele'
+    ));
+}
 }

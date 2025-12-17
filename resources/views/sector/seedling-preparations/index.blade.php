@@ -1,596 +1,222 @@
 <x-layout>
-    <div class="content-header p-3 seedling-preparations-container">
+    <div class="content-header p-3">
+
         <!-- Content Header -->
         <div class="content-header">
             <div class="container-fluid">
-                <div class="row mb-2">
+                <div class="row mb-2 align-items-center">
                     <div class="col-sm-6">
-                        <h1 class="m-0">
-                            <i class="fas fa-tree text-success mr-2"></i> Seedling Preparations (Qophii fi Dhaabbii)
+                        <h1 class="m-0 text-success">
+                            <i class="fas fa-tree me-2"></i> Seedling Preparations (Qophii fi Dhaabbii)
                         </h1>
-                        <p class="text-muted mb-0 mt-1">Track and manage seedling preparation and planting activities</p>
+                        <p class="text-muted mt-1 mb-0">Track and manage seedling preparation and planting activities</p>
                     </div>
-                    <div class="col-sm-6">
-                        <div class="float-right">
-                            <a href="{{ route('sector.seedling-preparations.create') }}" class="btn btn-success btn-add-preparation">
-                                <i class="fas fa-plus-circle mr-2"></i> Add New Preparation
-                            </a>
-                        </div>
+                    <div class="col-sm-6 text-end">
+                        <a href="{{ route('sector.seedling-preparations.create') }}" class="btn btn-success">
+                            <i class="fas fa-plus-circle me-1"></i> Add New Preparation
+                        </a>
                     </div>
                 </div>
             </div>
         </div>
 
         <!-- Main content -->
-        <div class="content">
+        <section class="content">
             <div class="container-fluid">
+
                 <!-- Success Alert -->
                 @if (session('success'))
-                    <div class="alert alert-success alert-dismissible fade show custom-alert" role="alert">
-                        <div class="d-flex align-items-center">
-                            <i class="icon fas fa-check mr-2"></i>
-                            <span class="flex-grow-1">{{ session('success') }}</span>
-                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        <i class="fas fa-check me-1"></i>
+                        {{ session('success') }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
                 @endif
 
-               
-
                 @if ($preparations->isEmpty())
                     <!-- Empty State -->
-                    <div class="card">
-                        <div class="card-body text-center py-5">
+                    <div class="card card-outline card-warning text-center py-5">
+                        <div class="card-body">
                             <i class="fas fa-info-circle fa-3x text-muted mb-3"></i>
-                            <h4 class="text-muted">No seedling preparations found</h4>
-                            <p class="text-muted mb-4">Get started by creating your first seedling preparation</p>
+                            <h4 class="text-muted mb-2">No seedling preparations found</h4>
+                            <p class="text-muted mb-3">Get started by creating your first seedling preparation</p>
                             <a href="{{ route('sector.seedling-preparations.create') }}" class="btn btn-success">
-                                <i class="fas fa-plus-circle mr-2"></i> Create Preparation
+                                <i class="fas fa-plus-circle me-1"></i> Create Preparation
                             </a>
                         </div>
                     </div>
                 @else
-                    <!-- Data Table -->
-                    <div class="card">
-                        <div class="card-header">
-                            <h3 class="card-title">
-                                <i class="fas fa-table mr-2 text-primary"></i>
-                                Seedling Preparations Overview
-                            </h3>
-                            <div class="card-tools">
-                                <span class="badge badge-info mr-2">{{ $preparations->count() }} preparations found</span>
+                    <!-- Preparations Table -->
+                    <div class="card card-outline card-primary">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h3 class="card-title"><i class="fas fa-table me-1"></i> Seedling Preparations Overview</h3>
+                            <div>
+                                <span class="badge bg-info me-2">{{ $preparations->count() }} found</span>
                                 <button class="btn btn-tool" onclick="scrollToTop('seedlingTable')">
                                     <i class="fas fa-arrow-up"></i>
                                 </button>
                             </div>
                         </div>
-                        <div class="card-body p-0">
-                            <div class="table-responsive" style="max-height: 70vh;">
-                                <table class="table table-hover align-middle mb-0" id="seedlingTable">
-                                    <thead class="thead-light sticky-header">
-                                        <tr>
-                                            <th class="text-center" style="width: 10%">Year (EC)</th>
-                                            <th style="width: 15%">Seedling Type</th>
-                                            <th style="width: 20%">Seedlings</th>
-                                            <th class="text-center" style="width: 20%">Preparation Data (Qophii)</th>
-                                            <th class="text-center" style="width: 20%">Planting Data (Dhaabbii)</th>
-                                            <th class="text-center" style="width: 15%">Actions</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @php
-                                            // Group preparations by year and type
-                                            $groupedPreparations = [];
-                                            foreach ($preparations as $preparation) {
-                                                $prepData = $preparation->preparation_data ?? [];
-                                                $plantData = $preparation->planting_data ?? [];
-                                                $seedlingType = $prepData['seedling_type']['name'] ?? ($plantData['seedling_type']['name'] ?? 'N/A');
-                                                
-                                                $year = $preparation->year;
-                                                
-                                                if (!isset($groupedPreparations[$year])) {
-                                                    $groupedPreparations[$year] = [];
-                                                }
-                                                
-                                                if (!isset($groupedPreparations[$year][$seedlingType])) {
-                                                    $groupedPreparations[$year][$seedlingType] = [];
-                                                }
-                                                
-                                                $groupedPreparations[$year][$seedlingType][] = $preparation;
+                        <div class="card-body table-responsive p-0" style="max-height: 70vh;">
+                            <table class="table table-hover text-nowrap align-middle" id="seedlingTable">
+                                <thead class="table-light sticky-top">
+                                    <tr>
+                                        <th class="text-center" style="width: 10%">Year (EC)</th>
+                                        <th style="width: 15%">Seedling Type</th>
+                                        <th style="width: 20%">Seedlings</th>
+                                        <th class="text-center" style="width: 20%">Preparation Data (Qophii)</th>
+                                        <th class="text-center" style="width: 20%">Planting Data (Dhaabbii)</th>
+                                        <th class="text-center" style="width: 15%">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @php
+                                        $groupedPreparations = [];
+                                        foreach ($preparations as $preparation) {
+                                            $prepData = $preparation->preparation_data ?? [];
+                                            $plantData = $preparation->planting_data ?? [];
+                                            $seedlingType = $prepData['seedling_type']['name'] ?? ($plantData['seedling_type']['name'] ?? 'N/A');
+                                            $year = $preparation->year;
+
+                                            if (!isset($groupedPreparations[$year])) {
+                                                $groupedPreparations[$year] = [];
                                             }
+                                            if (!isset($groupedPreparations[$year][$seedlingType])) {
+                                                $groupedPreparations[$year][$seedlingType] = [];
+                                            }
+                                            $groupedPreparations[$year][$seedlingType][] = $preparation;
+                                        }
+                                    @endphp
+
+                                    @foreach($groupedPreparations as $year => $types)
+                                        @php
+                                            $yearRowspan = array_sum(array_map('count', $types));
+                                            $yearDisplayed = false;
                                         @endphp
-
-                                        @foreach($groupedPreparations as $year => $types)
+                                        @foreach($types as $seedlingType => $typePreparations)
                                             @php
-                                                $yearRowspan = 0;
-                                                foreach ($types as $typePreparations) {
-                                                    $yearRowspan += count($typePreparations);
-                                                }
-                                                $yearDisplayed = false;
+                                                $typeRowspan = count($typePreparations);
+                                                $typeDisplayed = false;
                                             @endphp
-                                            
-                                            @foreach($types as $seedlingType => $typePreparations)
+                                            @foreach($typePreparations as $preparation)
                                                 @php
-                                                    $typeRowspan = count($typePreparations);
-                                                    $typeDisplayed = false;
+                                                    $prepSeedlings = $preparation->preparation_data['selected_seedlings'] ?? [];
+                                                    $plantSeedlings = $preparation->planting_data['selected_seedlings'] ?? [];
                                                 @endphp
-                                                
-                                                @foreach($typePreparations as $preparation)
-                                                    @php
-                                                        $prepData = $preparation->preparation_data ?? [];
-                                                        $plantData = $preparation->planting_data ?? [];
-                                                        $prepSeedlings = $prepData['selected_seedlings'] ?? [];
-                                                        $plantSeedlings = $plantData['selected_seedlings'] ?? [];
-                                                    @endphp
-                                                    
-                                                    <tr class="data-row hover-row" 
-                                                        data-year="{{ $year }}"
-                                                        data-type="{{ $seedlingType }}"
-                                                        data-status="{{ $preparation->status }}">
-                                                        
-                                                        <!-- Year Column -->
-                                                        @if (!$yearDisplayed)
-                                                            <td class="year-cell align-middle text-center font-weight-bold" 
-                                                                rowspan="{{ $yearRowspan }}"
-                                                                style="background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);">
-                                                                <div class="year-content">
-                                                                    <div class="year-value h5 text-primary mb-1">
-                                                                        {{ $year }}
-                                                                    </div>
-                                                                    @if($year == date('Y'))
-                                                                        <span class="badge badge-success">
-                                                                            Current
-                                                                        </span>
-                                                                    @endif
-                                                                    <div class="year-total mt-2">
-                                                                        <small class="text-muted d-block">Year Summary:</small>
-                                                                        <div class="font-weight-bold text-warning">
-                                                                            {{ $yearRowspan }} Prep{{ $yearRowspan > 1 ? 's' : '' }}
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            </td>
-                                                            @php $yearDisplayed = true; @endphp
-                                                        @endif
-
-                                                        <!-- Seedling Type Column -->
-                                                        @if (!$typeDisplayed)
-                                                            <td class="type-cell align-middle" 
-                                                                rowspan="{{ $typeRowspan }}"
-                                                                style="background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);">
-                                                                <div class="type-content">
-                                                                    <div class="type-name font-weight-bold text-dark mb-2">
-                                                                        {{ $seedlingType }}
-                                                                    </div>
-                                                                    <div class="type-total">
-                                                                        <small class="text-muted d-block">Type Summary:</small>
-                                                                        <div class="font-weight-bold text-warning">
-                                                                            {{ $typeRowspan }} Prep{{ $typeRowspan > 1 ? 's' : '' }}
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            </td>
-                                                            @php $typeDisplayed = true; @endphp
-                                                        @endif
-
-                                                        <!-- Seedlings Column -->
-                                                        <td class="seedlings-cell">
-                                                            <div class="seedlings-list">
-                                                                @if (count($prepSeedlings))
-                                                                    @foreach ($prepSeedlings as $s)
-                                                                        <div class="seedling-item mb-2 p-2 border-left border-warning border-3 pl-2">
-                                                                            <div class="d-flex align-items-center">
-                                                                                <i class="fas fa-seedling text-success mr-2"></i>
-                                                                                <span class="font-weight-semibold text-dark">{{ $s['name'] }}</span>
-                                                                            </div>
-                                                                        </div>
-                                                                    @endforeach
-                                                                @elseif(count($plantSeedlings))
-                                                                    @foreach ($plantSeedlings as $s)
-                                                                        <div class="seedling-item mb-2 p-2 border-left border-success border-3 pl-2">
-                                                                            <div class="d-flex align-items-center">
-                                                                                <i class="fas fa-seedling text-success mr-2"></i>
-                                                                                <span class="font-weight-semibold text-dark">{{ $s['name'] }}</span>
-                                                                            </div>
-                                                                        </div>
-                                                                    @endforeach
-                                                                @else
-                                                                    <span class="text-muted">No seedlings</span>
-                                                                @endif
-                                                            </div>
-                                                        </td>
-
-                                                        <!-- Preparation Data -->
-                                                        <td class="preparation-cell">
-                                                            @forelse($prepSeedlings as $s)
-                                                                <div class="preparation-item mb-3 p-2 border-left border-warning border-3 pl-2 bg-warning bg-opacity-5 rounded">
-                                                                    <div class="d-flex justify-content-between align-items-start mb-1">
-                                                                        <div class="font-weight-semibold text-warning">{{ $s['name'] }}</div>
-                                                                        <span class="badge badge-warning">{{ $preparation->status === 'completed' ? 'Completed' : 'In Progress' }}</span>
-                                                                    </div>
-                                                                    <div class="preparation-stats">
-                                                                        <div class="stat-row d-flex justify-content-between">
-                                                                            <span class="text-muted">Hanga:</span>
-                                                                            <span class="font-weight-bold">{{ number_format($s['hanga_qophii'] ?? 0, 2) }}</span>
-                                                                        </div>
-                                                                        <div class="stat-row d-flex justify-content-between">
-                                                                            <span class="text-muted">Participants:</span>
-                                                                            <span class="font-weight-bold">{{ number_format($s['nama_hirmaate_qophii'] ?? 0, 2) }}</span>
-                                                                        </div>
-                                                                        <div class="stat-row d-flex justify-content-between">
-                                                                            <span class="text-muted">Days:</span>
-                                                                            <span class="font-weight-bold">{{ number_format($s['baayina_guyyaa_qophii'] ?? 0, 2) }}</span>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            @empty
-                                                                <div class="text-center text-muted py-3">
-                                                                    <i class="fas fa-info-circle mr-1"></i>
-                                                                    No preparation data
-                                                                </div>
-                                                            @endforelse
-                                                        </td>
-
-                                                        <!-- Planting Data -->
-                                                        <td class="planting-cell">
-                                                            @if (count($plantSeedlings))
-                                                                @foreach ($plantSeedlings as $s)
-                                                                    <div class="planting-item mb-3 p-2 border-left border-success border-3 pl-2 bg-success bg-opacity-5 rounded">
-                                                                        <div class="d-flex justify-content-between align-items-start mb-1">
-                                                                            <div class="font-weight-semibold text-success">{{ $s['name'] }}</div>
-                                                                            <span class="badge badge-success">Planted</span>
-                                                                        </div>
-                                                                        <div class="planting-stats">
-                                                                            <div class="stat-row d-flex justify-content-between">
-                                                                                <span class="text-muted">Hanga:</span>
-                                                                                <span class="font-weight-bold">{{ number_format($s['hanga_dhaabbii'] ?? 0, 2) }}</span>
-                                                                            </div>
-                                                                            <div class="stat-row d-flex justify-content-between">
-                                                                                <span class="text-muted">Participants:</span>
-                                                                                <span class="font-weight-bold">{{ number_format($s['nama_hirmaate_dhaabbii'] ?? 0, 2) }}</span>
-                                                                            </div>
-                                                                            <div class="stat-row d-flex justify-content-between">
-                                                                                <span class="text-muted">Days:</span>
-                                                                                <span class="font-weight-bold">{{ number_format($s['baayina_guyyaa_dhaabbii'] ?? 0, 2) }}</span>
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                @endforeach
-                                                            @else
-                                                                <div class="text-center text-muted py-3">
-                                                                    <i class="fas fa-info-circle mr-1"></i>
-                                                                    No planting data
-                                                                </div>
+                                                <tr class="hover-row" data-year="{{ $year }}" data-type="{{ $seedlingType }}">
+                                                    <!-- Year -->
+                                                    @if (!$yearDisplayed)
+                                                        <td class="align-middle text-center fw-bold bg-light" rowspan="{{ $yearRowspan }}">
+                                                            {{ $year }}
+                                                            @if($year == date('Y'))
+                                                                <span class="badge bg-success ms-1">Current</span>
                                                             @endif
                                                         </td>
+                                                        @php $yearDisplayed = true; @endphp
+                                                    @endif
 
-                                                        <!-- Actions Column -->
-                                                        <td class="actions-cell text-center align-middle">
-                                                            <div class="btn-group-vertical" role="group">
-                                                                <a href="{{ url('/sector/seedling-preparations/' . $preparation->id . '/edit') }}" 
-                                                                   class="btn btn-primary btn-sm action-btn mb-1"
-                                                                   title="{{ $preparation->status === 'completed' ? 'View Details' : 'Plant Info' }}"
-                                                                   data-preparation-id="{{ $preparation->id }}">
-                                                                    <i class="fas {{ $preparation->status === 'completed' ? 'fa-eye' : 'fa-tree' }}"></i>
-                                                                    <span class="d-block mt-1 small">{{ $preparation->status === 'completed' ? 'View' : 'Plant' }}</span>
-                                                                </a>
-                                                                <a href="{{ url('/sector/seedling-preparations/' . $preparation->id . '/editpreparation') }}" 
-                                                                   class="btn btn-warning btn-sm action-btn mb-1"
-                                                                   title="Edit Preparation"
-                                                                   data-preparation-id="{{ $preparation->id }}">
-                                                                    <i class="fas fa-edit"></i>
-                                                                    <span class="d-block mt-1 small">Edit</span>
-                                                                </a>
-                                                                <a href="{{ route('sector.seedling-preparations.plan', $preparation->id) }}" 
-                                                                   class="btn btn-info btn-sm action-btn"
-                                                                   title="Edit Planting Plan"
-                                                                   data-preparation-id="{{ $preparation->id }}">
-                                                                    <i class="fas fa-calendar-alt"></i>
-                                                                    <span class="d-block mt-1 small">Schedule</span>
-                                                                </a>
-                                                            </div>
+                                                    <!-- Type -->
+                                                    @if (!$typeDisplayed)
+                                                        <td class="align-middle bg-light" rowspan="{{ $typeRowspan }}">
+                                                            {{ $seedlingType }}
                                                         </td>
-                                                    </tr>
-                                                @endforeach
+                                                        @php $typeDisplayed = true; @endphp
+                                                    @endif
+
+                                                    <!-- Seedlings -->
+                                                    <td>
+                                                        @forelse($prepSeedlings as $s)
+                                                            <div class="d-flex align-items-center mb-1">
+                                                                <i class="fas fa-seedling text-success me-1"></i>
+                                                                {{ $s['name'] }}
+                                                            </div>
+                                                        @empty
+                                                            <span class="text-muted">No seedlings</span>
+                                                        @endforelse
+                                                    </td>
+
+                                                    <!-- Preparation Data -->
+                                                    <td>
+                                                        @forelse($prepSeedlings as $s)
+                                                            <div class="p-2 mb-1 bg-warning bg-opacity-10 rounded border-start border-warning">
+                                                                <div class="d-flex justify-content-between">
+                                                                    <span>{{ $s['name'] }}</span>
+                                                                    <span class="badge bg-warning">{{ $preparation->status == 'completed' ? 'Completed' : 'In Progress' }}</span>
+                                                                </div>
+                                                                <small>Hanga: {{ $s['hanga_qophii'] ?? 0 }}</small><br>
+                                                                <small>Participants: {{ $s['nama_hirmaate_qophii'] ?? 0 }}</small><br>
+                                                                <small>Days: {{ $s['baayina_guyyaa_qophii'] ?? 0 }}</small>
+                                                            </div>
+                                                        @empty
+                                                            <span class="text-muted">No preparation data</span>
+                                                        @endforelse
+                                                    </td>
+
+                                                    <!-- Planting Data -->
+                                                    <td>
+                                                        @forelse($plantSeedlings as $s)
+                                                            <div class="p-2 mb-1 bg-success bg-opacity-10 rounded border-start border-success">
+                                                                <div class="d-flex justify-content-between">
+                                                                    <span>{{ $s['name'] }}</span>
+                                                                    <span class="badge bg-success">Planted</span>
+                                                                </div>
+                                                                <small>Hanga: {{ $s['hanga_dhaabbii'] ?? 0 }}</small><br>
+                                                                <small>Participants: {{ $s['nama_hirmaate_dhaabbii'] ?? 0 }}</small><br>
+                                                                <small>Days: {{ $s['baayina_guyyaa_dhaabbii'] ?? 0 }}</small>
+                                                            </div>
+                                                        @empty
+                                                            <span class="text-muted">No planting data</span>
+                                                        @endforelse
+                                                    </td>
+
+                                                    <!-- Actions -->
+                                                    <td class="text-center align-middle">
+                                                        <div class="btn-group-vertical w-100">
+                                                            <a href="{{ route('sector.seedling-preparations.edit', $preparation->id) }}" class="btn btn-primary btn-sm mb-1">
+                                                                <i class="fas fa-eye me-1"></i> View
+                                                            </a>
+                                                            <a href="{{ url('/sector/seedling-preparations/' . $preparation->id . '/editpreparation') }}" class="btn btn-warning btn-sm mb-1">
+                                                                <i class="fas fa-edit me-1"></i> Edit
+                                                            </a>
+                                                            <a href="{{ route('sector.seedling-preparations.plan', $preparation->id) }}" class="btn btn-info btn-sm">
+                                                                <i class="fas fa-calendar-alt me-1"></i> Schedule
+                                                            </a>
+                                                        </div>
+                                                    </td>
+                                                </tr>
                                             @endforeach
                                         @endforeach
-                                    </tbody>
-                                </table>
-                            </div>
+                                    @endforeach
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 @endif
             </div>
-        </div>
+        </section>
     </div>
 
+    <!-- JS -->
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Add hover effects to table rows
-            document.querySelectorAll('.hover-row').forEach(row => {
-                row.addEventListener('mouseenter', function() {
-                    this.style.background = 'linear-gradient(135deg, #f0f8ff 0%, #e7f3ff 100%)';
-                    this.style.borderLeft = '3px solid #007bff';
-                });
-                
-                row.addEventListener('mouseleave', function() {
-                    this.style.background = '';
-                    this.style.borderLeft = '';
-                });
-            });
-
-            // Add loading states to action buttons
-            document.querySelectorAll('.action-btn').forEach(button => {
-                button.addEventListener('click', function(e) {
-                    const originalHtml = this.innerHTML;
-                    this.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
-                    this.disabled = true;
-                    
-                    setTimeout(() => {
-                        if (this.disabled) {
-                            this.innerHTML = originalHtml;
-                            this.disabled = false;
-                        }
-                    }, 2000);
-                });
-            });
-
-            // Initialize table scrolling indicators
-            initializeTableScrolling();
-        });
-
         function scrollToTop(tableId) {
-            const tableContainer = document.querySelector(`#${tableId}`).closest('.table-responsive');
-            tableContainer.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
-        function initializeTableScrolling() {
-            const tableContainers = document.querySelectorAll('.table-responsive');
-            
-            tableContainers.forEach(container => {
-                container.addEventListener('scroll', function() {
-                    if (this.scrollTop > 100) {
-                        this.classList.add('scrolled');
-                    } else {
-                        this.classList.remove('scrolled');
-                    }
-                });
-            });
+            const container = document.querySelector(`#${tableId}`).closest('.table-responsive');
+            container.scrollTo({ top: 0, behavior: 'smooth' });
         }
     </script>
 
     <style>
-        .seedling-preparations-container {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-            min-height: 100vh;
+        .hover-row:hover {
+            background-color: #f1f3f5;
         }
-
-        /* Table Styles */
-        .table-responsive {
-            position: relative;
-            border: 1px solid #dee2e6;
-            border-radius: .25rem;
-        }
-
-        .sticky-header {
-            position: sticky;
-            top: 0;
-            z-index: 10;
-            background: white;
-        }
-
-        .sticky-header th {
-            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-            border-bottom: 2px solid #dee2e6;
-            font-weight: 600;
-            font-size: 0.8rem;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            color: #495057;
-            vertical-align: middle;
-            white-space: nowrap;
-        }
-
-        /* Cell Styles */
-        .year-cell, .type-cell {
-            border-right: 2px solid #dee2e6;
-            vertical-align: middle !important;
-        }
-
-        .year-content, .type-content {
-            padding: 0.5rem;
-        }
-
-        .seedlings-list {
-            max-height: 200px;
-            overflow-y: auto;
-        }
-
-        .seedling-item {
-            transition: all 0.2s ease;
-        }
-
-        .seedling-item:hover {
-            background-color: #f8f9fa;
-            transform: translateX(2px);
-        }
-
-        .preparation-item, .planting-item {
-            transition: all 0.2s ease;
-        }
-
-        .preparation-item:hover, .planting-item:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-
-        .stat-row {
-            font-size: 0.8rem;
-            margin-bottom: 0.25rem;
-        }
-
-        /* Total sections within cells */
-        .year-total, .type-total {
-            margin-top: 0.5rem;
-            padding-top: 0.5rem;
-            border-top: 1px dashed #dee2e6;
-        }
-
-        .year-total small, .type-total small {
-            font-size: 0.7rem;
-        }
-
-        /* Table row styling */
-        .table td {
-            padding: 0.6rem;
-            border-bottom: 1px solid #dee2e6;
-            font-size: 0.85rem;
-        }
-
-        /* Action buttons */
-        .action-btn {
-            font-size: 0.7rem;
-            padding: 0.3rem;
-            border-radius: 4px;
-            transition: all 0.2s ease;
+        .btn-group-vertical .btn {
             width: 100%;
-            min-width: 50px;
             text-align: left;
         }
-
-        .action-btn:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        .table th, .table td {
+            vertical-align: middle;
         }
-
-        .btn-group-vertical {
-            width: 100%;
-        }
-
-        /* Scrollbar */
-        .table-responsive::-webkit-scrollbar,
-        .seedlings-list::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
-        }
-
-        .table-responsive::-webkit-scrollbar-track,
-        .seedlings-list::-webkit-scrollbar-track {
-            background: #f1f1f1;
-            border-radius: 3px;
-        }
-
-        .table-responsive::-webkit-scrollbar-thumb,
-        .seedlings-list::-webkit-scrollbar-thumb {
-            background: #c1c1c1;
-            border-radius: 3px;
-        }
-
-        .table-responsive::-webkit-scrollbar-thumb:hover,
-        .seedlings-list::-webkit-scrollbar-thumb:hover {
-            background: #a8a8a8;
-        }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            .table-responsive {
-                font-size: 0.75rem;
-            }
-            
-            .action-btn {
-                font-size: 0.65rem;
-                padding: 0.25rem;
-            }
-            
-            .year-value {
-                font-size: 0.9rem !important;
-            }
-        }
-
-        /* Animations */
-        .fa-spinner {
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-
-        /* Hover effects */
-        .hover-row {
-            transition: all 0.3s ease;
-        }
-
-        /* Info box styling */
-        .info-box {
-            min-height: 80px;
-            border-radius: .25rem;
-            margin-bottom: 0;
-        }
-
-        .info-box .info-box-icon {
-            border-radius: .25rem 0 0 .25rem;
-        }
-
-        .info-box .info-box-content {
-            padding: 10px;
-        }
-
-        .info-box .info-box-text {
-            font-size: 0.875rem;
-        }
-
-        .info-box .info-box-number {
-            font-size: 1.25rem;
-            font-weight: 600;
-        }
-
-        /* Button styles */
-        .btn-warning {
-            background: linear-gradient(135deg, #ffc107 0%, #ff8c00 100%);
-            color: white;
-            border: none;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
-            color: white;
-            border: none;
-        }
-
-        .btn-info {
-            background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
-            color: white;
-            border: none;
-        }
-
-        .btn-warning:hover {
-            background: linear-gradient(135deg, #ff8c00 0%, #ff5722 100%);
-        }
-
-        .btn-primary:hover {
-            background: linear-gradient(135deg, #0056b3 0%, #004085 100%);
-        }
-
-        .btn-info:hover {
-            background: linear-gradient(135deg, #138496 0%, #117a8b 100%);
-        }
-
-        /* Ensure proper vertical alignment for rowspan cells */
-        .year-cell, .type-cell {
-            vertical-align: middle !important;
-        }
-
-        .border-left {
-            border-left: 3px solid !important;
-        }
-
-        .pl-2 {
-            padding-left: 0.5rem !important;
+        .border-start {
+            border-left-width: 3px !important;
         }
     </style>
 </x-layout>
