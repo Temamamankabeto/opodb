@@ -6,7 +6,7 @@
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6">
-                    <h6><i class="fas fa-seedling text-success mr-2"></i>{{ __('Raawwii Torbanii') }}</h6>
+                    <h6><i class="fas fa-seedling text-success mr-2"></i>{{ __('Weekly Performance') }}</h6>
                 </div>
             </div>
         </div>
@@ -28,7 +28,7 @@
             <div class="card card-primary card-outline">
                 <div class="card-header">
                     <h5 class="card-title">
-                        <i class="fas fa-filter mr-2"></i>{{ __('Mormii Itti Fufu') }}
+                        <i class="fas fa-filter mr-2"></i>{{ __('Filter First') }}
                     </h5>
                     <div class="card-tools">
                         <button type="button" class="btn btn-tool" data-card-widget="collapse">
@@ -42,25 +42,25 @@
                             <!-- Year Filter -->
                             <div class="col-md-3">
                                 <div class="form-group">
-                                    <label for="yearFilter">{{ __('Waggaa Filadhu') }} <span class="text-danger">*</span></label>
+                                    <label for="yearFilter">{{ __('Select Year') }} <span class="text-danger">*</span></label>
                                     <select class="form-control select2" id="yearFilter" name="year" required>
-                                        <option value="">-- {{ __('Waggaa Filadhu') }} --</option>
+                                        <option value="">-- {{ __('Select Year') }} --</option>
                                         @foreach($years as $year)
                                             <option value="{{ $year }}" {{ $selectedYear == $year ? 'selected' : '' }}>
                                                 {{ $year }}
                                             </option>
                                         @endforeach
                                     </select>
-                                    <small class="text-muted">{{ __('Waggaa jalqabaa filadhu') }}</small>
+                                    <small class="text-muted">{{ __('SelectFirst Year') }}</small>
                                 </div>
                             </div>
 
                             <!-- Season Filter -->
                             <div class="col-md-3">
                                 <div class="form-group">
-                                    <label for="seasonFilter">{{ __('Akaakayyii Filadhu') }}</label>
+                                    <label for="seasonFilter">{{ __('Season') }}</label>
                                     <select class="form-control select2" id="seasonFilter" name="season" {{ !$selectedYear ? 'disabled' : '' }}>
-                                        <option value="">-- {{ __('Waggaa jalqabaa Filadhu') }} --</option>
+                                        <option value="">-- {{ __('SelectFirst Year') }} --</option>
                                         @if($selectedYear)
                                             @foreach($seasons as $season)
                                                 <option value="{{ $season }}" {{ $selectedSeason == $season ? 'selected' : '' }}>
@@ -70,7 +70,7 @@
                                         @endif
                                     </select>
                                     <div id="seasonLoading" class="text-muted" style="display: none;">
-                                        <i class="fas fa-spinner fa-spin"></i> {{ __('Akaakayyiiwwaniiyyuu Barbaaduu') }}...
+                                        <i class="fas fa-spinner fa-spin"></i> {{ __('Season') }}...
                                     </div>
                                 </div>
                             </div>
@@ -78,9 +78,9 @@
                             <!-- Crop Filter -->
                             <div class="col-md-3">
                                 <div class="form-group">
-                                    <label for="cropFilter">{{ __('Alaayyii Filadhu') }}</label>
+                                    <label for="cropFilter">{{ __('Crop') }}</label>
                                     <select class="form-control select2" id="cropFilter" name="crop" {{ !$selectedYear || !$selectedSeason ? 'disabled' : '' }}>
-                                        <option value="">-- {{ __('Akaakayyii jalqabaa Filadhu') }} --</option>
+                                        <option value="">-- {{ __('Crop') }} --</option>
                                         @if($selectedYear && $selectedSeason)
                                             @foreach($crops as $cropId => $cropName)
                                                 <option value="{{ $cropId }}" {{ $selectedCrop == $cropId ? 'selected' : '' }}>
@@ -90,7 +90,7 @@
                                         @endif
                                     </select>
                                     <div id="cropLoading" class="text-muted" style="display: none;">
-                                        <i class="fas fa-spinner fa-spin"></i> {{ __('Alaayyiiwwaniiyyuu Barbaaduu') }}...
+                                        <i class="fas fa-spinner fa-spin"></i> {{ __('seasrch Crop') }}...
                                     </div>
                                 </div>
                             </div>
@@ -99,12 +99,12 @@
                                 <div class="form-group mt-4">
                                     <!-- Search Button -->
                                     <button type="submit" class="btn btn-primary w-100 mb-2">
-                                        <i class="fas fa-search mr-2"></i> {{ __('Barbaadi') }}
+                                        <i class="fas fa-search mr-2"></i> {{ __('search') }}
                                     </button>
 
                                     <!-- Reset Button -->
                                     <a href="{{ route('sector.crop-karora.index') }}" class="btn btn-secondary w-100">
-                                        <i class="fas fa-redo mr-2"></i> {{ __('Oofsi') }}
+                                        <i class="fas fa-redo mr-2"></i> {{ __('Reset') }}
                                     </a>
                                 </div>
                             </div>
@@ -118,8 +118,8 @@
                 <div class="card">
                     <div class="card-body text-center py-5">
                         <i class="fas fa-filter fa-3x text-primary mb-3"></i>
-                        <h4 class="text-primary">{{ __('Mormiiwwan Filadhu') }}</h4>
-                        <p class="text-muted">{{ __('Dhimmi keessan ilaalchisee beekumsa argachuuf waggaa jalqabaa filadhu') }}</p>
+                        <h4 class="text-primary">{{ __('Filadhu') }}</h4>
+                        <p class="text-muted">{{ __(' ') }}</p>
                         <div class="mt-4">
                             <i class="fas fa-arrow-down fa-2x text-muted"></i>
                         </div>
@@ -130,12 +130,12 @@
                 <div class="card">
                     <div class="card-body text-center py-5">
                         <i class="fas fa-search fa-3x text-warning mb-3"></i>
-                        <h4 class="text-warning">{{ __('Mormiiwwan Filatamaniiyyuu Qorannoon Hin Argamne') }}</h4>
+                        <h4 class="text-warning">{{ __(' ') }}</h4>
                         <p class="text-muted mb-4">
                             @if($selectedYear)
-                                {{ __('Waggaa') }}: <strong>{{ $selectedYear }}</strong>
+                                {{ __('Year') }}: <strong>{{ $selectedYear }}</strong>
                                 @if($selectedSeason)
-                                    | {{ __('Akaakayyii') }}: <strong>{{ ucfirst($selectedSeason) }}</strong>
+                                    | {{ __('Season') }}: <strong>{{ ucfirst($selectedSeason) }}</strong>
                                     @if($selectedCrop && isset($crops[$selectedCrop]))
                                         | {{ __('Alaayyii') }}: <strong>{{ $crops[$selectedCrop] }}</strong>
                                     @endif
@@ -143,7 +143,7 @@
                             @endif
                         </p>
                         <a href="{{ route('sector.crop-karora.index') }}" class="btn btn-secondary">
-                            <i class="fas fa-redo mr-2"></i>{{ __('Mormiiwwanii Cabsisi') }}
+                            <i class="fas fa-redo mr-2"></i>{{ __('back') }}
                         </a>
                     </div>
                 </div>
@@ -235,11 +235,11 @@
                                 <thead>
                                     <tr class="bg-gradient-dark">
                                         <th style="width: 8%">{{ __('Waggaa') }}</th>
-                                        <th style="width: 8%">{{ __('Akaakayyii') }}</th>
-                                        <th style="width: 15%">{{ __('Alaayyii') }}</th>
-                                        <th style="width: 8%">{{ __('Haala (ha)') }}</th>
-                                        <th style="width: 12%">{{ __('Qarshii Eegamaa (qt)') }}</th>
-                                        <th style="width: 4%">{{ __('Raawwii Torbanii') }}</th>
+                                        <th style="width: 8%">{{ __('Season') }}</th>
+                                        <th style="width: 15%">{{ __('Crop') }}</th>
+                                        <th style="width: 8%">{{ __('Land (ha)') }}</th>
+                                        <th style="width: 12%">{{ __('Production (qt)') }}</th>
+                                        <th style="width: 4%">{{ __('Performance') }}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -356,13 +356,13 @@
                                                         </button>
                                                         <div class="dropdown-menu">
                                                             <a class="dropdown-item" href="{{ route('sector.crop-plans.achivement', $plan->id ) }}">
-                                                                <i class="fas fa-flask mr-2"></i>{{ __('Dachii') }}
+                                                                <i class="fas fa-flask mr-2"></i>{{ __('Land') }}
                                                             </a>
                                                             <a class="dropdown-item" href="{{ route('sector.crop-plans.productionachivement', $plan->id ) }}">
-                                                                <i class="fas fa-industry mr-2"></i>{{ __('Oomisha') }}
+                                                                <i class="fas fa-industry mr-2"></i>{{ __('Production') }}
                                                             </a>
                                                             <a class="dropdown-item" href="{{ route('sector.fertilizer-achivement.edit', $plan->id ) }}">
-                                                                <i class="fas fa-flask mr-2"></i>{{ __('Calalguddiftuu') }}
+                                                                <i class="fas fa-flask mr-2"></i>{{ __('Fertilizer') }}
                                                             </a>
                                                         </div>
                                                     </div>
