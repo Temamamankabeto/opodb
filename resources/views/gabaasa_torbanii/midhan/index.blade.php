@@ -11,15 +11,15 @@
                             <i class="fas fa-seedling fa-lg text-dark"></i>
                         </div>
                         <div>
-                            <h1 class="m-0 text-dark">Kebele Agricultural Report</h1>
-                            <small class="text-dark">Crop production analysis and comparison report</small>
+                            <h1 class="m-0 text-dark">{{ __('Kebele Agricultural Report') }}</h1>
+                            <small class="text-dark">{{ __('Crop production analysis and comparison report') }}</small>
                         </div>
                     </div>
                 </div>
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
-                        <li class="breadcrumb-item"><a href="#" class="text-dark"><i class="fas fa-home text-dark"></i> Home</a></li>
-                        <li class="breadcrumb-item active text-dark">Crop Report</li>
+                        <li class="breadcrumb-item"><a href="#" class="text-dark"><i class="fas fa-home text-dark"></i> {{ __('Home') }}</a></li>
+                        <li class="breadcrumb-item active text-dark">{{ __('Crop Report') }}</li>
                     </ol>
                     <div class="float-sm-right mt-2">
                         <span class="badge badge-light border">
@@ -41,7 +41,7 @@
                 <div class="card-header bg-white border-bottom">
                     <h3 class="card-title text-dark">
                         <i class="fas fa-chart-bar mr-1 text-dark"></i>
-                        Crop Production Comparison Report
+                        {{ __('Crop Production Comparison Report') }}
                     </h3>
                     <div class="card-tools">
                         <button type="button" class="btn btn-tool text-dark" data-card-widget="collapse">
@@ -56,7 +56,7 @@
                         <div class="card-header bg-white border-bottom">
                             <h3 class="card-title text-dark">
                                 <i class="fas fa-filter mr-1 text-dark"></i>
-                                Filter Options
+                                {{ __('Filter Options') }}
                             </h3>
                             <div class="card-tools">
                                 <button type="button" class="btn btn-tool text-dark" data-card-widget="collapse">
@@ -72,10 +72,10 @@
                                         <div class="form-group">
                                             <label class="mb-1 text-dark">
                                                 <i class="fas fa-calendar mr-1 text-dark"></i>
-                                                Year
+                                                {{ __('Year') }}
                                             </label>
                                             <select id="year" name="year" class="form-control form-control-sm border">
-                                                <option value="">Select Year</option>
+                                                <option value="">{{ __('Select Year') }}</option>
                                                 @foreach($years as $y)
                                                     <option value="{{ $y }}" {{ request('year', $year) == $y ? 'selected' : '' }}>{{ $y }}</option>
                                                 @endforeach
@@ -88,10 +88,10 @@
                                         <div class="form-group">
                                             <label class="mb-1 text-dark">
                                                 <i class="fas fa-cloud-sun mr-1 text-dark"></i>
-                                                Season
+                                                {{ __('Season') }}
                                             </label>
                                             <select id="season" name="season" class="form-control form-control-sm border" {{ request('season') ? '' : 'disabled' }}>
-                                                <option value="">Select Season</option>
+                                                <option value="">{{ __('Select Season') }}</option>
                                                 @if(request('season'))
                                                     <option value="{{ request('season') }}" selected>{{ request('season') }}</option>
                                                 @endif
@@ -104,10 +104,10 @@
                                         <div class="form-group">
                                             <label class="mb-1 text-dark">
                                                 <i class="fas fa-tags mr-1 text-dark"></i>
-                                                Crop Type
+                                                {{ __('Crop Type') }}
                                             </label>
                                             <select id="croptype" name="croptype_id" class="form-control form-control-sm border" {{ request('croptype_id') ? '' : 'disabled' }}>
-                                                <option value="">Crop Type</option>
+                                                <option value="">{{ __('Crop Type') }}</option>
                                                 @if(request('croptype_id') && $croptypeData = \App\Models\CropType::find(request('croptype_id')))
                                                     <option value="{{ $croptypeData->id }}" selected>{{ $croptypeData->name }}</option>
                                                 @endif
@@ -120,10 +120,10 @@
                                         <div class="form-group">
                                             <label class="mb-1 text-dark">
                                                 <i class="fas fa-leaf mr-1 text-dark"></i>
-                                                Crop
+                                                {{ __('Crop') }}
                                             </label>
                                             <select id="crop" name="crop_id" class="form-control form-control-sm border" {{ request('crop_id') ? '' : 'disabled' }}>
-                                                <option value="">Crop</option>
+                                                <option value="">{{ __('Crop') }}</option>
                                                 @if(request('crop_id') && $cropData = \App\Models\Crop::find(request('crop_id')))
                                                     <option value="{{ $cropData->id }}" selected>{{ $cropData->name }}</option>
                                                 @endif
@@ -136,11 +136,11 @@
                                     <div class="col-md-12 text-right">
                                         <button type="submit" class="btn btn-dark btn-sm">
                                             <i class="fas fa-filter mr-1"></i>
-                                            Apply Filter
+                                            {{ __('Apply Filter') }}
                                         </button>
                                         <a href="{{ route('sector.crop-gabaasa.index') }}" class="btn btn-light btn-sm border">
                                             <i class="fas fa-redo mr-1 text-dark"></i>
-                                            <span class="text-dark">Reset</span>
+                                            <span class="text-dark">{{ __('Reset') }}</span>
                                         </a>
                                     </div>
                                 </div>
@@ -148,7 +148,139 @@
                         </div>
                     </div>
 
-                  
+                    <!-- Summary Cards -->
+                    <div class="row mb-4">
+                        <div class="col-lg-3 col-6">
+                            <div class="small-box bg-info">
+                                <div class="inner">
+                                    <h3>{{ number_format($currentYearData->count()) }}</h3>
+                                    <p>{{ __('Total Crops') }}</p>
+                                </div>
+                                <div class="icon">
+                                    <i class="fas fa-leaf"></i>
+                                </div>
+                                <a href="#" class="small-box-footer">
+                                    {{ __('All Seasons') }} <i class="fas fa-arrow-circle-right"></i>
+                                </a>
+                            </div>
+                        </div>
+                        
+                        <div class="col-lg-3 col-6">
+                            <div class="small-box bg-success">
+                                <div class="inner">
+                                    <h3>{{ number_format($currentYearData->sum('land'), 1) }}</h3>
+                                    <p>{{ __('Total Land (Ha)') }}</p>
+                                </div>
+                                <div class="icon">
+                                    <i class="fas fa-tractor"></i>
+                                </div>
+                                <a href="#" class="small-box-footer">
+                                    {{ __('Current Year') }} <i class="fas fa-arrow-circle-right"></i>
+                                </a>
+                            </div>
+                        </div>
+                        
+                        <div class="col-lg-3 col-6">
+                            <div class="small-box bg-warning">
+                                <div class="inner">
+                                    <h3>{{ number_format($currentYearData->sum('production'), 1) }}</h3>
+                                    <p>{{ __('Total Production (Qt)') }}</p>
+                                </div>
+                                <div class="icon">
+                                    <i class="fas fa-weight-hanging"></i>
+                                </div>
+                                <a href="#" class="small-box-footer">
+                                    {{ __('Current Year') }} <i class="fas fa-arrow-circle-right"></i>
+                                </a>
+                            </div>
+                        </div>
+                        
+                        <div class="col-lg-3 col-6">
+                            <div class="small-box bg-danger">
+                                <div class="inner">
+                                    <h3>{{ number_format(collect($previousYearData)->sum('production'), 1) }}</h3>
+                                    <p>{{ __('Previous Year Production') }}</p>
+                                </div>
+                                <div class="icon">
+                                    <i class="fas fa-chart-line"></i>
+                                </div>
+                                <a href="#" class="small-box-footer">
+                                    {{ __('Year ') . $prevYear }} <i class="fas fa-arrow-circle-right"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Charts Section -->
+                    <div class="row mb-4">
+                        <!-- Bar Chart - Season Comparison -->
+                        <div class="col-md-8">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h3 class="card-title">
+                                        <i class="fas fa-chart-bar mr-1"></i>
+                                        {{ __('Production Comparison by Season') }}
+                                    </h3>
+                                    <div class="card-tools">
+                                        <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                                            <i class="fas fa-minus"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <div class="chart">
+                                        <canvas id="barChart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Pie Chart - Land Distribution -->
+                        <div class="col-md-4">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h3 class="card-title">
+                                        <i class="fas fa-chart-pie mr-1"></i>
+                                        {{ __('Land Distribution by Season') }}
+                                    </h3>
+                                    <div class="card-tools">
+                                        <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                                            <i class="fas fa-minus"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <div class="chart">
+                                        <canvas id="pieChart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Line Chart - Trend Analysis -->
+                    <div class="row mb-4">
+                        <div class="col-md-12">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h3 class="card-title">
+                                        <i class="fas fa-chart-line mr-1"></i>
+                                        {{ __('Production Trend Analysis') }}
+                                    </h3>
+                                    <div class="card-tools">
+                                        <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                                            <i class="fas fa-minus"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <div class="chart">
+                                        <canvas id="lineChart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
                     <!-- Export and Actions Row -->
                     <div class="row mb-3">
@@ -156,10 +288,10 @@
                             <div class="d-flex justify-content-end">
                                 <div class="btn-group">
                                     <button type="button" class="btn btn-success btn-sm" id="exportExcelBtn">
-                                        <i class="fas fa-file-excel mr-1"></i> Export to Excel
+                                        <i class="fas fa-file-excel mr-1"></i> {{ __('Export to Excel') }}
                                     </button>
                                     <button type="button" class="btn btn-info btn-sm" onclick="window.print()">
-                                        <i class="fas fa-print mr-1"></i> Print Report
+                                        <i class="fas fa-print mr-1"></i> {{ __('Print Report') }}
                                     </button>
                                 </div>
                             </div>
@@ -171,7 +303,7 @@
                         <div class="card-header bg-white border-bottom">
                             <h3 class="card-title text-dark">
                                 <i class="fas fa-table mr-1 text-dark"></i>
-                                Production Data Comparison (Grouped by Season)
+                                {{ __('Production Data Comparison (Grouped by Season)') }}
                             </h3>
                             <div class="card-tools">
                                 <button type="button" class="btn btn-tool text-dark" data-card-widget="maximize">
@@ -188,19 +320,19 @@
                                     <thead class="bg-light">
                                         <tr>
                                             <th class="text-center text-dark border">#</th>
-                                            <th class="text-dark border">Season</th>
-                                            <th class="text-dark border">Crop</th>
-                                            <th colspan="2" class="text-center text-dark border">Current Year ({{ $year }})</th>
-                                            <th colspan="2" class="text-center text-dark border">Previous Year ({{ $prevYear }})</th>
+                                            <th class="text-dark border">{{ __('Season') }}</th>
+                                            <th class="text-dark border">{{ __('Crop') }}</th>
+                                            <th colspan="2" class="text-center text-dark border">{{ __('Current Year') }} ({{ $year }})</th>
+                                            <th colspan="2" class="text-center text-dark border">{{ __('Previous Year') }} ({{ $prevYear }})</th>
                                         </tr>
                                         <tr>
                                             <th class="text-center text-dark border"></th>
                                             <th class="text-dark border"></th>
                                             <th class="text-dark border"></th>
-                                            <th class="text-center text-dark border">Land (Ha)</th>
-                                            <th class="text-center text-dark border">Production (Qt)</th>
-                                            <th class="text-center text-dark border">Land (Ha)</th>
-                                            <th class="text-center text-dark border">Production (Qt)</th>
+                                            <th class="text-center text-dark border">{{ __('Land (Ha)') }}</th>
+                                            <th class="text-center text-dark border">{{ __('Production (Qt)') }}</th>
+                                            <th class="text-center text-dark border">{{ __('Land (Ha)') }}</th>
+                                            <th class="text-center text-dark border">{{ __('Production (Qt)') }}</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -290,7 +422,7 @@
                                         
                                         <tr class="bg-light">
                                             <td colspan="3" class="text-right text-dark border">
-                                                <strong>Season Total for {{ $season }}:</strong>
+                                                <strong>{{ __('Season Total for') }} {{ $season }}:</strong>
                                             </td>
                                             <td class="text-right text-dark border">
                                                 <strong>{{ number_format($seasonTotalCurrentLand,2) }}</strong>
@@ -310,8 +442,8 @@
                                         <tr>
                                             <td colspan="7" class="text-center py-4 border">
                                                 <div class="callout callout-light border mb-0">
-                                                    <h5 class="text-dark"><i class="icon fas fa-exclamation-triangle text-dark"></i> No Data Found</h5>
-                                                    <p class="text-dark">Try adjusting your filter criteria</p>
+                                                    <h5 class="text-dark"><i class="icon fas fa-exclamation-triangle text-dark"></i> {{ __('No Data Found') }}</h5>
+                                                    <p class="text-dark">{{ __('Try adjusting your filter criteria') }}</p>
                                                 </div>
                                             </td>
                                         </tr>
@@ -327,7 +459,7 @@
                                         @endphp
                                         <tr class="bg-dark">
                                             <td colspan="3" class="text-right border">
-                                                <strong class="text-white">GRAND TOTAL:</strong>
+                                                <strong class="text-white">{{ __('GRAND TOTAL') }}:</strong>
                                             </td>
                                             <td class="text-right border">
                                                 <strong class="text-white">{{ number_format($grandTotalCurrentLand,2) }}</strong>
@@ -348,161 +480,6 @@
                             </div>
                         </div>
                     </div>
-
-                    <!-- Charts Section -->
-                    <div class="row mt-4">
-                        <div class="col-md-6">
-                            <div class="card bg-white border">
-                                <div class="card-header bg-white border-bottom">
-                                    <h3 class="card-title text-dark">
-                                        <i class="fas fa-chart-bar mr-1 text-dark"></i>
-                                        Production Comparison by Season
-                                    </h3>
-                                    <div class="card-tools">
-                                        <button type="button" class="btn btn-tool text-dark" data-card-widget="collapse">
-                                            <i class="fas fa-minus text-dark"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                                <div class="card-body bg-white">
-                                    <canvas id="barChart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
-                                </div>
-                                <div class="card-footer bg-white border-top">
-                                    <small class="text-dark">
-                                        <i class="fas fa-info-circle mr-1 text-dark"></i>
-                                        Comparing {{ $year }} vs {{ $prevYear }} production by season
-                                    </small>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="col-md-6">
-                            <div class="card bg-white border">
-                                <div class="card-header bg-white border-bottom">
-                                    <h3 class="card-title text-dark">
-                                        <i class="fas fa-chart-line mr-1 text-dark"></i>
-                                        Production Trend by Season
-                                    </h3>
-                                    <div class="card-tools">
-                                        <button type="button" class="btn btn-tool text-dark" data-card-widget="collapse">
-                                            <i class="fas fa-minus text-dark"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                                <div class="card-body bg-white">
-                                    <canvas id="lineChart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
-                                </div>
-                                <div class="card-footer bg-white border-top">
-                                    <small class="text-dark">
-                                        <i class="fas fa-info-circle mr-1 text-dark"></i>
-                                        Production trends across seasons
-                                    </small>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="col-md-6 mt-3">
-                            <div class="card bg-white border">
-                                <div class="card-header bg-white border-bottom">
-                                    <h3 class="card-title text-dark">
-                                        <i class="fas fa-chart-pie mr-1 text-dark"></i>
-                                        Land Distribution by Season
-                                    </h3>
-                                    <div class="card-tools">
-                                        <button type="button" class="btn btn-tool text-dark" data-card-widget="collapse">
-                                            <i class="fas fa-minus text-dark"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                                <div class="card-body bg-white">
-                                    <canvas id="pieChart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
-                                </div>
-                                <div class="card-footer bg-white border-top">
-                                    <small class="text-dark">
-                                        <i class="fas fa-info-circle mr-1 text-dark"></i>
-                                        Land allocation by season for {{ $year }}
-                                    </small>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="col-md-6 mt-3">
-                            <div class="card bg-white border">
-                                <div class="card-header bg-white border-bottom">
-                                    <h3 class="card-title text-dark">
-                                        <i class="fas fa-chart-area mr-1 text-dark"></i>
-                                        Key Insights by Season
-                                    </h3>
-                                    <div class="card-tools">
-                                        <button type="button" class="btn btn-tool text-dark" data-card-widget="collapse">
-                                            <i class="fas fa-minus text-dark"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                                <div class="card-body bg-white">
-                                    <div class="row">
-                                        <div class="col-12">
-                                            <div class="info-box bg-white border mb-3">
-                                                <span class="info-box-icon bg-light border"><i class="fas fa-chart-line text-dark"></i></span>
-                                                <div class="info-box-content">
-                                                    <span class="info-box-text text-dark">Top Performing Season</span>
-                                                    @if($currentYearData->isNotEmpty())
-                                                        @php
-                                                            $groupedData = $currentYearData->groupBy('season');
-                                                            $seasonTotals = [];
-                                                            foreach ($groupedData as $season => $data) {
-                                                                $seasonTotals[$season] = $data->sum('production');
-                                                            }
-                                                            arsort($seasonTotals);
-                                                            $topSeason = key($seasonTotals);
-                                                            $topSeasonProduction = current($seasonTotals);
-                                                        @endphp
-                                                        <span class="info-box-number text-dark">
-                                                            {{ $topSeason }}
-                                                            <small class="text-dark">({{ number_format($topSeasonProduction,2) }} Qt)</small>
-                                                        </span>
-                                                    @else
-                                                        <span class="info-box-number text-dark">No data available</span>
-                                                    @endif
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-12">
-                                            <div class="info-box bg-white border mb-3">
-                                                <span class="info-box-icon bg-light border"><i class="fas fa-percentage text-dark"></i></span>
-                                                <div class="info-box-content">
-                                                    <span class="info-box-text text-dark">Year-over-Year Growth</span>
-                                                    @if($currentYearData->isNotEmpty() && !empty($previousYearData))
-                                                        @php
-                                                            $currentTotal = $currentYearData->sum('production');
-                                                            $previousTotal = collect($previousYearData)->sum('production');
-                                                            $growth = $previousTotal > 0 ? (($currentTotal - $previousTotal) / $previousTotal) * 100 : 0;
-                                                        @endphp
-                                                        <span class="info-box-number {{ $growth >= 0 ? 'text-success' : 'text-danger' }}">
-                                                            {{ $growth >= 0 ? '+' : '' }}{{ number_format($growth, 1) }}%
-                                                        </span>
-                                                    @else
-                                                        <span class="info-box-number text-dark">No comparison data</span>
-                                                    @endif
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-12">
-                                            <div class="info-box bg-white border">
-                                                <span class="info-box-icon bg-light border"><i class="fas fa-expand-arrows-alt text-dark"></i></span>
-                                                <div class="info-box-content">
-                                                    <span class="info-box-text text-dark">Total Cultivated Land</span>
-                                                    <span class="info-box-number text-dark">
-                                                        {{ number_format($currentYearData->sum('land'),2) }} Ha
-                                                    </span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
                 </div>
 
                 <div class="card-footer bg-white border-top">
@@ -510,13 +487,13 @@
                         <div class="col-sm-6">
                             <small class="text-dark">
                                 <i class="fas fa-sync-alt mr-1 text-dark"></i>
-                                Data updates in real-time
+                                {{ __('Data updates in real-time') }}
                             </small>
                         </div>
                         <div class="col-sm-6 text-right">
                             <small class="text-dark">
                                 <i class="far fa-clock mr-1 text-dark"></i>
-                                Report generated on {{ now()->format('d M Y, h:i A') }}
+                                {{ __('Report generated on') }} {{ now()->format('d M Y, h:i A') }}
                             </small>
                         </div>
                     </div>
@@ -526,6 +503,246 @@
         </div>
     </section>
 </div>
+<style>
+/* =========================
+   GLOBAL REFINEMENTS
+========================= */
+.content-wrapper,
+.content,
+.card,
+.table {
+    font-size: 14px;
+}
+
+.card {
+    border-radius: 10px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+}
+
+.card-header {
+    border-radius: 10px 10px 0 0;
+    font-weight: 600;
+}
+
+.card-footer {
+    border-radius: 0 0 10px 10px;
+}
+
+/* =========================
+   HEADER AREA
+========================= */
+.content-header h1 {
+    font-weight: 700;
+    letter-spacing: 0.3px;
+}
+
+.content-header small {
+    font-size: 13px;
+    opacity: 0.85;
+}
+
+.breadcrumb {
+    background: transparent;
+    padding: 0;
+    margin-bottom: 0;
+}
+
+.badge {
+    padding: 6px 10px;
+    font-size: 12px;
+}
+
+/* =========================
+   SUMMARY CARDS
+========================= */
+.small-box {
+    border-radius: 10px;
+    position: relative;
+    color: white !important;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease;
+}
+
+.small-box:hover {
+    transform: translateY(-5px);
+}
+
+.small-box .inner h3 {
+    font-size: 38px;
+    font-weight: bold;
+    margin: 0 0 10px 0;
+    white-space: nowrap;
+    padding: 0;
+}
+
+.small-box .inner p {
+    font-size: 15px;
+}
+
+.small-box .icon {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    z-index: 0;
+    font-size: 70px;
+    color: rgba(255,255,255,0.15);
+}
+
+.small-box-footer {
+    background: rgba(0,0,0,0.1);
+    color: rgba(255,255,255,0.8);
+    display: block;
+    padding: 5px 0;
+    position: relative;
+    text-align: center;
+    text-decoration: none;
+    border-radius: 0 0 10px 10px;
+}
+
+.small-box-footer:hover {
+    background: rgba(0,0,0,0.15);
+    color: white;
+}
+
+/* =========================
+   CHART STYLING
+========================= */
+.chart {
+    position: relative;
+    height: 250px;
+}
+
+.chart canvas {
+    width: 100% !important;
+    height: 250px !important;
+}
+
+/* =========================
+   FILTER CARD
+========================= */
+.form-group label {
+    font-weight: 600;
+    font-size: 13px;
+}
+
+.form-control {
+    border-radius: 6px;
+}
+
+.form-control:focus {
+    box-shadow: 0 0 0 2px rgba(0,123,255,0.15);
+}
+
+/* =========================
+   BUTTONS
+========================= */
+.btn {
+    border-radius: 6px;
+    font-weight: 600;
+}
+
+.btn-group .btn {
+    box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+}
+
+.btn-success {
+    background: linear-gradient(135deg, #28a745, #5dd879);
+    border: none;
+}
+
+.btn-info {
+    background: linear-gradient(135deg, #17a2b8, #4dd0e1);
+    border: none;
+}
+
+.btn-dark {
+    background: linear-gradient(135deg, #343a40, #000);
+    border: none;
+}
+
+/* =========================
+   TABLE STYLING
+========================= */
+.table {
+    margin-bottom: 0;
+}
+
+.table thead th {
+    vertical-align: middle;
+    font-weight: 700;
+    font-size: 13px;
+    background: #f8f9fa;
+}
+
+.table tbody td {
+    vertical-align: middle;
+}
+
+.table-hover tbody tr:hover {
+    background-color: rgba(0,0,0,0.03);
+}
+
+.table td strong {
+    font-weight: 700;
+}
+
+/* Season Icon Alignment */
+.table .fa-cloud-sun {
+    opacity: 0.85;
+}
+
+/* Totals */
+.table tr.bg-light td {
+    background-color: #f4f6f9 !important;
+    font-weight: 700;
+}
+
+.table tr.bg-dark td {
+    background: linear-gradient(135deg, #343a40, #000) !important;
+}
+
+/* =========================
+   CALLOUT (NO DATA)
+========================= */
+.callout {
+    border-radius: 8px;
+}
+
+/* =========================
+   EXPORT TOAST
+========================= */
+.export-toast {
+    border-radius: 10px;
+    font-weight: 600;
+}
+
+/* =========================
+   PRINT STYLES
+========================= */
+@media print {
+    body {
+        background: #fff !important;
+    }
+
+    .btn,
+    .card-tools,
+    .breadcrumb,
+    .export-toast,
+    .small-box,
+    .chart {
+        display: none !important;
+    }
+
+    .card {
+        box-shadow: none !important;
+        border: 1px solid #ddd;
+    }
+
+    table {
+        font-size: 12px;
+    }
+}
+</style>
 
 <!-- Add SheetJS for Excel export -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
@@ -545,9 +762,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Cascading filters
     year.addEventListener('change', function () {
-        reset(season, 'Select Season');
-        reset(croptype, 'Crop Type');
-        reset(crop, 'Crop');
+        reset(season, '{{ __('Select Season') }}');
+        reset(croptype, '{{ __('Crop Type') }}');
+        reset(crop, '{{ __('Crop') }}');
 
         if (!this.value) return;
 
@@ -560,8 +777,8 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     season.addEventListener('change', function () {
-        reset(croptype, 'Crop Type');
-        reset(crop, 'Crop');
+        reset(croptype, '{{ __('Crop Type') }}');
+        reset(crop, '{{ __('Crop') }}');
 
         if (!this.value) return;
 
@@ -574,7 +791,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     croptype.addEventListener('change', function () {
-        reset(crop, 'Crop');
+        reset(crop, '{{ __('Crop') }}');
 
         if (!this.value) return;
 
@@ -595,14 +812,21 @@ document.addEventListener('DOMContentLoaded', function () {
         const data = [];
         
         // Add title row
-        data.push(['KEBELE AGRICULTURAL REPORT - PRODUCTION COMPARISON']);
-        data.push(['Report Period:', {{ $year }} + ' vs ' + {{ $prevYear }}]);
-        data.push(['Generated on:', new Date().toLocaleDateString() + ' ' + new Date().toLocaleTimeString()]);
+        data.push(['{{ __('KEBELE AGRICULTURAL REPORT - PRODUCTION COMPARISON') }}']);
+        data.push(['{{ __('Report Period') }}:', {{ $year }} + ' vs ' + {{ $prevYear }}]);
+        data.push(['{{ __('Generated on') }}:', new Date().toLocaleDateString() + ' ' + new Date().toLocaleTimeString()]);
         data.push([]); // Empty row
         
         // Add headers
-        data.push(['#', 'Season', 'Crop', 'Current Year Land (Ha)', 'Current Year Production (Qt)', 
-                   'Previous Year Land (Ha)', 'Previous Year Production (Qt)']);
+        data.push([
+            '#',
+            '{{ __('Season') }}',
+            '{{ __('Crop') }}',
+            '{{ __('Current Year Land (Ha)') }}',
+            '{{ __('Current Year Production (Qt)') }}',
+            '{{ __('Previous Year Land (Ha)') }}',
+            '{{ __('Previous Year Production (Qt)') }}'
+        ]);
         
         @php 
             $groupedData = $currentYearData->groupBy('season');
@@ -644,7 +868,7 @@ document.addEventListener('DOMContentLoaded', function () {
             // Add season total
             data.push([
                 '',
-                'SEASON TOTAL: {{ $season }}',
+                '{{ __('SEASON TOTAL') }} {{ $season }}',
                 '',
                 {{ $seasonTotalCurrentLand }},
                 {{ $seasonTotalCurrentProduction }},
@@ -667,7 +891,7 @@ document.addEventListener('DOMContentLoaded', function () {
             @endphp
             data.push([
                 '',
-                'GRAND TOTAL',
+                '{{ __('GRAND TOTAL') }}',
                 '',
                 {{ $grandTotalCurrentLand }},
                 {{ $grandTotalCurrentProduction }},
@@ -678,11 +902,11 @@ document.addEventListener('DOMContentLoaded', function () {
         
         // Add summary section
         data.push([]);
-        data.push(['REPORT SUMMARY']);
-        data.push(['Total Crops Analyzed:', {{ $currentYearData->count() }}]);
-        data.push(['Total Seasons:', {{ count($groupedData) }}]);
-        data.push(['Report Year:', {{ $year }}]);
-        data.push(['Comparison Year:', {{ $prevYear }}]);
+        data.push(['{{ __('REPORT SUMMARY') }}']);
+        data.push(['{{ __('Total Crops Analyzed') }}:', {{ $currentYearData->count() }}]);
+        data.push(['{{ __('Total Seasons') }}:', {{ count($groupedData) }}]);
+        data.push(['{{ __('Report Year') }}:', {{ $year }}]);
+        data.push(['{{ __('Comparison Year') }}:', {{ $prevYear }}]);
         
         // Convert data to worksheet
         const ws = XLSX.utils.aoa_to_sheet(data);
@@ -699,17 +923,17 @@ document.addEventListener('DOMContentLoaded', function () {
         ];
         
         // Add the worksheet to the workbook
-        XLSX.utils.book_append_sheet(wb, ws, 'Agricultural Report');
+        XLSX.utils.book_append_sheet(wb, ws, '{{ __('Agricultural Report') }}');
         
         // Generate filename
-        const filename = 'Agricultural_Report_{{ $year }}_vs_{{ $prevYear }}_' + 
+        const filename = '{{ __('Agricultural Report') }}_{{ $year }}_vs_{{ $prevYear }}_' + 
                         new Date().toISOString().slice(0,10).replace(/-/g, '') + '.xlsx';
         
         // Export the workbook
         XLSX.writeFile(wb, filename);
         
         // Show success message
-        showToast('Export successful! File downloaded as ' + filename, 'success');
+        showToast('{{ __('Export successful! File downloaded as') }} ' + filename, 'success');
     });
 
     // Toast notification function
@@ -733,7 +957,7 @@ document.addEventListener('DOMContentLoaded', function () {
         `;
         
         toast.innerHTML = `
-            <strong>${type === 'success' ? 'Success!' : 'Info'}</strong> ${message}
+            <strong>${type === 'success' ? '{{ __('Success!') }}' : '{{ __('Info') }}'}</strong> ${message}
             <button type="button" class="close" data-dismiss="alert">
                 <span>&times;</span>
             </button>
@@ -749,7 +973,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }, 5000);
     }
 
-    // Chart.js - Grouped by Season with vibrant colors
+    // Prepare chart data from PHP variables
     @php
         // Prepare data for charts grouped by season
         $groupedCurrentData = $currentYearData->groupBy('season');
@@ -778,7 +1002,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const prevSeasonProduction = @json(array_values($prevSeasonTotals));
     const currentSeasonLand = @json(array_values($currentSeasonLandTotals));
 
-    // Vibrant color palette
+    // Vibrant color palette for charts
     const vibrantColors = {
         currentYear: [
             'rgba(54, 162, 235, 0.8)',   // Blue
@@ -817,285 +1041,304 @@ document.addEventListener('DOMContentLoaded', function () {
     };
 
     // Bar Chart - Season Production Comparison
-    new Chart(document.getElementById('barChart').getContext('2d'), {
-        type: 'bar',
-        data: {
-            labels: seasons,
-            datasets: [
-                {
-                    label: `Current Year (${@json($year)})`,
-                    data: currentSeasonProduction,
-                    backgroundColor: vibrantColors.currentYear.slice(0, seasons.length),
-                    borderColor: vibrantColors.borderColors.slice(0, seasons.length),
-                    borderWidth: 2,
-                    borderRadius: 5,
-                    borderSkipped: false,
-                },
-                {
-                    label: `Previous Year (${@json($prevYear)})`,
-                    data: prevSeasonProduction,
-                    backgroundColor: vibrantColors.previousYear.slice(0, seasons.length),
-                    borderColor: 'rgba(100, 100, 100, 1)',
-                    borderWidth: 1,
-                    borderRadius: 5,
-                    borderSkipped: false,
-                }
-            ]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: {
-                    position: 'top',
-                    labels: {
-                        font: {
-                            size: 12,
-                            weight: 'bold'
-                        },
-                        padding: 20,
-                        usePointStyle: true,
+    if (document.getElementById('barChart')) {
+        const barCtx = document.getElementById('barChart').getContext('2d');
+        new Chart(barCtx, {
+            type: 'bar',
+            data: {
+                labels: seasons,
+                datasets: [
+                    {
+                        label: `{{ __('Current Year') }} ({{ $year }})`,
+                        data: currentSeasonProduction,
+                        backgroundColor: vibrantColors.currentYear.slice(0, seasons.length),
+                        borderColor: vibrantColors.borderColors.slice(0, seasons.length),
+                        borderWidth: 2,
+                        borderRadius: 5,
+                        borderSkipped: false,
+                    },
+                    {
+                        label: `{{ __('Previous Year') }} ({{ $prevYear }})`,
+                        data: prevSeasonProduction,
+                        backgroundColor: vibrantColors.previousYear.slice(0, seasons.length),
+                        borderColor: 'rgba(100, 100, 100, 1)',
+                        borderWidth: 1,
+                        borderRadius: 5,
+                        borderSkipped: false,
                     }
-                },
-                tooltip: {
-                    backgroundColor: 'rgba(0, 0, 0, 0.7)',
-                    titleFont: {
-                        size: 14,
-                        weight: 'bold'
-                    },
-                    bodyFont: {
-                        size: 13
-                    },
-                    padding: 12,
-                    cornerRadius: 6,
-                }
+                ]
             },
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    grid: {
-                        color: 'rgba(0, 0, 0, 0.1)'
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                        labels: {
+                            font: {
+                                size: 12,
+                                weight: 'bold'
+                            },
+                            padding: 20,
+                            usePointStyle: true,
+                        }
                     },
-                    title: {
-                        display: true,
-                        text: 'Production (Quintal)',
-                        font: {
+                    tooltip: {
+                        backgroundColor: 'rgba(0, 0, 0, 0.7)',
+                        titleFont: {
                             size: 14,
                             weight: 'bold'
                         },
-                        padding: {top: 10, bottom: 20}
-                    },
-                    ticks: {
-                        font: {
-                            size: 12
+                        bodyFont: {
+                            size: 13
                         },
-                        callback: function(value) {
-                            return value.toLocaleString();
+                        padding: 12,
+                        cornerRadius: 6,
+                        callbacks: {
+                            label: function(context) {
+                                let label = context.dataset.label || '';
+                                if (label) {
+                                    label += ': ';
+                                }
+                                label += context.parsed.y.toLocaleString() + ' Qt';
+                                return label;
+                            }
                         }
                     }
                 },
-                x: {
-                    grid: {
-                        color: 'rgba(0, 0, 0, 0.1)'
-                    },
-                    title: {
-                        display: true,
-                        text: 'Agricultural Seasons',
-                        font: {
-                            size: 14,
-                            weight: 'bold'
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            color: 'rgba(0, 0, 0, 0.1)'
                         },
-                        padding: {top: 20, bottom: 10}
+                        title: {
+                            display: true,
+                            text: '{{ __('Production (Quintal)') }}',
+                            font: {
+                                size: 14,
+                                weight: 'bold'
+                            },
+                            padding: {top: 10, bottom: 20}
+                        },
+                        ticks: {
+                            font: {
+                                size: 12
+                            },
+                            callback: function(value) {
+                                return value.toLocaleString();
+                            }
+                        }
                     },
-                    ticks: {
-                        font: {
-                            size: 12,
-                            weight: 'bold'
+                    x: {
+                        grid: {
+                            color: 'rgba(0, 0, 0, 0.1)'
+                        },
+                        title: {
+                            display: true,
+                            text: '{{ __('Agricultural Seasons') }}',
+                            font: {
+                                size: 14,
+                                weight: 'bold'
+                            },
+                            padding: {top: 20, bottom: 10}
+                        },
+                        ticks: {
+                            font: {
+                                size: 12,
+                                weight: 'bold'
+                            }
                         }
                     }
                 }
             }
-        }
-    });
+        });
+    }
 
     // Line Chart - Season Production Trend
-    new Chart(document.getElementById('lineChart').getContext('2d'), {
-        type: 'line',
-        data: {
-            labels: seasons,
-            datasets: [
-                {
-                    label: `Current Year (${@json($year)})`,
-                    data: currentSeasonProduction,
-                    borderColor: '#FF6384', // Red
-                    backgroundColor: 'rgba(255, 99, 132, 0.1)',
-                    borderWidth: 3,
-                    tension: 0.4,
-                    fill: true,
-                    pointBackgroundColor: '#FF6384',
-                    pointBorderColor: '#fff',
-                    pointBorderWidth: 2,
-                    pointRadius: 6,
-                    pointHoverRadius: 8
-                },
-                {
-                    label: `Previous Year (${@json($prevYear)})`,
-                    data: prevSeasonProduction,
-                    borderColor: '#36A2EB', // Blue
-                    backgroundColor: 'rgba(54, 162, 235, 0.1)',
-                    borderWidth: 3,
-                    tension: 0.4,
-                    fill: true,
-                    borderDash: [5, 5],
-                    pointBackgroundColor: '#36A2EB',
-                    pointBorderColor: '#fff',
-                    pointBorderWidth: 2,
-                    pointRadius: 6,
-                    pointHoverRadius: 8
-                }
-            ]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: {
-                    position: 'top',
-                    labels: {
-                        font: {
-                            size: 12,
-                            weight: 'bold'
-                        },
-                        padding: 20,
-                        usePointStyle: true,
-                    }
-                },
-                tooltip: {
-                    backgroundColor: 'rgba(0, 0, 0, 0.7)',
-                    titleFont: {
-                        size: 14,
-                        weight: 'bold'
+    if (document.getElementById('lineChart')) {
+        const lineCtx = document.getElementById('lineChart').getContext('2d');
+        new Chart(lineCtx, {
+            type: 'line',
+            data: {
+                labels: seasons,
+                datasets: [
+                    {
+                        label: `{{ __('Current Year') }} ({{ $year }})`,
+                        data: currentSeasonProduction,
+                        borderColor: '#FF6384', // Red
+                        backgroundColor: 'rgba(255, 99, 132, 0.1)',
+                        borderWidth: 3,
+                        tension: 0.4,
+                        fill: true,
+                        pointBackgroundColor: '#FF6384',
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2,
+                        pointRadius: 6,
+                        pointHoverRadius: 8
                     },
-                    bodyFont: {
-                        size: 13
-                    },
-                    padding: 12,
-                    cornerRadius: 6,
-                    callbacks: {
-                        label: function(context) {
-                            let label = context.dataset.label || '';
-                            if (label) {
-                                label += ': ';
-                            }
-                            label += context.parsed.y.toLocaleString() + ' Qt';
-                            return label;
-                        }
+                    {
+                        label: `{{ __('Previous Year') }} ({{ $prevYear }})`,
+                        data: prevSeasonProduction,
+                        borderColor: '#36A2EB', // Blue
+                        backgroundColor: 'rgba(54, 162, 235, 0.1)',
+                        borderWidth: 3,
+                        tension: 0.4,
+                        fill: true,
+                        borderDash: [5, 5],
+                        pointBackgroundColor: '#36A2EB',
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2,
+                        pointRadius: 6,
+                        pointHoverRadius: 8
                     }
-                }
+                ]
             },
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    grid: {
-                        color: 'rgba(0, 0, 0, 0.1)'
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                        labels: {
+                            font: {
+                                size: 12,
+                                weight: 'bold'
+                            },
+                            padding: 20,
+                            usePointStyle: true,
+                        }
                     },
-                    title: {
-                        display: true,
-                        text: 'Production (Quintal)',
-                        font: {
+                    tooltip: {
+                        backgroundColor: 'rgba(0, 0, 0, 0.7)',
+                        titleFont: {
                             size: 14,
                             weight: 'bold'
                         },
-                        padding: {top: 10, bottom: 20}
-                    },
-                    ticks: {
-                        font: {
-                            size: 12
+                        bodyFont: {
+                            size: 13
                         },
-                        callback: function(value) {
-                            return value.toLocaleString();
+                        padding: 12,
+                        cornerRadius: 6,
+                        callbacks: {
+                            label: function(context) {
+                                let label = context.dataset.label || '';
+                                if (label) {
+                                    label += ': ';
+                                }
+                                label += context.parsed.y.toLocaleString() + ' Qt';
+                                return label;
+                            }
                         }
                     }
                 },
-                x: {
-                    grid: {
-                        color: 'rgba(0, 0, 0, 0.1)'
-                    },
-                    title: {
-                        display: true,
-                        text: 'Agricultural Seasons',
-                        font: {
-                            size: 14,
-                            weight: 'bold'
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            color: 'rgba(0, 0, 0, 0.1)'
                         },
-                        padding: {top: 20, bottom: 10}
+                        title: {
+                            display: true,
+                            text: '{{ __('Production (Quintal)') }}',
+                            font: {
+                                size: 14,
+                                weight: 'bold'
+                            },
+                            padding: {top: 10, bottom: 20}
+                        },
+                        ticks: {
+                            font: {
+                                size: 12
+                            },
+                            callback: function(value) {
+                                return value.toLocaleString();
+                            }
+                        }
                     },
-                    ticks: {
-                        font: {
-                            size: 12,
-                            weight: 'bold'
+                    x: {
+                        grid: {
+                            color: 'rgba(0, 0, 0, 0.1)'
+                        },
+                        title: {
+                            display: true,
+                            text: '{{ __('Agricultural Seasons') }}',
+                            font: {
+                                size: 14,
+                                weight: 'bold'
+                            },
+                            padding: {top: 20, bottom: 10}
+                        },
+                        ticks: {
+                            font: {
+                                size: 12,
+                                weight: 'bold'
+                            }
                         }
                     }
                 }
             }
-        }
-    });
+        });
+    }
 
     // Pie Chart - Land Distribution by Season
-    new Chart(document.getElementById('pieChart').getContext('2d'), {
-        type: 'pie',
-        data: {
-            labels: seasons,
-            datasets: [{
-                data: currentSeasonLand,
-                backgroundColor: vibrantColors.pieColors.slice(0, seasons.length),
-                borderColor: '#fff',
-                borderWidth: 2,
-                hoverOffset: 20
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: {
-                    position: 'right',
-                    labels: {
-                        font: {
-                            size: 12
+    if (document.getElementById('pieChart')) {
+        const pieCtx = document.getElementById('pieChart').getContext('2d');
+        new Chart(pieCtx, {
+            type: 'pie',
+            data: {
+                labels: seasons,
+                datasets: [{
+                    data: currentSeasonLand,
+                    backgroundColor: vibrantColors.pieColors.slice(0, seasons.length),
+                    borderColor: '#fff',
+                    borderWidth: 2,
+                    hoverOffset: 20
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'right',
+                        labels: {
+                            font: {
+                                size: 12
+                            },
+                            padding: 20,
+                            usePointStyle: true,
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(0, 0, 0, 0.7)',
+                        titleFont: {
+                            size: 14,
+                            weight: 'bold'
                         },
-                        padding: 20,
-                        usePointStyle: true,
-                    }
-                },
-                tooltip: {
-                    backgroundColor: 'rgba(0, 0, 0, 0.7)',
-                    titleFont: {
-                        size: 14,
-                        weight: 'bold'
-                    },
-                    bodyFont: {
-                        size: 13
-                    },
-                    padding: 12,
-                    cornerRadius: 6,
-                    callbacks: {
-                        label: function(context) {
-                            let label = context.label || '';
-                            if (label) {
-                                label += ': ';
+                        bodyFont: {
+                            size: 13
+                        },
+                        padding: 12,
+                        cornerRadius: 6,
+                        callbacks: {
+                            label: function(context) {
+                                let label = context.label || '';
+                                if (label) {
+                                    label += ': ';
+                                }
+                                const value = context.raw || 0;
+                                const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                const percentage = Math.round((value / total) * 100);
+                                label += value.toLocaleString() + ' Ha (' + percentage + '%)';
+                                return label;
                             }
-                            const value = context.raw || 0;
-                            const total = context.dataset.data.reduce((a, b) => a + b, 0);
-                            const percentage = Math.round((value / total) * 100);
-                            label += value.toLocaleString() + ' Ha (' + percentage + '%)';
-                            return label;
                         }
                     }
                 }
             }
-        }
-    });
+        });
+    }
 });
 </script>
 

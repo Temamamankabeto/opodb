@@ -118,15 +118,17 @@
                                                                     <div class="row small mt-1">
                                                                         <div class="col-4">
                                                                             <strong>Number:</strong>
-                                                                            {{ number_format($building['public_number'] ?? 0) }}
+                                                                            {{ isset($building['public_number']) ? number_format($building['public_number']) : 0 }}
                                                                         </div>
                                                                         <div class="col-4">
                                                                             <strong>Cost:</strong>
-                                                                            {{ number_format($building['public_cost'] ?? 0, 2) }} ETB
+                                                                            {{ isset($building['public_cost']) ? number_format($building['public_cost'], 2) : 0 }} ETB
                                                                         </div>
                                                                         <div class="col-4">
                                                                             <strong>Total:</strong>
-                                                                            {{ number_format(($building['public_number'] ?? 0) * ($building['public_cost'] ?? 0), 2) }} ETB
+                                                                            {{ (isset($building['public_number']) && isset($building['public_cost'])) 
+                                                                                ? number_format($building['public_number'] * $building['public_cost'], 2) 
+                                                                                : 0 }} ETB
                                                                         </div>
                                                                     </div>
                                                                 </div>
@@ -137,24 +139,31 @@
                                                                     <div class="row small mt-1">
                                                                         <div class="col-4">
                                                                             <strong>Number:</strong>
-                                                                            {{ number_format($building['private_number'] ?? 0) }}
+                                                                            {{ isset($building['private_number']) ? number_format($building['private_number']) : 0 }}
                                                                         </div>
                                                                         <div class="col-4">
                                                                             <strong>Cost:</strong>
-                                                                            {{ number_format($building['private_cost'] ?? 0, 2) }} ETB
+                                                                            {{ isset($building['private_cost']) ? number_format($building['private_cost'], 2) : 0 }} ETB
                                                                         </div>
                                                                         <div class="col-4">
                                                                             <strong>Total:</strong>
-                                                                            {{ number_format(($building['private_number'] ?? 0) * ($building['private_cost'] ?? 0), 2) }} ETB
+                                                                            {{ (isset($building['private_number']) && isset($building['private_cost'])) 
+                                                                                ? number_format($building['private_number'] * $building['private_cost'], 2) 
+                                                                                : 0 }} ETB
                                                                         </div>
                                                                     </div>
                                                                 </div>
 
                                                                 {{-- Totals Section --}}
                                                                 @php
-                                                                    $publicTotal = ($building['public_number'] ?? 0) * ($building['public_cost'] ?? 0);
-                                                                    $privateTotal = ($building['private_number'] ?? 0) * ($building['private_cost'] ?? 0);
-                                                                    $totalBuildings = ($building['public_number'] ?? 0) + ($building['private_number'] ?? 0);
+                                                                    $publicNumber = $building['public_number'] ?? 0;
+                                                                    $privateNumber = $building['private_number'] ?? 0;
+                                                                    $publicCost = $building['public_cost'] ?? 0;
+                                                                    $privateCost = $building['private_cost'] ?? 0;
+                                                                    
+                                                                    $publicTotal = $publicNumber * $publicCost;
+                                                                    $privateTotal = $privateNumber * $privateCost;
+                                                                    $totalBuildings = $publicNumber + $privateNumber;
                                                                     $grandTotal = $publicTotal + $privateTotal;
                                                                 @endphp
                                                                 <div class="bg-primary text-white p-1 rounded small">
@@ -202,15 +211,17 @@
                                                                     <div class="row small mt-1">
                                                                         <div class="col-4">
                                                                             <strong>Number:</strong>
-                                                                            {{ number_format($improvement['public_number'] ?? 0) }}
+                                                                            {{ isset($improvement['public_number']) ? number_format($improvement['public_number']) : 0 }}
                                                                         </div>
                                                                         <div class="col-4">
                                                                             <strong>Cost:</strong>
-                                                                            {{ number_format($improvement['public_cost'] ?? 0, 2) }} ETB
+                                                                            {{ isset($improvement['public_cost']) ? number_format($improvement['public_cost'], 2) : 0 }} ETB
                                                                         </div>
                                                                         <div class="col-4">
                                                                             <strong>Total:</strong>
-                                                                            {{ number_format(($improvement['public_number'] ?? 0) * ($improvement['public_cost'] ?? 0), 2) }} ETB
+                                                                            {{ (isset($improvement['public_number']) && isset($improvement['public_cost'])) 
+                                                                                ? number_format($improvement['public_number'] * $improvement['public_cost'], 2) 
+                                                                                : 0 }} ETB
                                                                         </div>
                                                                     </div>
                                                                 </div>
@@ -221,24 +232,31 @@
                                                                     <div class="row small mt-1">
                                                                         <div class="col-4">
                                                                             <strong>Number:</strong>
-                                                                            {{ number_format($improvement['private_number'] ?? 0) }}
+                                                                            {{ isset($improvement['private_number']) ? number_format($improvement['private_number']) : 0 }}
                                                                         </div>
                                                                         <div class="col-4">
                                                                             <strong>Cost:</strong>
-                                                                            {{ number_format($improvement['private_cost'] ?? 0, 2) }} ETB
+                                                                            {{ isset($improvement['private_cost']) ? number_format($improvement['private_cost'], 2) : 0 }} ETB
                                                                         </div>
                                                                         <div class="col-4">
                                                                             <strong>Total:</strong>
-                                                                            {{ number_format(($improvement['private_number'] ?? 0) * ($improvement['private_cost'] ?? 0), 2) }} ETB
+                                                                            {{ (isset($improvement['private_number']) && isset($improvement['private_cost'])) 
+                                                                                ? number_format($improvement['private_number'] * $improvement['private_cost'], 2) 
+                                                                                : 0 }} ETB
                                                                         </div>
                                                                     </div>
                                                                 </div>
 
                                                                 {{-- Totals Section --}}
                                                                 @php
-                                                                    $publicTotal = ($improvement['public_number'] ?? 0) * ($improvement['public_cost'] ?? 0);
-                                                                    $privateTotal = ($improvement['private_number'] ?? 0) * ($improvement['private_cost'] ?? 0);
-                                                                    $totalImprovements = ($improvement['public_number'] ?? 0) + ($improvement['private_number'] ?? 0);
+                                                                    $publicNumber = $improvement['public_number'] ?? 0;
+                                                                    $privateNumber = $improvement['private_number'] ?? 0;
+                                                                    $publicCost = $improvement['public_cost'] ?? 0;
+                                                                    $privateCost = $improvement['private_cost'] ?? 0;
+                                                                    
+                                                                    $publicTotal = $publicNumber * $publicCost;
+                                                                    $privateTotal = $privateNumber * $privateCost;
+                                                                    $totalImprovements = $publicNumber + $privateNumber;
                                                                     $grandTotal = $publicTotal + $privateTotal;
                                                                 @endphp
                                                                 <div class="bg-success text-white p-1 rounded small">
@@ -366,7 +384,7 @@
                                         <div class="border-bottom pb-3 mb-3">
                                             <h6 class="text-primary mb-2">
                                                 <i class="fas fa-building mr-1"></i>
-                                                #{{ $index + 1 }} - {{ $building['name'] }}
+                                                #{{ $index + 1 }} - {{ $building['name'] ?? 'N/A' }}
                                             </h6>
                                             
                                             {{-- Public Data --}}
@@ -376,15 +394,17 @@
                                                 </div>
                                                 <div class="col-md-3">
                                                     <strong>Number:</strong>
-                                                    {{ number_format($building['public_number']) }}
+                                                    {{ isset($building['public_number']) ? number_format($building['public_number']) : 0 }}
                                                 </div>
                                                 <div class="col-md-3">
                                                     <strong>Cost:</strong>
-                                                    {{ number_format($building['public_cost'], 2) }} ETB
+                                                    {{ isset($building['public_cost']) ? number_format($building['public_cost'], 2) : 0 }} ETB
                                                 </div>
                                                 <div class="col-md-6">
                                                     <strong>Total:</strong>
-                                                    {{ number_format($building['public_number'] * $building['public_cost'], 2) }} ETB
+                                                    {{ (isset($building['public_number']) && isset($building['public_cost'])) 
+                                                        ? number_format($building['public_number'] * $building['public_cost'], 2) 
+                                                        : 0 }} ETB
                                                 </div>
                                             </div>
 
@@ -395,23 +415,30 @@
                                                 </div>
                                                 <div class="col-md-3">
                                                     <strong>Number:</strong>
-                                                    {{ number_format($building['private_number']) }}
+                                                    {{ isset($building['private_number']) ? number_format($building['private_number']) : 0 }}
                                                 </div>
                                                 <div class="col-md-3">
                                                     <strong>Cost:</strong>
-                                                    {{ number_format($building['private_cost'], 2) }} ETB
+                                                    {{ isset($building['private_cost']) ? number_format($building['private_cost'], 2) : 0 }} ETB
                                                 </div>
                                                 <div class="col-md-6">
                                                     <strong>Total:</strong>
-                                                    {{ number_format($building['private_number'] * $building['private_cost'], 2) }} ETB
+                                                    {{ (isset($building['private_number']) && isset($building['private_cost'])) 
+                                                        ? number_format($building['private_number'] * $building['private_cost'], 2) 
+                                                        : 0 }} ETB
                                                 </div>
                                             </div>
 
                                             {{-- Totals --}}
                                             @php
-                                                $publicTotal = $building['public_number'] * $building['public_cost'];
-                                                $privateTotal = $building['private_number'] * $building['private_cost'];
-                                                $totalBuildings = $building['public_number'] + $building['private_number'];
+                                                $publicNumber = $building['public_number'] ?? 0;
+                                                $privateNumber = $building['private_number'] ?? 0;
+                                                $publicCost = $building['public_cost'] ?? 0;
+                                                $privateCost = $building['private_cost'] ?? 0;
+                                                
+                                                $publicTotal = $publicNumber * $publicCost;
+                                                $privateTotal = $privateNumber * $privateCost;
+                                                $totalBuildings = $publicNumber + $privateNumber;
                                                 $grandTotal = $publicTotal + $privateTotal;
                                                 $averageCost = $totalBuildings > 0 ? $grandTotal / $totalBuildings : 0;
                                             @endphp
@@ -460,7 +487,7 @@
                                         <div class="border-bottom pb-3 mb-3">
                                             <h6 class="text-success mb-2">
                                                 <i class="fas fa-tools mr-1"></i>
-                                                #{{ $index + 1 }} - {{ $improvement['name'] }}
+                                                #{{ $index + 1 }} - {{ $improvement['name'] ?? 'N/A' }}
                                             </h6>
                                             
                                             {{-- Public Data --}}
@@ -470,15 +497,17 @@
                                                 </div>
                                                 <div class="col-md-3">
                                                     <strong>Number:</strong>
-                                                    {{ number_format($improvement['public_number']) }}
+                                                    {{ isset($improvement['public_number']) ? number_format($improvement['public_number']) : 0 }}
                                                 </div>
                                                 <div class="col-md-3">
                                                     <strong>Cost:</strong>
-                                                    {{ number_format($improvement['public_cost'], 2) }} ETB
+                                                    {{ isset($improvement['public_cost']) ? number_format($improvement['public_cost'], 2) : 0 }} ETB
                                                 </div>
                                                 <div class="col-md-6">
                                                     <strong>Total:</strong>
-                                                    {{ number_format($improvement['public_number'] * $improvement['public_cost'], 2) }} ETB
+                                                    {{ (isset($improvement['public_number']) && isset($improvement['public_cost'])) 
+                                                        ? number_format($improvement['public_number'] * $improvement['public_cost'], 2) 
+                                                        : 0 }} ETB
                                                 </div>
                                             </div>
 
@@ -489,23 +518,30 @@
                                                 </div>
                                                 <div class="col-md-3">
                                                     <strong>Number:</strong>
-                                                    {{ number_format($improvement['private_number']) }}
+                                                    {{ isset($improvement['private_number']) ? number_format($improvement['private_number']) : 0 }}
                                                 </div>
                                                 <div class="col-md-3">
                                                     <strong>Cost:</strong>
-                                                    {{ number_format($improvement['private_cost'], 2) }} ETB
+                                                    {{ isset($improvement['private_cost']) ? number_format($improvement['private_cost'], 2) : 0 }} ETB
                                                 </div>
                                                 <div class="col-md-6">
                                                     <strong>Total:</strong>
-                                                    {{ number_format($improvement['private_number'] * $improvement['private_cost'], 2) }} ETB
+                                                    {{ (isset($improvement['private_number']) && isset($improvement['private_cost'])) 
+                                                        ? number_format($improvement['private_number'] * $improvement['private_cost'], 2) 
+                                                        : 0 }} ETB
                                                 </div>
                                             </div>
 
                                             {{-- Totals --}}
                                             @php
-                                                $publicTotal = $improvement['public_number'] * $improvement['public_cost'];
-                                                $privateTotal = $improvement['private_number'] * $improvement['private_cost'];
-                                                $totalImprovements = $improvement['public_number'] + $improvement['private_number'];
+                                                $publicNumber = $improvement['public_number'] ?? 0;
+                                                $privateNumber = $improvement['private_number'] ?? 0;
+                                                $publicCost = $improvement['public_cost'] ?? 0;
+                                                $privateCost = $improvement['private_cost'] ?? 0;
+                                                
+                                                $publicTotal = $publicNumber * $publicCost;
+                                                $privateTotal = $privateNumber * $privateCost;
+                                                $totalImprovements = $publicNumber + $privateNumber;
                                                 $grandTotal = $publicTotal + $privateTotal;
                                                 $averageCost = $totalImprovements > 0 ? $grandTotal / $totalImprovements : 0;
                                             @endphp

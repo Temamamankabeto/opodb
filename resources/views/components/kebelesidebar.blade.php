@@ -431,21 +431,94 @@
                             <p>{{ __('Fertilizer') }}</p>
                         </a>
                         </li>
- <li class="nav-item">
+                    </li>
+                    <li class="nav-item">
                         <a href="{{ url('kebele/mechanization-report') }}" class="nav-link">
                             <i class="fas fa-flask nav-icon"></i>
                             <p>{{ __('Mechinization') }}</p>
                         </a>
-                        </li>
-                         <li class="nav-item">
+                    </li>
+                    <li class="nav-item">
                         <a href="{{ url('kebele/compost-report') }}" class="nav-link">
                             <i class="fas fa-flask nav-icon"></i>
                             <p>{{ __('Soil Development') }}</p>
                         </a>
-                        </li>
-
-                       
+                    </li>
                         
+                    <li class="nav-item">
+                        <a href="{{ url('kebele/seedling-reports/kebele') }}" class="nav-link">
+                            <i class="fas fa-flask nav-icon"></i>
+                            <p>{{ __('Seedling') }}</p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ url('kebele/gabaasa_torbanii/livestock/plans') }}" class="nav-link">
+                            <i class="fas fa-flask nav-icon"></i>
+                            <p>{{ __('Livestock') }}</p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ url('kebele/gabaasa_torbanii/natural-resources/plans') }}" class="nav-link">
+                            <i class="fas fa-flask nav-icon"></i>
+                            <p>{{ __('Natural Resources') }}</p>
+                        </a>
+                    </li>
+                      
+                    <li class="nav-item">
+                        <a href="{{ url('kebele/gabaasa_torbanii/association-expansion/plans') }}" class="nav-link">
+                            <i class="fas fa-flask nav-icon"></i>
+                            <p>{{ __('Association Expansion') }}</p>
+                        </a>
+                    </li>  
+                        
+                    <li class="nav-item">
+                        <a href="{{ url('kebele/gabaasa_torbanii/building-institution/plans') }}" class="nav-link">
+                            <i class="fas fa-flask nav-icon"></i>
+                            <p>{{ __('Building Institution') }}</p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ url('kebele/gabaasa_torbanii/power-institution/plans') }}" class="nav-link">
+                            <i class="fas fa-flask nav-icon"></i>
+                            <p>{{ __('Power Institution') }}</p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ url('kebele/gabaasa_torbanii/economic-transition-facilities/plans') }}" class="nav-link">
+                            <i class="fas fa-flask nav-icon"></i>
+                            <p>{{ __('Economic Transition Facilities') }}</p>
+                        </a>
+                    </li>  
+                    <li class="nav-item">
+                        <a href="{{ url('kebele/gabaasa_torbanii/barnoota/plans') }}" class="nav-link">
+                            <i class="fas fa-flask nav-icon"></i>
+                            <p>{{ __('Education') }}</p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ url('kebele/gabaasa_torbanii/healthy/plans') }}" class="nav-link">
+                            <i class="fas fa-flask nav-icon"></i>
+                            <p>{{ __('Health') }}</p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ url('kebele/gabaasa_torbanii/cultural/plans') }}" class="nav-link">
+                            <i class="fas fa-flask nav-icon"></i>
+                            <p>{{ __('Cultural Revival') }}</p>
+                        </a>
+                    </li>   
+                    <li class="nav-item">
+                        <a href="{{ url('kebele/gabaasa_torbanii/asset/plans') }}" class="nav-link">
+                            <i class="fas fa-flask nav-icon"></i>
+                            <p>{{ __('Asset') }}</p>
+                        </a>
+                    </li>   
+                    <li class="nav-item">
+                        <a href="{{ url('kebele/gabaasa_torbanii/employee/plans') }}" class="nav-link">
+                            <i class="fas fa-flask nav-icon"></i>
+                            <p>{{ __('Employee') }}</p>
+                        </a>
+                    </li>
             </ul>
             </li>
         </ul>

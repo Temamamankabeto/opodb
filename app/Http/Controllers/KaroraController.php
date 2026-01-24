@@ -607,10 +607,9 @@ public function fertilizers(Request $request)
         'kebeles'
         ));
     }
-
-    public function seedling(Request $request)
-    {
-       $user = auth()->user();
+public function seedling(Request $request)
+{
+    $user = auth()->user();
     
     // Ensure the user has a kebele assigned
     if (!$user->kebele_id) {
@@ -633,8 +632,20 @@ public function fertilizers(Request $request)
                         ->get();
 
     $reportData = [];
+    
+    // Initialize arrays for seedling type data SEPARATELY for preparation and planting
+    $seedlingTypeData = [
+        'current' => [
+            'preparation' => [],
+            'planting' => []
+        ],
+        'previous' => [
+            'preparation' => [],
+            'planting' => []
+        ]
+    ];
 
-    // Initialize totals for the kebele (since this is kebele-level, only one kebele)
+    // Initialize totals for the kebele
     $current = ['preparation' => ['hanga' => 0, 'participants' => 0, 'days' => 0],
                 'planting' => ['hanga' => 0, 'participants' => 0, 'days' => 0]];
 
@@ -659,6 +670,23 @@ public function fertilizers(Request $request)
             $totalPrepHanga += $s['hanga_qophii'] ?? 0;
             $totalPrepParticipants += $s['nama_hirmaate_qophii'] ?? 0;
             $totalPrepDays += $s['baayina_guyyaa_qophii'] ?? 0;
+            
+            // Get seedling name
+            $seedlingName = $s['name'] ?? 'Unknown';
+            $hangaQophii = $s['hanga_qophii'] ?? 0;
+            
+            // Store separately for preparation
+            if ($prep->year == $selectedYear) {
+                if (!isset($seedlingTypeData['current']['preparation'][$seedlingName])) {
+                    $seedlingTypeData['current']['preparation'][$seedlingName] = 0;
+                }
+                $seedlingTypeData['current']['preparation'][$seedlingName] += $hangaQophii;
+            } else {
+                if (!isset($seedlingTypeData['previous']['preparation'][$seedlingName])) {
+                    $seedlingTypeData['previous']['preparation'][$seedlingName] = 0;
+                }
+                $seedlingTypeData['previous']['preparation'][$seedlingName] += $hangaQophii;
+            }
         }
 
         // Aggregate planting data
@@ -666,6 +694,23 @@ public function fertilizers(Request $request)
             $totalPlantHanga += $s['hanga_dhaabbii'] ?? 0;
             $totalPlantParticipants += $s['nama_hirmaate_dhaabbii'] ?? 0;
             $totalPlantDays += $s['baayina_guyyaa_dhaabbii'] ?? 0;
+            
+            // Get seedling name
+            $seedlingName = $s['name'] ?? 'Unknown';
+            $hangaDhaabbii = $s['hanga_dhaabbii'] ?? 0;
+            
+            // Store separately for planting
+            if ($prep->year == $selectedYear) {
+                if (!isset($seedlingTypeData['current']['planting'][$seedlingName])) {
+                    $seedlingTypeData['current']['planting'][$seedlingName] = 0;
+                }
+                $seedlingTypeData['current']['planting'][$seedlingName] += $hangaDhaabbii;
+            } else {
+                if (!isset($seedlingTypeData['previous']['planting'][$seedlingName])) {
+                    $seedlingTypeData['previous']['planting'][$seedlingName] = 0;
+                }
+                $seedlingTypeData['previous']['planting'][$seedlingName] += $hangaDhaabbii;
+            }
         }
 
         if ($prep->year == $selectedYear) {
@@ -687,15 +732,28 @@ public function fertilizers(Request $request)
         }
     }
 
+    // Sort all seedling type data by amount (descending)
+    foreach (['current', 'previous'] as $yearType) {
+        foreach (['preparation', 'planting'] as $activityType) {
+            arsort($seedlingTypeData[$yearType][$activityType]);
+        }
+    }
+
     // Only one kebele row
     $reportData[] = [
         'kebele_name' => $user->kebele->name ?? 'N/A',
         'current' => $current,
         'previous' => $previous,
     ];
-        return view('gabaasa_torbanii.seedling.kebele_report', compact(
-            'availableYears', 'selectedYear', 'previousYear', 'reportData'));
-    }
+
+    return view('gabaasa_torbanii.seedling.kebele_report', compact(
+        'availableYears', 
+        'selectedYear', 
+        'previousYear', 
+        'reportData',
+        'seedlingTypeData'
+    ));
+}
 
     private function sumPreparation($preparations)
     {

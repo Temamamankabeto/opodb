@@ -11,15 +11,15 @@
                             <i class="fas fa-flask fa-lg text-dark"></i>
                         </div>
                         <div>
-                            <h1 class="m-0 text-dark">Kebele Fertilizer Report</h1>
-                            <small class="text-dark">Fertilizer usage analysis and comparison report</small>
+                            <h1 class="m-0 text-dark">{{ __('Kebele Fertilizer Report') }}</h1>
+                            <small class="text-dark">{{ __('Fertilizer usage analysis and comparison report') }}</small>
                         </div>
                     </div>
                 </div>
                 <div class="col-sm-6">
                     <ol class="breadcrumb float-sm-right">
-                        <li class="breadcrumb-item"><a href="#" class="text-dark"><i class="fas fa-home text-dark"></i> Home</a></li>
-                        <li class="breadcrumb-item active text-dark">Fertilizer Report</li>
+                        <li class="breadcrumb-item"><a href="#" class="text-dark"><i class="fas fa-home text-dark"></i> {{ __('Home') }}</a></li>
+                        <li class="breadcrumb-item active text-dark">{{ __('Fertilizer Report') }}</li>
                     </ol>
                     <div class="float-sm-right mt-2">
                         <span class="badge badge-light border">
@@ -41,7 +41,7 @@
                 <div class="card-header bg-white border-bottom">
                     <h3 class="card-title text-dark">
                         <i class="fas fa-chart-bar mr-1 text-dark"></i>
-                        Fertilizer Usage Comparison Report
+                        {{ __('Fertilizer Usage Comparison Report') }}
                     </h3>
                     <div class="card-tools">
                         <button type="button" class="btn btn-tool text-dark" data-card-widget="collapse">
@@ -56,7 +56,7 @@
                         <div class="card-header bg-white border-bottom">
                             <h3 class="card-title text-dark">
                                 <i class="fas fa-filter mr-1 text-dark"></i>
-                                Filter Options
+                                {{ __('Filter Options') }}
                             </h3>
                             <div class="card-tools">
                                 <button type="button" class="btn btn-tool text-dark" data-card-widget="collapse">
@@ -72,10 +72,10 @@
                                         <div class="form-group">
                                             <label class="mb-1 text-dark">
                                                 <i class="fas fa-calendar mr-1 text-dark"></i>
-                                                Year
+                                                {{ __('Year') }}
                                             </label>
                                             <select id="year" name="year" class="form-control form-control-sm border">
-                                                <option value="">Select Year</option>
+                                                <option value="">{{ __('Select Year') }}</option>
                                                 @foreach($years as $y)
                                                     <option value="{{ $y }}" {{ request('year', $year) == $y ? 'selected' : '' }}>
                                                         {{ $y }}
@@ -91,10 +91,10 @@
     <div class="form-group">
         <label class="mb-1 text-dark">
             <i class="fas fa-cloud-sun mr-1 text-dark"></i>
-            Season
+            {{ __('Season') }}
         </label>
         <select id="season" name="season" class="form-control form-control-sm border">
-            <option value="">Select Season</option>
+            <option value="">{{ __('Select Season') }}</option>
             @if(request()->has('season') && request('season'))
                 <option value="{{ request('season') }}" selected>{{ request('season') }}</option>
             @endif
@@ -107,10 +107,10 @@
     <div class="form-group">
         <label class="mb-1 text-dark">
             <i class="fas fa-tags mr-1 text-dark"></i>
-            Fertilizer Type
+            {{ __('Fertilizer Type') }}
         </label>
         <select id="fertilizerType" name="fertilizer_type_id" class="form-control form-control-sm border">
-            <option value="">Fertilizer Type</option>
+            <option value="">{{ __('Fertilizer Type') }}</option>
             @if(request()->has('fertilizer_type_id') && request('fertilizer_type_id'))
                 <option value="{{ request('fertilizer_type_id') }}" selected>
                     {{-- You might want to display the fertilizer type name here --}}
@@ -125,10 +125,10 @@
     <div class="form-group">
         <label class="mb-1 text-dark">
             <i class="fas fa-flask mr-1 text-dark"></i>
-            Fertilizer
+            {{ __('Fertilizer') }}
         </label>
         <select id="fertilizer" name="fertilizer_id" class="form-control form-control-sm border">
-            <option value="">Fertilizer</option>
+            <option value="">{{ __('Fertilizer') }}</option>
             @if(request()->has('fertilizer_id') && request('fertilizer_id'))
                 <option value="{{ request('fertilizer_id') }}" selected>
                     {{-- You might want to display the fertilizer name here --}}
@@ -143,11 +143,11 @@
                                     <div class="col-md-12 text-right">
                                         <button type="submit" class="btn btn-dark btn-sm">
                                             <i class="fas fa-filter mr-1"></i>
-                                            Apply Filter
+                                            {{ __('Apply Filter') }}
                                         </button>
                                         <a href="{{ route('sector.fertilizer-gabaasa.index') }}" class="btn btn-light btn-sm border">
                                             <i class="fas fa-redo mr-1 text-dark"></i>
-                                            <span class="text-dark">Reset</span>
+                                            <span class="text-dark">{{ __('Reset') }}</span>
                                         </a>
                                     </div>
                                 </div>
@@ -161,67 +161,53 @@
                             <div class="small-box bg-white border">
                                 <div class="inner">
                                     <h3 class="text-dark">{{ count($currentYearData) }}</h3>
-                                    <p class="text-dark">Fertilizers Analyzed</p>
+                                    <p class="text-dark">{{ __('Fertilizers Analyzed') }}</p>
                                 </div>
                                 <div class="icon">
                                     <i class="fas fa-flask text-dark"></i>
                                 </div>
-                                <div class="small-box-footer text-dark border-top">Total in report</div>
+                                <div class="small-box-footer text-dark border-top">{{ __('Total in report') }}</div>
                             </div>
                         </div>
                         <div class="col-lg-3 col-6">
                             <div class="small-box bg-white border">
                                 <div class="inner">
                                     <h3 class="text-dark">{{ $year }}</h3>
-                                    <p class="text-dark">Current Year</p>
+                                    <p class="text-dark">{{ __('Current Year') }}</p>
                                 </div>
                                 <div class="icon">
                                     <i class="fas fa-chart-line text-dark"></i>
                                 </div>
-                                <div class="small-box-footer text-dark border-top">Analysis period</div>
+                                <div class="small-box-footer text-dark border-top">{{ __('Analysis period') }}</div>
                             </div>
                         </div>
                         <div class="col-lg-3 col-6">
                             <div class="small-box bg-white border">
                                 <div class="inner">
                                     <h3 class="text-dark">{{ $prevYear }}</h3>
-                                    <p class="text-dark">Previous Year</p>
+                                    <p class="text-dark">{{ __('Previous Year') }}</p>
                                 </div>
                                 <div class="icon">
                                     <i class="fas fa-history text-dark"></i>
                                 </div>
-                                <div class="small-box-footer text-dark border-top">Comparison period</div>
+                                <div class="small-box-footer text-dark border-top">{{ __('Comparison period') }}</div>
                             </div>
                         </div>
                         <div class="col-lg-3 col-6">
                             <div class="small-box bg-white border">
                                 <div class="inner">
                                     <h3 class="text-dark">{{ count($years) }}</h3>
-                                    <p class="text-dark">Years of Data</p>
+                                    <p class="text-dark">{{ __('Years of Data') }}</p>
                                 </div>
                                 <div class="icon">
                                     <i class="fas fa-database text-dark"></i>
                                 </div>
-                                <div class="small-box-footer text-dark border-top">Historical data</div>
+                                <div class="small-box-footer text-dark border-top">{{ __('Historical data') }}</div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Export and Actions Row -->
-                    <div class="row mb-3">
-                        <div class="col-md-12">
-                            <div class="d-flex justify-content-end">
-                                <div class="btn-group">
-                                    <button type="button" class="btn btn-success btn-sm" id="exportExcelBtn">
-                                        <i class="fas fa-file-excel mr-1"></i> Export to Excel
-                                    </button>
-                                    <button type="button" class="btn btn-info btn-sm" onclick="window.print()">
-                                        <i class="fas fa-print mr-1"></i> Print Report
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                     
 
                     <!-- Data Table Grouped by Season -->
                     @php
@@ -236,7 +222,7 @@
                         <div class="card-header bg-white border-bottom">
                             <h3 class="card-title text-dark">
                                 <i class="fas fa-table mr-1 text-dark"></i>
-                                Fertilizer Usage Comparison (Grouped by Season)
+                                {{ __('Fertilizer Usage Comparison (Grouped by Season)') }}
                             </h3>
                             <div class="card-tools">
                                 <button type="button" class="btn btn-tool text-dark" data-card-widget="maximize">
@@ -253,19 +239,19 @@
                                     <thead class="bg-light">
                                         <tr>
                                             <th class="text-center text-dark border">#</th>
-                                            <th class="text-dark border">Season</th>
-                                            <th class="text-dark border">Fertilizer</th>
-                                            <th colspan="2" class="text-center text-dark border">Current Year ({{ $year }})</th>
-                                            <th colspan="2" class="text-center text-dark border">Previous Year ({{ $prevYear }})</th>
+                                            <th class="text-dark border">{{ __('Season') }}</th>
+                                            <th class="text-dark border">{{ __('Fertilizer') }}</th>
+                                            <th colspan="2" class="text-center text-dark border">{{ __('Current Year') }} ({{ $year }})</th>
+                                            <th colspan="2" class="text-center text-dark border">{{ __('Previous Year') }} ({{ $prevYear }})</th>
                                         </tr>
                                         <tr>
                                             <th class="text-center text-dark border"></th>
                                             <th class="text-dark border"></th>
                                             <th class="text-dark border"></th>
-                                            <th class="text-center text-dark border">Amount</th>
-                                            <th class="text-center text-dark border">Unit</th>
-                                            <th class="text-center text-dark border">Amount</th>
-                                            <th class="text-center text-dark border">Unit</th>
+                                            <th class="text-center text-dark border">{{ __('Amount') }}</th>
+                                            <th class="text-center text-dark border">{{ __('Unit') }}</th>
+                                            <th class="text-center text-dark border">{{ __('Amount') }}</th>
+                                            <th class="text-center text-dark border">{{ __('Unit') }}</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -335,7 +321,7 @@
                                         
                                         <tr class="bg-light">
                                             <td colspan="3" class="text-right text-dark border">
-                                                <strong>Season Total for {{ $season }}:</strong>
+                                                <strong>{{ __('Season Total for') }} {{ $season }}:</strong>
                                             </td>
                                             <td class="text-right text-dark border">
                                                 <strong>{{ number_format($seasonTotalCurrentAmount,2) }}</strong>
@@ -360,7 +346,7 @@
                                     @endphp
                                     <tr class="bg-dark">
                                         <td colspan="3" class="text-right border">
-                                            <strong class="text-white">GRAND TOTAL:</strong>
+                                            <strong class="text-white">{{ __('GRAND TOTAL') }}:</strong>
                                         </td>
                                         <td class="text-right border">
                                             <strong class="text-white">{{ number_format($grandTotalCurrentAmount,2) }}</strong>
@@ -384,8 +370,8 @@
                     <div class="card bg-white border">
                         <div class="card-body">
                             <div class="callout callout-light border">
-                                <h5 class="text-dark"><i class="icon fas fa-exclamation-triangle text-dark"></i> No Fertilizer Data Found</h5>
-                                <p class="text-dark">Try adjusting your filter criteria</p>
+                                <h5 class="text-dark"><i class="icon fas fa-exclamation-triangle text-dark"></i> {{ __('No Fertilizer Data Found') }}</h5>
+                                <p class="text-dark">{{ __('Try adjusting your filter criteria') }}</p>
                             </div>
                         </div>
                     </div>
@@ -398,7 +384,7 @@
                                 <div class="card-header bg-white border-bottom">
                                     <h3 class="card-title text-dark">
                                         <i class="fas fa-chart-bar mr-1 text-dark"></i>
-                                        Fertilizer Usage Comparison by Season
+                                        {{ __('Fertilizer Usage Comparison by Season') }}
                                     </h3>
                                     <div class="card-tools">
                                         <button type="button" class="btn btn-tool text-dark" data-card-widget="collapse">
@@ -412,7 +398,7 @@
                                 <div class="card-footer bg-white border-top">
                                     <small class="text-dark">
                                         <i class="fas fa-info-circle mr-1 text-dark"></i>
-                                        Comparing {{ $year }} vs {{ $prevYear }} fertilizer usage by season
+                                        {{ __('Comparing :year vs :prevYear fertilizer usage by season', ['year' => $year, 'prevYear' => $prevYear]) }}
                                     </small>
                                 </div>
                             </div>
@@ -423,7 +409,7 @@
                                 <div class="card-header bg-white border-bottom">
                                     <h3 class="card-title text-dark">
                                         <i class="fas fa-chart-line mr-1 text-dark"></i>
-                                        Fertilizer Usage Trend by Season
+                                        {{ __('Fertilizer Usage Trend by Season') }}
                                     </h3>
                                     <div class="card-tools">
                                         <button type="button" class="btn btn-tool text-dark" data-card-widget="collapse">
@@ -437,7 +423,7 @@
                                 <div class="card-footer bg-white border-top">
                                     <small class="text-dark">
                                         <i class="fas fa-info-circle mr-1 text-dark"></i>
-                                        Fertilizer usage trends across seasons
+                                        {{ __('Fertilizer usage trends across seasons') }}
                                     </small>
                                 </div>
                             </div>
@@ -448,7 +434,7 @@
                                 <div class="card-header bg-white border-bottom">
                                     <h3 class="card-title text-dark">
                                         <i class="fas fa-chart-pie mr-1 text-dark"></i>
-                                        Fertilizer Distribution by Type
+                                        {{ __('Fertilizer Distribution by Type') }}
                                     </h3>
                                     <div class="card-tools">
                                         <button type="button" class="btn btn-tool text-dark" data-card-widget="collapse">
@@ -462,7 +448,7 @@
                                 <div class="card-footer bg-white border-top">
                                     <small class="text-dark">
                                         <i class="fas fa-info-circle mr-1 text-dark"></i>
-                                        Fertilizer allocation by type for {{ $year }}
+                                        {{ __('Fertilizer allocation by type for :year', ['year' => $year]) }}
                                     </small>
                                 </div>
                             </div>
@@ -473,7 +459,7 @@
                                 <div class="card-header bg-white border-bottom">
                                     <h3 class="card-title text-dark">
                                         <i class="fas fa-chart-area mr-1 text-dark"></i>
-                                        Key Insights
+                                        {{ __('Key Insights') }}
                                     </h3>
                                     <div class="card-tools">
                                         <button type="button" class="btn btn-tool text-dark" data-card-widget="collapse">
@@ -487,7 +473,7 @@
                                             <div class="info-box bg-white border mb-3">
                                                 <span class="info-box-icon bg-light border"><i class="fas fa-flask text-dark"></i></span>
                                                 <div class="info-box-content">
-                                                    <span class="info-box-text text-dark">Most Used Fertilizer</span>
+                                                    <span class="info-box-text text-dark">{{ __('Most Used Fertilizer') }}</span>
                                                     @if($currentYearData->count() > 0)
                                                         @php
                                                             $fertilizerTotals = [];
@@ -507,7 +493,7 @@
                                                             <small class="text-dark">({{ number_format($topFertilizerAmount,2) }} {{ $currentYearData->first()['unit'] ?? '' }})</small>
                                                         </span>
                                                     @else
-                                                        <span class="info-box-number text-dark">No data available</span>
+                                                        <span class="info-box-number text-dark">{{ __('No data available') }}</span>
                                                     @endif
                                                 </div>
                                             </div>
@@ -516,7 +502,7 @@
                                             <div class="info-box bg-white border mb-3">
                                                 <span class="info-box-icon bg-light border"><i class="fas fa-percentage text-dark"></i></span>
                                                 <div class="info-box-content">
-                                                    <span class="info-box-text text-dark">Year-over-Year Change</span>
+                                                    <span class="info-box-text text-dark">{{ __('Year-over-Year Change') }}</span>
                                                     @if($currentYearData->count() > 0 && $previousYearData->count() > 0)
                                                         @php
                                                             $currentTotal = $currentYearData->sum('amount');
@@ -527,7 +513,7 @@
                                                             {{ $change >= 0 ? '+' : '' }}{{ number_format($change, 1) }}%
                                                         </span>
                                                     @else
-                                                        <span class="info-box-number text-dark">No comparison data</span>
+                                                        <span class="info-box-number text-dark">{{ __('No comparison data') }}</span>
                                                     @endif
                                                 </div>
                                             </div>
@@ -536,7 +522,7 @@
                                             <div class="info-box bg-white border">
                                                 <span class="info-box-icon bg-light border"><i class="fas fa-balance-scale text-dark"></i></span>
                                                 <div class="info-box-content">
-                                                    <span class="info-box-text text-dark">Total Fertilizer Used</span>
+                                                    <span class="info-box-text text-dark">{{ __('Total Fertilizer Used') }}</span>
                                                     <span class="info-box-number text-dark">
                                                         {{ number_format($currentYearData->sum('amount'),2) }} {{ $currentYearData->first()['unit'] ?? '' }}
                                                     </span>
@@ -555,13 +541,13 @@
                         <div class="col-sm-6">
                             <small class="text-dark">
                                 <i class="fas fa-sync-alt mr-1 text-dark"></i>
-                                Data updates in real-time
+                                {{ __('Data updates in real-time') }}
                             </small>
                         </div>
                         <div class="col-sm-6 text-right">
                             <small class="text-dark">
                                 <i class="far fa-clock mr-1 text-dark"></i>
-                                Report generated on {{ now()->format('d M Y, h:i A') }}
+                                {{ __('Report generated on') }} {{ now()->format('d M Y, h:i A') }}
                             </small>
                         </div>
                     </div>
@@ -597,7 +583,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const data = await response.json();
             
             // Clear existing options except the first one
-            selectElement.innerHTML = `<option value="">Select ${selectElement.name}</option>`;
+            selectElement.innerHTML = `<option value="">{{ __('Select') }} ${selectElement.name}</option>`;
             
             if (Array.isArray(data) && data.length > 0) {
                 selectElement.disabled = false;
@@ -664,9 +650,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // YEAR → SEASON
     year.addEventListener('change', async function () {
-        reset(season, 'Select Season');
-        reset(fertilizerType, 'Fertilizer Type');
-        reset(fertilizer, 'Fertilizer');
+        reset(season, '{{ __('Select Season') }}');
+        reset(fertilizerType, '{{ __('Fertilizer Type') }}');
+        reset(fertilizer, '{{ __('Fertilizer') }}');
 
         if (!this.value) return;
 
@@ -680,8 +666,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // SEASON → FERTILIZER TYPE
     season.addEventListener('change', async function () {
-        reset(fertilizerType, 'Fertilizer Type');
-        reset(fertilizer, 'Fertilizer');
+        reset(fertilizerType, '{{ __('Fertilizer Type') }}');
+        reset(fertilizer, '{{ __('Fertilizer') }}');
 
         if (!this.value || !year.value) return;
 
@@ -693,7 +679,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // FERTILIZER TYPE → FERTILIZER
     fertilizerType.addEventListener('change', async function () {
-        reset(fertilizer, 'Fertilizer');
+        reset(fertilizer, '{{ __('Fertilizer') }}');
 
         if (!this.value || !year.value || !season.value) return;
 
@@ -712,14 +698,21 @@ document.addEventListener('DOMContentLoaded', function () {
         const data = [];
         
         // Add title row
-        data.push(['KEBELE FERTILIZER REPORT - USAGE COMPARISON']);
-        data.push(['Report Period:', {{ $year }} + ' vs ' + {{ $prevYear }}]);
-        data.push(['Generated on:', new Date().toLocaleDateString() + ' ' + new Date().toLocaleTimeString()]);
+        data.push(['{{ __('KEBELE FERTILIZER REPORT - USAGE COMPARISON') }}']);
+        data.push(['{{ __('Report Period') }}:', {{ $year }} + ' vs ' + {{ $prevYear }}]);
+        data.push(['{{ __('Generated on') }}:', new Date().toLocaleDateString() + ' ' + new Date().toLocaleTimeString()]);
         data.push([]); // Empty row
         
         // Add headers
-        data.push(['#', 'Season', 'Fertilizer', 'Current Year Amount', 'Unit', 
-                   'Previous Year Amount', 'Unit']);
+        data.push([
+            '#',
+            '{{ __('Season') }}',
+            '{{ __('Fertilizer') }}',
+            '{{ __('Current Year Amount') }}',
+            '{{ __('Unit') }}',
+            '{{ __('Previous Year Amount') }}',
+            '{{ __('Unit') }}'
+        ]);
         
         @php 
             $groupedData = $currentYearData->groupBy('season');
@@ -754,7 +747,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 // Add season total
                 data.push([
                     '',
-                    'SEASON TOTAL: {{ $season }}',
+                    '{{ __('SEASON TOTAL') }} {{ $season }}',
                     '',
                     {{ $seasonTotalCurrentAmount }},
                     '{{ $seasonData->first()["unit"] ?? "" }}',
@@ -774,7 +767,7 @@ document.addEventListener('DOMContentLoaded', function () {
             @endphp
             data.push([
                 '',
-                'GRAND TOTAL',
+                '{{ __('GRAND TOTAL') }}',
                 '',
                 {{ $grandTotalCurrentAmount }},
                 '{{ $currentYearData->first()["unit"] ?? "" }}',
@@ -785,11 +778,11 @@ document.addEventListener('DOMContentLoaded', function () {
         
         // Add summary section
         data.push([]);
-        data.push(['REPORT SUMMARY']);
-        data.push(['Total Fertilizers Analyzed:', {{ $currentYearData->count() }}]);
-        data.push(['Total Seasons:', {{ $groupedData->count() }}]);
-        data.push(['Report Year:', {{ $year }}]);
-        data.push(['Comparison Year:', {{ $prevYear }}]);
+        data.push(['{{ __('REPORT SUMMARY') }}']);
+        data.push(['{{ __('Total Fertilizers Analyzed') }}:', {{ $currentYearData->count() }}]);
+        data.push(['{{ __('Total Seasons') }}:', {{ $groupedData->count() }}]);
+        data.push(['{{ __('Report Year') }}:', {{ $year }}]);
+        data.push(['{{ __('Comparison Year') }}:', {{ $prevYear }}]);
         
         // Convert data to worksheet
         const ws = XLSX.utils.aoa_to_sheet(data);
@@ -806,17 +799,17 @@ document.addEventListener('DOMContentLoaded', function () {
         ];
         
         // Add the worksheet to the workbook
-        XLSX.utils.book_append_sheet(wb, ws, 'Fertilizer Report');
+        XLSX.utils.book_append_sheet(wb, ws, '{{ __('Fertilizer Report') }}');
         
         // Generate filename
-        const filename = 'Fertilizer_Report_{{ $year }}_vs_{{ $prevYear }}_' + 
+        const filename = '{{ __('Fertilizer Report') }}_{{ $year }}_vs_{{ $prevYear }}_' + 
                         new Date().toISOString().slice(0,10).replace(/-/g, '') + '.xlsx';
         
         // Export the workbook
         XLSX.writeFile(wb, filename);
         
         // Show success message
-        showToast('Export successful! File downloaded as ' + filename, 'success');
+        showToast('{{ __('Export successful! File downloaded as') }} ' + filename, 'success');
     });
 
     // Toast notification function
@@ -840,7 +833,7 @@ document.addEventListener('DOMContentLoaded', function () {
         `;
         
         toast.innerHTML = `
-            <strong>${type === 'success' ? 'Success!' : 'Info'}</strong> ${message}
+            <strong>${type === 'success' ? '{{ __('Success!') }}' : '{{ __('Info') }}'}</strong> ${message}
             <button type="button" class="close" data-dismiss="alert">
                 <span>&times;</span>
             </button>
@@ -926,7 +919,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 labels: seasons,
                 datasets: [
                     {
-                        label: `Current Year (${@json($year)})`,
+                        label: `{{ __('Current Year') }} (${@json($year)})`,
                         data: currentSeasonAmount,
                         backgroundColor: fertilizerColors.currentYear.slice(0, seasons.length),
                         borderColor: fertilizerColors.currentYear.slice(0, seasons.length).map(color => color.replace('0.8', '1')),
@@ -935,7 +928,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         borderSkipped: false,
                     },
                     {
-                        label: `Previous Year (${@json($prevYear)})`,
+                        label: `{{ __('Previous Year') }} (${@json($prevYear)})`,
                         data: prevSeasonAmount,
                         backgroundColor: fertilizerColors.previousYear.slice(0, seasons.length),
                         borderColor: fertilizerColors.previousYear.slice(0, seasons.length).map(color => color.replace('0.4', '1')),
@@ -991,7 +984,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         },
                         title: {
                             display: true,
-                            text: 'Amount (' + (@json($currentYearData->first()['unit'] ?? '')) + ')',
+                            text: '{{ __('Amount') }} (' + (@json($currentYearData->first()['unit'] ?? '')) + ')',
                             font: {
                                 size: 14,
                                 weight: 'bold'
@@ -1013,7 +1006,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         },
                         title: {
                             display: true,
-                            text: 'Agricultural Seasons',
+                            text: '{{ __('Agricultural Seasons') }}',
                             font: {
                                 size: 14,
                                 weight: 'bold'
@@ -1038,7 +1031,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 labels: seasons,
                 datasets: [
                     {
-                        label: `Current Year (${@json($year)})`,
+                        label: `{{ __('Current Year') }} (${@json($year)})`,
                         data: currentSeasonAmount,
                         borderColor: '#2ecc71', // Green
                         backgroundColor: 'rgba(46, 204, 113, 0.1)',
@@ -1052,7 +1045,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         pointHoverRadius: 8
                     },
                     {
-                        label: `Previous Year (${@json($prevYear)})`,
+                        label: `{{ __('Previous Year') }} (${@json($prevYear)})`,
                         data: prevSeasonAmount,
                         borderColor: '#3498db', // Blue
                         backgroundColor: 'rgba(52, 152, 219, 0.1)',
@@ -1114,7 +1107,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         },
                         title: {
                             display: true,
-                            text: 'Amount (' + (@json($currentYearData->first()['unit'] ?? '')) + ')',
+                            text: '{{ __('Amount') }} (' + (@json($currentYearData->first()['unit'] ?? '')) + ')',
                             font: {
                                 size: 14,
                                 weight: 'bold'
@@ -1136,7 +1129,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         },
                         title: {
                             display: true,
-                            text: 'Agricultural Seasons',
+                            text: '{{ __('Agricultural Seasons') }}',
                             font: {
                                 size: 14,
                                 weight: 'bold'
@@ -1216,8 +1209,8 @@ document.addEventListener('DOMContentLoaded', function () {
         document.getElementById('pieChart').parentElement.innerHTML = `
             <div class="text-center py-5">
                 <i class="fas fa-chart-pie fa-3x text-muted mb-3"></i>
-                <h5 class="text-muted">No fertilizer type data available</h5>
-                <p class="text-muted">Try adjusting your filter criteria</p>
+                <h5 class="text-muted">{{ __('No fertilizer type data available') }}</h5>
+                <p class="text-muted">{{ __('Try adjusting your filter criteria') }}</p>
             </div>
         `;
     }

@@ -26,10 +26,13 @@ use App\Http\Controllers\JobCreationController;
 use App\Http\Controllers\KebeleAdminController;
 use App\Http\Controllers\ZonalReportController;
 use App\Http\Controllers\CulturalPlanController;
+use App\Http\Controllers\HealthReportController;
 use App\Http\Controllers\WoredaReportController;
 use App\Http\Controllers\GabbinaBiyyeeController;
 use App\Http\Controllers\LivestockPlanController;
 use App\Http\Controllers\MechanizationController;
+use App\Http\Controllers\BarnootaReportController;
+use App\Http\Controllers\CulturalReportController;
 use App\Http\Controllers\EnterpriseWorkController;
 use App\Http\Controllers\FertilizerTypeController;
 use App\Http\Controllers\JobOpportunityController;
@@ -40,27 +43,37 @@ use App\Http\Controllers\WeeklyLandPlanController;
 use App\Http\Controllers\AssociationTypeController;
 use App\Http\Controllers\CulturalRevivalController;
 use App\Http\Controllers\KebeleAssetPlanController;
+use App\Http\Controllers\LivestockReportController;
 use App\Http\Controllers\LivestockSupplyController;
 use App\Http\Controllers\NaturalResourceController;
 use App\Http\Controllers\woredadashboardController;
+use App\Http\Controllers\ZonalEmploymentController;
+use App\Http\Controllers\EmploymentReportController;
 use App\Http\Controllers\LivestockProductController;
 use App\Http\Controllers\Setting\LanguageController;
 use App\Http\Controllers\CropConfigurationController;
+use App\Http\Controllers\KebeleAssetReportController;
 use App\Http\Controllers\StudentMealSupplyController;
 use App\Http\Controllers\KebeleEconomicPlanController;
 use App\Http\Controllers\NaturalResourcePlanController;
 use App\Http\Controllers\SeedlingPreparationController;
 use App\Http\Controllers\CivilRegistrationPlanController;
+use App\Http\Controllers\NaturalResourceReportController;
+use App\Http\Controllers\PowerInstitutionReportController;
+use App\Http\Controllers\CivilRegistrationReportController;
 use App\Http\Controllers\AssociationExpansionPlanController;
 use App\Http\Controllers\EducationalEffectivenessController;
 use App\Http\Controllers\EducationalParticipationController;
 use App\Http\Controllers\KebeleGovernmentPropertyController;
+use App\Http\Controllers\BuildingInstitutionReportController;
 use App\Http\Controllers\EmploymentOpportunityPlanController;
+use App\Http\Controllers\AssociationExpansionReportController;
 use App\Http\Controllers\EnvironmentalProtectionPlanController;
 use App\Http\Controllers\BuildingPowerInstitutionPlanController;
 use App\Http\Controllers\RegistrationOfCivilCertificateController;
 use App\Http\Controllers\BuildingEconomicInstitutionPlanController;
 use App\Http\Controllers\BuildingCommunityInstitutionPlanController;
+use App\Http\Controllers\EconomicTransitionFacilitiesReportController;
 
 Route::middleware([SecurityHeaders::class])->group(function () {
     // Public routes
@@ -118,6 +131,14 @@ Route::middleware([SecurityHeaders::class])->group(function () {
 
         // for report  
         Route::middleware('role:2')->prefix('zones')->group(function () {
+        Route::get('/gabaasa_torbanii/employee/plans', [ZonalEmploymentController::class, 'zonalPlans'])->name('zone.employee.plans');
+        Route::post('/employment-feedback/store', [ZonalEmploymentController::class, 'storeFeedback'])
+        ->name('zonal.feedback.store');
+        
+    
+    // Store general feedback for woreda
+    Route::post('/general-feedback/store', [ZonalEmploymentController::class, 'storeGeneralFeedback'])
+        ->name('zonal.general.feedback.store');
 
               Route::get('/compost-report', [ZonalReportController::class, 'compost'])
         ->name('zonal-compost-report.index');
@@ -308,6 +329,10 @@ Route::delete('/enterprise-work/{id}', [EnterpriseWorkController::class, 'destro
 
         // Zone Admin only
         Route::middleware('role:2,4')->prefix('zones')->group(function () {
+
+// woreda users 
+            Route::post('user-kebele/save', [UserController::class, 'woredaadminstore'])->name('woreda.admin.store');
+
         Route::get('/crop-plans', [DashboardController::class, 'indexzonecrop'])->name('crop-plans.indexz');
         Route::get('/report/crop-plans', [DashboardController::class, 'indexzonecrop'])->name('crop-plans.indext');
             // Route::get('users', [UserController::class, 'zoneUsers'])->name('zone.users');
@@ -352,6 +377,18 @@ Route::delete('/enterprise-work/{id}', [EnterpriseWorkController::class, 'destro
 
         // Woreda Admin only
         Route::middleware('role:3')->prefix('woredas')->group(function () {
+            Route::get('/gabaasa_torbanii/employee/plans', [EmploymentReportController::class, 'woredaplans'])->name('kebele.employee.plans');
+            Route::get('/employment-plans', [EmploymentReportController::class, 'woredaplans'])
+        ->name('woreda.plans');
+    
+    // Store feedback for specific employment plan (using existing JSON field)
+    Route::post('/employment-feedback/store', [EmploymentReportController::class, 'storeFeedback'])
+        ->name('woreda.feedback.store');
+    
+    // Store general feedback for kebele (optional - if you want separate general feedback)
+    Route::post('/general-feedback/store', [EmploymentReportController::class, 'storeGeneralFeedback'])
+        ->name('woreda.general.feedback.store');
+
            Route::get('kebele/users', [kebeleUserController::class, 'index'])->name('users.index');
             Route::get('kebele-users', [kebeleUserController::class, 'kebeleadmin'])->name('admin.kebele.users.index');
             Route::post('user-kebele/save', [kebeleUserController::class, 'kebeleadminstore'])->name('kebele.admin.store');
@@ -388,12 +425,12 @@ Route::delete('/enterprise-work/{id}', [EnterpriseWorkController::class, 'destro
             Route::get('filter/crops', [WoredaReportController::class, 'getCrop'])->name('woreda.filter.crops');
 
             Route::get('mechanization-report', [WoredaReportController::class, 'mechinization'])
-        ->name('woreda-mechanization-report.index');
- Route::get('/compost-report', [WoredaReportController::class, 'compost'])->name('woreda-compost-report.index');
+            ->name('woreda-mechanization-report.index');
+            Route::get('/compost-report', [WoredaReportController::class, 'compost'])->name('woreda-compost-report.index');
 
         });
 
-       Route::middleware('role:4')->prefix('kebele')->group(function () {
+ Route::middleware('role:4')->prefix('kebele')->group(function () {
     Route::get('mechanization-report', [KaroraController::class, 'mechinization'])
         ->name('kebele-mechanization-report.index');
 
@@ -406,6 +443,20 @@ Route::get('seedling-reports/kebele', [KaroraController::class, 'seedling'])
 
         Route::middleware('role:4')->prefix('kebele')->group(function () {
             // add more woreda admin routes here
+
+            Route::get('/gabaasa_torbanii/employee/plans', [EmploymentReportController::class, 'plans'])->name('kebele.employee.plans');
+            Route::get('/gabaasa_torbanii/asset/plans', [KebeleAssetReportController::class, 'plans'])->name('kebele.asset.plans');
+            Route::get('/gabaasa_torbanii/civil/plans', [CivilRegistrationReportController::class, 'plans'])->name('kebele.civeil.plans');
+            Route::get('/gabaasa_torbanii/cultural/plans', [CulturalReportController::class, 'plans'])->name('kebele.cultural.plans');
+            Route::get('/gabaasa_torbanii/healthy/plans', [HealthReportController::class, 'plans'])->name('kebele.healthy.plans');
+            Route::get('/gabaasa_torbanii/barnoota/plans', [BarnootaReportController::class, 'plans'])->name('kebele.barnoota.plans');
+            Route::get('/gabaasa_torbanii/economic-transition-facilities/plans', [EconomicTransitionFacilitiesReportController::class, 'plans'])->name('kebele.economic_transition_facilities.plans');
+            Route::get('/gabaasa_torbanii/power-institution/plans', [PowerInstitutionReportController::class, 'plans'])->name('kebele.power_institution.plans');
+            Route::get('/gabaasa_torbanii/building-institution/plans', [BuildingInstitutionReportController::class, 'plans'])->name('kebele.building_institution.plans');
+            Route::get('/gabaasa_torbanii/association-expansion/plans', [AssociationExpansionReportController::class, 'plans'])->name('kebele.association_expansion.plans');
+            Route::get('/gabaasa_torbanii/natural-resources/plans', [NaturalResourceReportController::class, 'plans'])->name('kebele.natural_resources.plans');
+            Route::get('/gabaasa_torbanii/livestock/plans', [LivestockReportController::class, 'plans'])->name('kebele.livestock.plans');
+
             Route::put('profile/{uuid}', [UserController::class, 'update'])->name('woreda.users.update');
             // Route::get('/profile/users/{uuid}', [UserController::class, 'edit'])->name('woreda.users.edit');
 

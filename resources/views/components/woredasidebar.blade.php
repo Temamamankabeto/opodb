@@ -96,9 +96,13 @@
                             <i class="fas fa-flask nav-icon"></i>
                             <p>{{ __('Soil Development') }}</p>
                         </a>
-
                     </li>
-                    
+                 <li class="nav-item">
+                        <a href="{{ url('woredas/gabaasa_torbanii/employee/plans') }}" class="nav-link">
+                            <i class="fas fa-flask nav-icon"></i>
+                            <p>{{ __('Employee Plans') }}</p>
+                        </a>
+                    </li>
 
                         
             </ul>

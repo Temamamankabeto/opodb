@@ -240,6 +240,90 @@ class UserController extends Controller
         return redirect()->back()->with('success', 'User created successfully.');
     }
 
+public function woredaadminstore(Request $request)
+{
+    // Validate incoming request
+    $request->validate([
+        'name' => 'required|string|max:255',
+        'email' => 'required|string|email|max:255|unique:users,email',
+        'phone' => [
+            'required',
+            'string',
+            'regex:/^(\+251|0)(9|7)\d{8}$/',
+            'unique:users,phone',
+        ],
+        'gender' => 'nullable|in:male,female,other',
+        'woreda_id' => 'required|exists:woredas,id',
+        'role_id' => 'required|exists:roles,id',
+        'status' => 'nullable|in:active,inactive,suspended',
+        'password' => 'required|string|min:8|confirmed',
+    ]);
+
+    // Get logged in user info
+    $authUser = Auth::user();
+    
+    // Generate unique employee ID
+    $employeeId = $this->generateEmployeeId();
+    
+    // Create the user
+    $user = User::create([
+        'region_id' => $authUser->region_id ?? 1,
+        'zone_id' => $authUser->zone_id, // Auto from logged in user
+        'name' => $request->name,
+        'email' => $request->email,
+        'phone' => $this->formatPhone($request->phone),
+        'gender' => $request->gender,
+        'woreda_id' => $request->woreda_id,
+        'role_id' => $request->role_id,
+        'employee_id' => $employeeId,
+        'password' => Hash::make($request->password),
+        'status' => $request->status ?? 'active',
+        'created_by' => $authUser->id,
+    ]);
+
+    // You can also send welcome email here
+    
+    return redirect()->back()->with('success', 'User created successfully. Employee ID: ' . $employeeId);
+}
+
+/**
+ * Generate unique employee ID
+ */
+private function generateEmployeeId()
+{
+    $prefix = 'WA'; // Woreda Admin
+    $yearMonth = date('Ym');
+    $random = str_pad(rand(1, 9999), 4, '0', STR_PAD_LEFT);
+    
+    $employeeId = $prefix . '-' . $yearMonth . '-' . $random;
+    
+    // Ensure uniqueness
+    while (User::where('employee_id', $employeeId)->exists()) {
+        $random = str_pad(rand(1, 9999), 4, '0', STR_PAD_LEFT);
+        $employeeId = $prefix . '-' . $yearMonth . '-' . $random;
+    }
+    
+    return $employeeId;
+}
+
+/**
+ * Format phone number to standard +251 format
+ */
+private function formatPhone($phone)
+{
+    $phone = preg_replace('/\D/', '', $phone);
+    
+    if (strlen($phone) === 10 && substr($phone, 0, 2) === '09') {
+        return '+2519' . substr($phone, 2);
+    }
+    
+    if (strlen($phone) === 9 && in_array(substr($phone, 0, 1), ['9', '7'])) {
+        return '+251' . $phone;
+    }
+    
+    return $phone;
+}
+
     public function storesectoradmin(Request $request)
     {
         //        dd($request->role_id);
@@ -318,26 +402,27 @@ class UserController extends Controller
     }
 
 
-    public function woredaadmin()
-    {
-        $zones = Zone::where('id', Auth::user()->zone_id)->get();
+   public function woredaadmin()
+{
+    $zones = Zone::where('id', Auth::user()->zone_id)->get();
+    $roles = Role::where('id', 3)->get();
+    
+    // Add this line to get woredas for the current zone
+    $woredas = Woreda::where('zone_id', Auth::user()->zone_id)->get();
 
-        // Only get role_id = 3 (woreda admin)
-        $roles = Role::where('id', 3)->get();
+    $users = User::with([
+        'zone:id,name',
+        'woreda:id,name',
+        'kebele:id,name',
+        'role:id,name'
+    ])
+    ->where('role_id', 3)
+    ->where('zone_id', Auth::user()->zone_id)
+    ->orderBy('created_at', 'desc')
+    ->paginate(10);
 
-        $users = User::with([
-            'zone:id,name',
-            'woreda:id,name',
-            'kebele:id,name',
-            'role:id,name'
-        ])
-            ->where('role_id', 3)
-            ->where('zone_id', Auth::user()->zone_id)
-            ->orderBy('created_at', 'desc')
-            ->paginate(10);
-
-        return view('user.zone.woreda_admin', compact('users', 'zones', 'roles'));
-    }
+    return view('user.zone.woreda_admin', compact('users', 'zones', 'roles', 'woredas'));
+}
 
     public function kebeleadmin()
     {

@@ -248,31 +248,40 @@
                             </div>
                         </div>
 
-                        {{-- New Building Data --}}
-                        <div class="card mb-3">
-                            <div class="card-header bg-primary text-white">
-                                <h6 class="mb-0">New Building Data</h6>
-                            </div>
-                            <div class="card-body">
-                                @if (!empty($plan->new_building_data) && count($plan->new_building_data) > 0)
-                                    @foreach ($plan->new_building_data as $index => $building)
-                                        <div class="border-bottom pb-2 mb-2 {{ !$loop->last ? 'border-bottom' : '' }}">
-                                            <h6 class="text-primary">#{{ $index + 1 }} - {{ $building['name'] }}</h6>
-                                            <div class="row small">
-                                                <div class="col-md-3"><strong>Number:</strong> {{ number_format($building['number']) }}</div>
-                                                <div class="col-md-3"><strong>Cost:</strong> {{ number_format($building['cost'], 2) }} ETB</div>
-                                                <div class="col-md-6"><strong>Total:</strong> {{ number_format($building['number'] * $building['cost'], 2) }} ETB</div>
-                                                <div class="col-12 mt-1">
-                                                    <strong>Description:</strong> {{ $building['description'] }}
-                                                </div>
-                                            </div>
-                                        </div>
-                                    @endforeach
-                                @else
-                                    <p class="text-muted mb-0">No new building data</p>
-                                @endif
-                            </div>
+                       {{-- New Building Data --}}
+<div class="card mb-3">
+    <div class="card-header bg-primary text-white">
+        <h6 class="mb-0">New Building Data</h6>
+    </div>
+    <div class="card-body">
+        @if (!empty($plan->new_building_data) && count($plan->new_building_data) > 0)
+            @foreach ($plan->new_building_data as $index => $building)
+                <div class="border-bottom pb-2 mb-2 {{ !$loop->last ? 'border-bottom' : '' }}">
+                    <h6 class="text-primary">#{{ $index + 1 }} - {{ $building['name'] ?? 'N/A' }}</h6>
+                    <div class="row small">
+                        <div class="col-md-3">
+                            <strong>Number:</strong> {{ isset($building['number']) ? number_format($building['number']) : 0 }}
                         </div>
+                        <div class="col-md-3">
+                            <strong>Cost:</strong> {{ isset($building['cost']) ? number_format($building['cost'], 2) : 0 }} ETB
+                        </div>
+                        <div class="col-md-6">
+                            <strong>Total:</strong> 
+                            {{ (isset($building['number']) && isset($building['cost'])) 
+                                ? number_format($building['number'] * $building['cost'], 2) 
+                                : 0 }} ETB
+                        </div>
+                        <div class="col-12 mt-1">
+                            <strong>Description:</strong> {{ $building['description'] ?? 'No description' }}
+                        </div>
+                    </div>
+                </div>
+            @endforeach
+        @else
+            <p class="text-muted mb-0">No new building data</p>
+        @endif
+    </div>
+</div>
 
                         {{-- Improvement Data --}}
                         <div class="card">

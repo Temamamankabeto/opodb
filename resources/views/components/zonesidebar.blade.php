@@ -9,7 +9,41 @@
 <hr>
 
  
+<li class="nav-item">
+        <a href="#" class="nav-link">
+            <i class="nav-icon fas fa-calendar-alt"></i>
+            <p>
+                {{ __('User Management ') }}
+                <i class="fas fa-angle-left right"></i>
+            </p>
+        </a>
 
+        <ul class="nav nav-treeview">
+
+            <!-- Misooma Midhaanii (Crop Development) -->
+            <li class="nav-item">
+                <a href="#" class="nav-link">
+                    <i class="fas fa-seedling nav-icon"></i>
+                    <p>
+                        {{ __('Woreda User') }}
+                        <i class="fas fa-angle-left right"></i>
+                    </p>
+                </a>
+
+                <ul class="nav nav-treeview">
+
+                    
+                       <li class="nav-item">
+                        <a href="{{ url(' admin/woreda-users') }}" class="nav-link">
+                            <i class="fas fa-flask nav-icon"></i>
+                            <p>{{ __('Users') }}</p>
+                        </a>
+
+                    </li>   
+            </ul>
+            </li>
+        </ul>
+</li>
  
  {{-- gabaasa woggaa  --}}
 <li class="nav-item">
@@ -62,8 +96,14 @@
                             <i class="fas fa-flask nav-icon"></i>
                             <p>{{ __('Soil Development') }}</p>
                         </a>
-
                     </li>
+                    
+                        <li class="nav-item">
+                            <a href="{{ url('zones/gabaasa_torbanii/employee/plans') }}" class="nav-link">
+                                <i class="fas fa-flask nav-icon"></i>
+                                <p>{{ __('Employment Opportunity Plans') }}</p>
+                            </a>
+                        </li>
                     
                     
                    
