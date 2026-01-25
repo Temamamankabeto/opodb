@@ -180,7 +180,7 @@
     {{-- Add Zone Modal --}}
     <div class="modal fade" id="addZoneModal" tabindex="-1">
         <div class="modal-dialog">
-            <form method="POST" action="{{ route('zones.store') }}" class="modal-content">
+            <form method="POST" action="{{ route('admin.zones.store') }}" class="modal-content">
                 @csrf
                 <div class="modal-header bg-primary text-white">
                     <h5 class="modal-title">Add Zone</h5>
