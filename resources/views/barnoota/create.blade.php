@@ -5,7 +5,7 @@
             <div class="container-fluid">
                 <div class="row mb-2">
                     <div class="col-sm-6">
-                        <h1>Create Barnoota Report</h1>
+                        <h1>Insert Your Education Plan</h1>
                     </div>
                     <div class="col-sm-6">
                         
