@@ -33,196 +33,216 @@ class BuildingEconomicInstitutionPlanController extends Controller
         return view('sector.economic-institutions.create', compact('institutions', 'years'));
     }
 
-    public function store(Request $request)
-    {
-        // Validate basic fields and ensure JSON data is strings
-        $validated = $request->validate([
-            'year' => 'required|string',
-            'new_building_data' => 'required|string',
-            'improvement_data' => 'nullable|string',
-        ]);
+   public function store(Request $request)
+{
+    // Validate only year as required, all others nullable
+    $validated = $request->validate([
+        'year' => 'required|string',
+        'new_building_data' => 'nullable',
+        'improvement_data' => 'nullable',
+    ]);
 
-        // Decode JSON data
-        $newBuildingData = json_decode($request->new_building_data, true);
-        $improvementData = $request->improvement_data ? json_decode($request->improvement_data, true) : [];
+    // Initialize empty arrays
+    $newBuildingData = [];
+    $improvementData = [];
 
-        // Validate new building data format
-        if (!is_array($newBuildingData)) {
+    // Decode JSON data only if provided and valid
+    if ($request->filled('new_building_data')) {
+        $decoded = json_decode($request->new_building_data, true);
+        if (is_array($decoded)) {
+            $newBuildingData = $decoded;
+        } else {
             return back()->withErrors([
                 'new_building_data' => 'Invalid data format for new building data.'
             ])->withInput();
         }
+    }
 
-        // Validate improvement data format only if provided
-        if ($request->improvement_data && !is_array($improvementData)) {
+    if ($request->filled('improvement_data')) {
+        $decoded = json_decode($request->improvement_data, true);
+        if (is_array($decoded)) {
+            $improvementData = $decoded;
+        } else {
             return back()->withErrors([
                 'improvement_data' => 'Invalid data format for improvement data.'
             ])->withInput();
         }
+    }
 
-        // Ensure improvement data is an array (even if empty)
-        if (!is_array($improvementData)) {
-            $improvementData = [];
+    // Custom validation for new building data (only if provided)
+    $errors = [];
+    
+    // Validate new building data if provided
+    if (!empty($newBuildingData)) {
+        foreach ($newBuildingData as $index => $data) {
+            // Only institution name is required
+            if (empty($data['name'])) {
+                $errors["new_building_data.{$index}.name"] = "Institution name is required.";
+            }
+            
+            // All other fields are optional - only validate if they're provided and not empty
+            if (isset($data['public_number']) && $data['public_number'] !== '' && !is_numeric($data['public_number'])) {
+                $errors["new_building_data.{$index}.public_number"] = "Public number of buildings must be numeric if provided.";
+            }
+            
+            if (isset($data['private_number']) && $data['private_number'] !== '' && !is_numeric($data['private_number'])) {
+                $errors["new_building_data.{$index}.private_number"] = "Private number of buildings must be numeric if provided.";
+            }
+            
+            if (isset($data['association_number']) && $data['association_number'] !== '' && !is_numeric($data['association_number'])) {
+                $errors["new_building_data.{$index}.association_number"] = "Association number of buildings must be numeric if provided.";
+            }
+            
+            if (isset($data['public_cost']) && $data['public_cost'] !== '' && !is_numeric($data['public_cost'])) {
+                $errors["new_building_data.{$index}.public_cost"] = "Public cost must be numeric if provided.";
+            }
+            
+            if (isset($data['private_cost']) && $data['private_cost'] !== '' && !is_numeric($data['private_cost'])) {
+                $errors["new_building_data.{$index}.private_cost"] = "Private cost must be numeric if provided.";
+            }
+            
+            if (isset($data['association_cost']) && $data['association_cost'] !== '' && !is_numeric($data['association_cost'])) {
+                $errors["new_building_data.{$index}.association_cost"] = "Association cost must be numeric if provided.";
+            }
+            
+            // Description is optional - no validation needed
         }
+    }
 
-       // Custom validation for new building data
-$errors = [];
-foreach ($newBuildingData as $index => $data) {
-    if (empty($data['name'])) {
-        $errors["new_building_data.{$index}.name"] = "Building name is required.";
+    // Custom validation for improvement data (only if provided)
+    if (!empty($improvementData)) {
+        foreach ($improvementData as $index => $data) {
+            // Only institution name is required
+            if (empty($data['name'])) {
+                $errors["improvement_data.{$index}.name"] = "Institution name is required.";
+            }
+            
+            // All other fields are optional - only validate if they're provided and not empty
+            if (isset($data['public_number']) && $data['public_number'] !== '' && !is_numeric($data['public_number'])) {
+                $errors["improvement_data.{$index}.public_number"] = "Public number of improvements must be numeric if provided.";
+            }
+            
+            if (isset($data['private_number']) && $data['private_number'] !== '' && !is_numeric($data['private_number'])) {
+                $errors["improvement_data.{$index}.private_number"] = "Private number of improvements must be numeric if provided.";
+            }
+            
+            if (isset($data['association_number']) && $data['association_number'] !== '' && !is_numeric($data['association_number'])) {
+                $errors["improvement_data.{$index}.association_number"] = "Association number of improvements must be numeric if provided.";
+            }
+            
+            if (isset($data['public_cost']) && $data['public_cost'] !== '' && !is_numeric($data['public_cost'])) {
+                $errors["improvement_data.{$index}.public_cost"] = "Public cost must be numeric if provided.";
+            }
+            
+            if (isset($data['private_cost']) && $data['private_cost'] !== '' && !is_numeric($data['private_cost'])) {
+                $errors["improvement_data.{$index}.private_cost"] = "Private cost must be numeric if provided.";
+            }
+            
+            if (isset($data['association_cost']) && $data['association_cost'] !== '' && !is_numeric($data['association_cost'])) {
+                $errors["improvement_data.{$index}.association_cost"] = "Association cost must be numeric if provided.";
+            }
+            
+            // Description is optional - no validation needed
+        }
     }
-    if (empty($data['public_number']) || !is_numeric($data['public_number'])) {
-        $errors["new_building_data.{$index}.public_number"] = "Public number of buildings is required and must be numeric.";
-    }
-    if (empty($data['private_number']) || !is_numeric($data['private_number'])) {
-        $errors["new_building_data.{$index}.private_number"] = "Private number of buildings is required and must be numeric.";
-    }
-    // FIXED: Changed 'associatione_number' to 'association_number'
-    if (empty($data['association_number']) || !is_numeric($data['association_number'])) {
-        $errors["new_building_data.{$index}.association_number"] = "Association number of buildings is required and must be numeric.";
-    }
-    if (empty($data['public_cost']) || !is_numeric($data['public_cost'])) {
-        $errors["new_building_data.{$index}.public_cost"] = "Public cost is required and must be numeric.";
-    }
-    if (empty($data['private_cost']) || !is_numeric($data['private_cost'])) {
-        $errors["new_building_data.{$index}.private_cost"] = "Private cost is required and must be numeric.";
-    }
-    if (empty($data['association_cost']) || !is_numeric($data['association_cost'])) {
-        $errors["new_building_data.{$index}.association_cost"] = "Association cost is required and must be numeric.";
-    }
-    if (empty($data['description'])) {
-        $errors["new_building_data.{$index}.description"] = "Description is required.";
-    }
-}
 
-        // Custom validation for improvement data (only if provided)
-foreach ($improvementData as $index => $data) {
-    if (empty($data['name'])) {
-        $errors["improvement_data.{$index}.name"] = "Improvement name is required.";
+    if (!empty($errors)) {
+        return back()->withErrors($errors)->withInput();
     }
-    if (empty($data['public_number']) || !is_numeric($data['public_number'])) {
-        $errors["improvement_data.{$index}.public_number"] = "Public number of improvements is required and must be numeric.";
-    }
-    if (empty($data['private_number']) || !is_numeric($data['private_number'])) {
-        $errors["improvement_data.{$index}.private_number"] = "Private number of improvements is required and must be numeric.";
-    }
-    // FIXED: Changed 'associatione_number' to 'association_number'
-    if (empty($data['association_number']) || !is_numeric($data['association_number'])) {
-        $errors["improvement_data.{$index}.association_number"] = "Association number of improvements is required and must be numeric.";
+
+    $user = Auth::user();
+
+    // Get unique institution names from both datasets
+    $allInstitutionNames = [];
+    
+    foreach ($newBuildingData as $building) {
+        if (!empty($building['name']) && !in_array($building['name'], $allInstitutionNames)) {
+            $allInstitutionNames[] = $building['name'];
+        }
     }
     
-    if (empty($data['public_cost']) || !is_numeric($data['public_cost'])) {
-        $errors["improvement_data.{$index}.public_cost"] = "Public cost is required and must be numeric.";
-    }
-    if (empty($data['private_cost']) || !is_numeric($data['private_cost'])) {
-        $errors["improvement_data.{$index}.private_cost"] = "Private cost is required and must be numeric.";
-    }
-    if (empty($data['association_cost']) || !is_numeric($data['association_cost'])) {
-        $errors["improvement_data.{$index}.association_cost"] = "Association cost is required and must be numeric.";
-    }
-    
-    if (empty($data['description'])) {
-        $errors["improvement_data.{$index}.description"] = "Description is required.";
-    }
-}
-
-        if (!empty($errors)) {
-            return back()->withErrors($errors)->withInput();
+    foreach ($improvementData as $improvement) {
+        if (!empty($improvement['name']) && !in_array($improvement['name'], $allInstitutionNames)) {
+            $allInstitutionNames[] = $improvement['name'];
         }
+    }
 
-        $user = Auth::user();
+    // If no institutions found in the data, return error
+    if (empty($allInstitutionNames)) {
+        return back()->withErrors([
+            'new_building_data' => 'At least one institution must be selected.'
+        ])->withInput();
+    }
 
-        // Get unique institution names from both datasets
-        $allInstitutionNames = [];
+    $createdCount = 0;
+    $skippedCount = 0;
+
+    // For each unique institution, create ONE record
+    foreach ($allInstitutionNames as $institutionName) {
+        // Find the institution by name
+        $institution = Institution::where('name', $institutionName)->first();
         
-        foreach ($newBuildingData as $building) {
-            if (!empty($building['name']) && !in_array($building['name'], $allInstitutionNames)) {
-                $allInstitutionNames[] = $building['name'];
-            }
+        if (!$institution) {
+            continue; // Skip if institution not found
         }
+
+        // Check if plan already exists for this year, institution, kebele and sector
+        $existingPlan = EconomicTransitionFacility::where('year', $request->year)
+            ->where('institution_id', $institution->id)
+            ->where('kebele_id', $user->kebele_id)
+            ->where('sector_id', $user->sector_id)
+            ->first();
+
+        if ($existingPlan) {
+            // SKIP - Institution already has data for this year
+            $skippedCount++;
+            continue;
+        }
+
+        // Filter data for this specific institution
+        $institutionNewBuildings = array_filter($newBuildingData, function($building) use ($institutionName) {
+            return $building['name'] === $institutionName;
+        });
         
-        foreach ($improvementData as $improvement) {
-            if (!empty($improvement['name']) && !in_array($improvement['name'], $allInstitutionNames)) {
-                $allInstitutionNames[] = $improvement['name'];
-            }
-        }
+        $institutionImprovements = array_filter($improvementData, function($improvement) use ($institutionName) {
+            return $improvement['name'] === $institutionName;
+        });
 
-        // If no institutions found, return error
-        if (empty($allInstitutionNames)) {
-            return back()->withErrors([
-                'new_building_data' => 'At least one institution must be selected for new buildings or improvements.'
-            ])->withInput();
-        }
+        // Reset array keys
+        $institutionNewBuildings = array_values($institutionNewBuildings);
+        $institutionImprovements = array_values($institutionImprovements);
 
-        $createdCount = 0;
-        $skippedCount = 0;
+        // Create record with all data (including empty/optional fields)
+        EconomicTransitionFacility::create([
+            'year' => $request->year,
+            'institution_id' => $institution->id,
+            'new_building_data' => $institutionNewBuildings,
+            'improvement_data' => $institutionImprovements,
+            'sector_id' => $user->sector_id,
+            'kebele_id' => $user->kebele_id,
+            'woreda_id' => $user->woreda_id,
+            'zone_id' => $user->zone_id,
+            'region_id' => $user->region_id,
+            'created_by' => $user->id,
+        ]);
 
-        // For each unique institution, create ONE record
-        foreach ($allInstitutionNames as $institutionName) {
-            // Find the institution by name
-            $institution = Institution::where('name', $institutionName)->first();
-            
-            if (!$institution) {
-                continue; // Skip if institution not found
-            }
+        $createdCount++;
+    }
 
-            // Check if plan already exists for this year, institution, kebele and sector
-            $existingPlan = EconomicTransitionFacility::where('year', $request->year)
-                ->where('institution_id', $institution->id)
-                ->where('kebele_id', $user->kebele_id)
-                ->where('sector_id', $user->sector_id)
-                ->first();
-
-            if ($existingPlan) {
-                // SKIP - Institution already has data for this year
-                $skippedCount++;
-                continue;
-            }
-
-            // Filter data for this specific institution
-            $institutionNewBuildings = array_filter($newBuildingData, function($building) use ($institutionName) {
-                return $building['name'] === $institutionName;
-            });
-            
-            $institutionImprovements = array_filter($improvementData, function($improvement) use ($institutionName) {
-                return $improvement['name'] === $institutionName;
-            });
-
-            // Reset array keys
-            $institutionNewBuildings = array_values($institutionNewBuildings);
-            $institutionImprovements = array_values($institutionImprovements);
-
-            // CREATE SINGLE RECORD per institution
-            EconomicTransitionFacility::create([
-                'year' => $request->year,
-                'institution_id' => $institution->id,
-                'new_building_data' => $institutionNewBuildings,
-                'improvement_data' => $institutionImprovements,
-                // 'sector_id' => $user->sector_id,
-                'kebele_id' => $user->kebele_id,
-                'woreda_id' => $user->woreda_id,
-                'zone_id' => $user->zone_id,
-                'region_id' => $user->region_id,
-                'created_by' => $user->id,
-            ]);
-
-            $createdCount++;
-        }
-
-        // Prepare success message
-        if ($createdCount > 0 && $skippedCount > 0) {
-            $message = "Building plans created successfully! {$createdCount} new plan(s) created and {$skippedCount} institution(s) skipped (data already exists).";
-        } elseif ($createdCount > 0) {
-            $message = "Building plans created successfully!";
-        } else {
-            $message = "No new plans were created. All selected institutions already have data for the selected year.";
-            return redirect()->route('sector.building-power-institution-plans.index')
-                ->with('warning', $message);
-        }
-
+    // Prepare success message
+    if ($createdCount > 0 && $skippedCount > 0) {
+        $message = "Building plans created successfully! {$createdCount} new plan(s) created and {$skippedCount} institution(s) skipped (data already exists).";
+    } elseif ($createdCount > 0) {
+        $message = "Building plans created successfully!";
+    } else {
+        $message = "No new plans were created. All selected institutions already have data for the selected year.";
         return redirect()->route('sector.building-economic-institution-plans.index')
-            ->with('success', $message);
+            ->with('warning', $message);
     }
+
+    return redirect()->route('sector.building-economic-institution-plans.index')
+        ->with('success', $message);
+}
 
     public function checkExisting(Request $request)
     {
