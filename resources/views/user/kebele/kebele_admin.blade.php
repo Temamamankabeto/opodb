@@ -59,11 +59,16 @@
                                 <td>{{ optional($user->role)->name ?? '-' }}</td>
                                 <td>{{ $user->employee_id ?? '-' }}</td>
                                 <td>
-                                    <!-- Edit button triggers modal -->
-                                    <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#editUserModal{{ $user->uuid }}">
-                                        <i class="fas fa-edit"></i>
-                                    </button>
-                                </td>
+    <!-- Edit button triggers modal -->
+    <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#editUserModal{{ $user->uuid }}">
+        <i class="fas fa-edit"></i>
+    </button>
+    
+    <!-- Delete button triggers confirmation modal -->
+    <button class="btn btn-danger btn-sm" data-toggle="modal" data-target="#deleteUserModal{{ $user->uuid }}">
+        <i class="fas fa-trash"></i>
+    </button>
+</td>
                             </tr>
                         @empty
                             <tr>
@@ -283,6 +288,52 @@
             </div>
         </div>
     @endforeach
+
+    <!-- Delete Confirmation Modals -->
+@foreach ($users as $user)
+    <div class="modal fade" id="deleteUserModal{{ $user->uuid }}" tabindex="-1" role="dialog" aria-labelledby="deleteUserModalLabel{{ $user->uuid }}" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header bg-danger">
+                    <h5 class="modal-title text-white">
+                        <i class="fas fa-exclamation-triangle mr-2"></i>
+                        {{ __('Confirm Deletion') }}
+                    </h5>
+                    <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="text-center mb-4">
+                        <div class="mb-3">
+                            <i class="fas fa-user-slash fa-3x text-danger"></i>
+                        </div>
+                        <h5 class="font-weight-bold">{{ __('Are you sure?') }}</h5>
+                        <p class="text-muted">
+                            {{ __('You are about to delete user') }}: <strong>{{ $user->name }}</strong>
+                        </p>
+                        <div class="alert alert-warning small">
+                            <i class="fas fa-exclamation-circle mr-1"></i>
+                            {{ __('This action cannot be undone. All data associated with this user will be permanently removed.') }}
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer justify-content-between">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                        <i class="fas fa-times mr-1"></i> {{ __('Cancel') }}
+                    </button>
+                    <form action="{{ route('kebele.admin.delete', $user->uuid) }}" method="POST" class="d-inline">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="btn btn-danger">
+                            <i class="fas fa-trash mr-1"></i> {{ __('Delete User') }}
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+@endforeach
 
     <style>
         /* Custom modal transitions */

@@ -381,15 +381,16 @@ Route::delete('/enterprise-work/{id}', [EnterpriseWorkController::class, 'destro
             Route::get('/employment-plans', [EmploymentReportController::class, 'woredaplans'])
         ->name('woreda.plans');
     
-    // Store feedback for specific employment plan (using existing JSON field)
-    Route::post('/employment-feedback/store', [EmploymentReportController::class, 'storeFeedback'])
-        ->name('woreda.feedback.store');
+        // Store feedback for specific employment plan (using existing JSON field)
+        Route::post('/employment-feedback/store', [EmploymentReportController::class, 'storeFeedback'])
+            ->name('woreda.feedback.store');
     
     // Store general feedback for kebele (optional - if you want separate general feedback)
     Route::post('/general-feedback/store', [EmploymentReportController::class, 'storeGeneralFeedback'])
         ->name('woreda.general.feedback.store');
 
            Route::get('kebele/users', [kebeleUserController::class, 'index'])->name('users.index');
+            Route::delete('/admin/{uuid}/delete', [kebeleUserController::class, 'kebeleadmindelete'])->name('kebele.admin.delete');
             Route::get('kebele-users', [kebeleUserController::class, 'kebeleadmin'])->name('admin.kebele.users.index');
             Route::post('user-kebele/save', [kebeleUserController::class, 'kebeleadminstore'])->name('kebele.admin.store');
             Route::put('kebeleusernupdate/{uuid}/', [UserController::class, 'kebeleadminupdate'])->name('kebele.user.update');

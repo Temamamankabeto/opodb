@@ -102,4 +102,22 @@ class kebeleUserController extends Controller
         return redirect()->back()
             ->with('success', 'Profile updated successfully.');
     }
+
+
+     public function kebeleadmindelete($uuid)
+    {
+        $user = User::where('uuid', $uuid)->firstOrFail();
+        
+        // Optional: Prevent deleting yourself
+        if (Auth::id() === $user->id) {
+            return redirect()->back()->with('error', 'You cannot delete your own account.');
+        }
+        
+        // Optional: Add authorization check
+        // $this->authorize('delete', $user);
+        
+        $user->delete();
+        
+        return redirect()->back()->with('success', 'User deleted successfully.');
+    }
 }
