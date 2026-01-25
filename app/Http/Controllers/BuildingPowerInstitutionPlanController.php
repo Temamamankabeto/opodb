@@ -38,7 +38,7 @@ class BuildingPowerInstitutionPlanController extends Controller
         // Validate basic fields and ensure JSON data is strings
         $validated = $request->validate([
             'year' => 'required|string',
-            'new_building_data' => 'required|string',
+            'new_building_data' => 'nullable|string',
             'improvement_data' => 'nullable|string',
         ]);
 
