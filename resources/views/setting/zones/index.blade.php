@@ -1,31 +1,34 @@
- <x-layout>
+<x-layout>
     @php
-    $nonce = request()->attributes->get('csp_nonce');
-@endphp
+        $nonce = request()->attributes->get('csp_nonce');
+    @endphp
 
-<script nonce="{{ $nonce }}">
-    console.log('Safe inline script');
-</script>
+    <script nonce="{{ $nonce }}">
+        console.log('Safe inline script');
+    </script>
+    
     <div class="container py-4">
         <h2 class="mb-4 text-primary fw-bold"><i class="bi bi-diagram-3-fill me-2"></i> Oromia Kebele Administrative Tree Structure</h2>
 
         @if (session('success'))
             <div class="alert alert-success">{{ session('success') }}</div>
         @endif
-@if ($errors->any())
-    <div class="alert alert-danger">
-        <strong>Whoops!</strong> There were some problems with your input.<br><br>
-        <ul>
-            @foreach ($errors->all() as $error)
-                <li>{{ $error }}</li>
-            @endforeach
-        </ul>
-    </div>
-@endif
+        
+        @if ($errors->any())
+            <div class="alert alert-danger">
+                <strong>Whoops!</strong> There were some problems with your input.<br><br>
+                <ul>
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+        
         {{-- Add Zone button --}}
         @if(Auth::user()->role_id == 1)
             <div class="mb-4">
-                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addZoneModal">
+                <button class="btn btn-primary" type="button" data-bs-toggle="modal" data-bs-target="#addZoneModal">
                     <i class="bi bi-plus-circle-fill"></i> Add Zone
                 </button>
             </div>
@@ -36,8 +39,8 @@
                 <div class="card-header" style="background-color: whitesmoke;">
                     <div class="d-flex justify-content-between align-items-center">
                         <h5 class="mb-0 text-primary"><i class="bi bi-map-fill me-2"></i> {{ $zone->name }}</h5>
-                        <button class="btn btn-sm btn-outline-primary rounded-circle" data-bs-toggle="collapse"
-                            data-bs-target="#zone-{{ $zone->id }}">
+                        <button class="btn btn-sm btn-outline-primary rounded-circle" type="button" 
+                            data-bs-toggle="collapse" data-bs-target="#zone-{{ $zone->id }}">
                             <i class="bi bi-chevron-double-down"></i>
                         </button>
                     </div>
@@ -45,7 +48,7 @@
 
                 <div id="zone-{{ $zone->id }}" class="collapse">
                     <div class="card-body py-2">
-                        <button class="btn btn-sm btn-success mb-2" data-bs-toggle="modal"
+                        <button class="btn btn-sm btn-success mb-2" type="button" data-bs-toggle="modal"
                             data-bs-target="#addWoredaModal{{ $zone->id }}">
                             <i class="bi bi-plus-circle"></i> Add Woreda
                         </button>
@@ -56,15 +59,15 @@
                                     <div>
                                         <i class="bi bi-signpost-2-fill text-success me-2"></i><strong>{{ $woreda->name }}</strong>
                                     </div>
-                                    <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="collapse"
-                                        data-bs-target="#woreda-{{ $woreda->id }}">
+                                    <button class="btn btn-sm btn-outline-secondary" type="button" 
+                                        data-bs-toggle="collapse" data-bs-target="#woreda-{{ $woreda->id }}">
                                         <i class="bi bi-caret-down-square"></i>
                                     </button>
                                 </div>
 
                                 <div class="mt-2 collapse" id="woreda-{{ $woreda->id }}">
-                                    <button class="btn btn-sm btn-secondary mb-2" data-bs-toggle="modal"
-                                        data-bs-target="#addKebeleModal{{ $woreda->id }}">
+                                    <button class="btn btn-sm btn-secondary mb-2" type="button" 
+                                        data-bs-toggle="modal" data-bs-target="#addKebeleModal{{ $woreda->id }}">
                                         <i class="bi bi-plus-circle"></i> Add Kebele
                                     </button>
 
@@ -77,21 +80,20 @@
                                                     </div>
 
                                                     <div>
-                                                        <button class="btn btn-sm btn-outline-info"
-                                                            data-bs-toggle="collapse"
-                                                            data-bs-target="#sectors-{{ $kebele->id }}">
+                                                        <button class="btn btn-sm btn-outline-info me-1" type="button"
+                                                            data-bs-toggle="collapse" data-bs-target="#sectors-{{ $kebele->id }}">
                                                             <i class="bi bi-diagram-3"></i> Sectors
                                                         </button>
-                                                        <button class="btn btn-sm btn-secondary" data-bs-toggle="modal"
-                                                            data-bs-target="#editKebeleModal{{ $kebele->id }}">
+                                                        <button class="btn btn-sm btn-secondary" type="button" 
+                                                            data-bs-toggle="modal" data-bs-target="#editKebeleModal{{ $kebele->id }}">
                                                             <i class="bi bi-pencil"></i> Edit
                                                         </button>
                                                     </div>
                                                 </div>
 
                                                 <div class="collapse mt-2 ms-4" id="sectors-{{ $kebele->id }}">
-                                                    <button class="btn btn-sm btn-info mb-2" data-bs-toggle="modal"
-                                                        data-bs-target="#addSectorModal{{ $kebele->id }}">
+                                                    <button class="btn btn-sm btn-info mb-2" type="button" 
+                                                        data-bs-toggle="modal" data-bs-target="#addSectorModal{{ $kebele->id }}">
                                                         <i class="bi bi-plus-circle"></i> Add Sector
                                                     </button>
 
@@ -108,25 +110,24 @@
                                             </li>
 
                                             {{-- Add Sector Modal --}}
-                                            <div class="modal fade" id="addSectorModal{{ $kebele->id }}" tabindex="-1">
+                                            <div class="modal fade" id="addSectorModal{{ $kebele->id }}" tabindex="-1" aria-hidden="true">
                                                 <div class="modal-dialog">
-                                                    <form method="POST" action="{{ route('sectors.store') }}"
-                                                        class="modal-content">
+                                                    <form method="POST" action="{{ route('sectors.store') }}" class="modal-content">
                                                         @csrf
                                                         <div class="modal-header bg-dark text-white">
                                                             <h5 class="modal-title">Add Sector to {{ $kebele->name }}</h5>
-                                                            <button type="button" class="btn-close"
-                                                                data-bs-dismiss="modal"></button>
+                                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                                         </div>
                                                         <div class="modal-body">
-                                                            <input type="hidden" name="kebele_id"
-                                                                value="{{ $kebele->id }}">
-                                                            <input type="text" name="name" class="form-control"
-                                                                placeholder="Sector Name" required>
-                                                                
-                                                                
+                                                            <input type="hidden" name="kebele_id" value="{{ $kebele->id }}">
+                                                            <div class="mb-3">
+                                                                <label for="sector_name_{{ $kebele->id }}" class="form-label">Sector Name</label>
+                                                                <input type="text" id="sector_name_{{ $kebele->id }}" name="name" 
+                                                                    class="form-control" placeholder="Sector Name" required>
+                                                            </div>
                                                         </div>
                                                         <div class="modal-footer">
+                                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                                                             <button class="btn btn-dark" type="submit">Save</button>
                                                         </div>
                                                     </form>
@@ -134,58 +135,68 @@
                                             </div>
 
                                             {{-- Edit Kebele Modal --}}
-                                            <div class="modal fade" id="editKebeleModal{{ $kebele->id }}" tabindex="-1">
+                                            <div class="modal fade" id="editKebeleModal{{ $kebele->id }}" tabindex="-1" aria-hidden="true">
                                                 <div class="modal-dialog modal-lg">
                                                     <div class="modal-content">
                                                         <div class="modal-header bg-primary text-white">
                                                             <h5 class="modal-title">Edit Kebele: {{ $kebele->name }}</h5>
-                                                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                                         </div>
                                                         <form method="POST" action="{{ route('admin.kebeles.update', $kebele->id) }}">
                                                             @csrf
                                                             @method('PUT')
                                                             <div class="modal-body">
                                                                 <div class="row mb-3">
-                                                                    <label for="name" class="col-sm-3 col-form-label">Kebele Name</label>
+                                                                    <label for="name_{{ $kebele->id }}" class="col-sm-3 col-form-label">Kebele Name</label>
                                                                     <div class="col-sm-9">
-                                                                        <input type="text" class="form-control" name="name" value="{{ $kebele->name }}" required>
+                                                                        <input type="text" id="name_{{ $kebele->id }}" class="form-control" 
+                                                                            name="name" value="{{ old('name', $kebele->name) }}" required>
                                                                     </div>
                                                                 </div>
 
                                                                 <div class="row mb-3">
-    <label for="total_area" class="col-sm-3 col-form-label">Total Area</label>
-    <div class="col-sm-9">
-        <input type="number" class="form-control" name="total_area" value="{{ $kebele->total_area }}" min="1" step="1" required>
-    </div>
-</div>
+                                                                    <label for="total_area_{{ $kebele->id }}" class="col-sm-3 col-form-label">Total Area</label>
+                                                                    <div class="col-sm-9">
+                                                                        <input type="number" id="total_area_{{ $kebele->id }}" class="form-control" 
+                                                                            name="total_area" value="{{ old('total_area', $kebele->total_area) }}" 
+                                                                            min="1" step="1" required>
+                                                                    </div>
+                                                                </div>
 
-<div class="row mb-3">
-    <label for="total_farm_area" class="col-sm-3 col-form-label">Farm Area</label>
-    <div class="col-sm-9">
-        <input type="number" class="form-control" name="total_farm_area" value="{{ $kebele->total_farm_area }}" min="1" step="1" required>
-    </div>
-</div>
+                                                                <div class="row mb-3">
+                                                                    <label for="total_farm_area_{{ $kebele->id }}" class="col-sm-3 col-form-label">Farm Area</label>
+                                                                    <div class="col-sm-9">
+                                                                        <input type="number" id="total_farm_area_{{ $kebele->id }}" class="form-control" 
+                                                                            name="total_farm_area" value="{{ old('total_farm_area', $kebele->total_farm_area) }}" 
+                                                                            min="1" step="1" required>
+                                                                    </div>
+                                                                </div>
 
-<div class="row mb-3">
-    <label for="total_population"  class="col-sm-3 col-form-label">Population </label>
-    <div class="col-sm-9">
-        <input type="number" class="form-control" name="total_population" value="{{ $kebele->total_population }}" min="1" step="1" required>
-    </div>
-</div>
+                                                                <div class="row mb-3">
+                                                                    <label for="total_population_{{ $kebele->id }}" class="col-sm-3 col-form-label">Population</label>
+                                                                    <div class="col-sm-9">
+                                                                        <input type="number" id="total_population_{{ $kebele->id }}" class="form-control" 
+                                                                            name="total_population" value="{{ old('total_population', $kebele->total_population) }}" 
+                                                                            min="1" step="1" required>
+                                                                    </div>
+                                                                </div>
 
-<div class="row mb-3">
-    <label for="male" class="col-sm-3 col-form-label">Male</label>
-    <div class="col-sm-9">
-        <input type="number" class="form-control" name="male" value="{{ $kebele->male }}" min="1" step="1" required>
-    </div>
-</div>
+                                                                <div class="row mb-3">
+                                                                    <label for="male_{{ $kebele->id }}" class="col-sm-3 col-form-label">Male</label>
+                                                                    <div class="col-sm-9">
+                                                                        <input type="number" id="male_{{ $kebele->id }}" class="form-control" 
+                                                                            name="male" value="{{ old('male', $kebele->male) }}" min="1" step="1" required>
+                                                                    </div>
+                                                                </div>
 
-<div class="row mb-3">
-    <label for="female" class="col-sm-3 col-form-label">Female</label>
-    <div class="col-sm-9">
-        <input type="number" class="form-control" name="female" value="{{ $kebele->female }}" min="1" step="1" required>
-    </div>
-</div>
+                                                                <div class="row mb-3">
+                                                                    <label for="female_{{ $kebele->id }}" class="col-sm-3 col-form-label">Female</label>
+                                                                    <div class="col-sm-9">
+                                                                        <input type="number" id="female_{{ $kebele->id }}" class="form-control" 
+                                                                            name="female" value="{{ old('female', $kebele->female) }}" min="1" step="1" required>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
                                                             <div class="modal-footer">
                                                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                                                                 <button type="submit" class="btn btn-primary">Save Changes</button>
@@ -202,36 +213,49 @@
                             </div>
 
                             {{-- Add Kebele Modal --}}
-                            <div class="modal fade" id="addKebeleModal{{ $woreda->id }}" tabindex="-1">
+                            <div class="modal fade" id="addKebeleModal{{ $woreda->id }}" tabindex="-1" aria-hidden="true">
                                 <div class="modal-dialog">
                                     <form method="POST" action="{{ route('admin.kebeles.store') }}" class="modal-content">
                                         @csrf
                                         <div class="modal-header bg-secondary text-white">
                                             <h5 class="modal-title">Add Kebele to {{ $woreda->name }}</h5>
-                                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                         </div>
                                         <div class="modal-body">
                                             <input type="hidden" name="woreda_id" value="{{ $woreda->id }}">
                                             <div class="mb-3">
-                                                <input type="text" name="name" class="form-control" placeholder="Kebele Name" required>
+                                                <label for="kebele_name_{{ $woreda->id }}" class="form-label">Kebele Name</label>
+                                                <input type="text" id="kebele_name_{{ $woreda->id }}" name="name" 
+                                                    class="form-control" placeholder="Kebele Name" required>
                                             </div>
                                             <div class="mb-3">
-                                                <input type="text" name="total_area" class="form-control" placeholder="Total Area" required>
+                                                <label for="total_area_new_{{ $woreda->id }}" class="form-label">Total Area</label>
+                                                <input type="number" id="total_area_new_{{ $woreda->id }}" name="total_area" 
+                                                    class="form-control" placeholder="Total Area" min="1" step="1" required>
                                             </div>
                                             <div class="mb-3">
-                                                <input type="text" name="total_farm_area" class="form-control" placeholder="Total Farm Area" required>
+                                                <label for="total_farm_area_new_{{ $woreda->id }}" class="form-label">Total Farm Area</label>
+                                                <input type="number" id="total_farm_area_new_{{ $woreda->id }}" name="total_farm_area" 
+                                                    class="form-control" placeholder="Total Farm Area" min="1" step="1" required>
                                             </div>
                                             <div class="mb-3">
-                                                <input type="text" name="total_population" class="form-control" placeholder="Total Population" required>
+                                                <label for="total_population_new_{{ $woreda->id }}" class="form-label">Total Population</label>
+                                                <input type="number" id="total_population_new_{{ $woreda->id }}" name="total_population" 
+                                                    class="form-control" placeholder="Total Population" min="1" step="1" required>
                                             </div>
                                             <div class="mb-3">
-                                                <input type="text" name="male" class="form-control" placeholder="Male" required>
+                                                <label for="male_new_{{ $woreda->id }}" class="form-label">Male</label>
+                                                <input type="number" id="male_new_{{ $woreda->id }}" name="male" 
+                                                    class="form-control" placeholder="Male" min="1" step="1" required>
                                             </div>
                                             <div class="mb-3">
-                                                <input type="text" name="female" class="form-control" placeholder="Female" required>
+                                                <label for="female_new_{{ $woreda->id }}" class="form-label">Female</label>
+                                                <input type="number" id="female_new_{{ $woreda->id }}" name="female" 
+                                                    class="form-control" placeholder="Female" min="1" step="1" required>
                                             </div>
                                         </div>
                                         <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                                             <button class="btn btn-secondary" type="submit">Save</button>
                                         </div>
                                     </form>
@@ -245,19 +269,24 @@
             </div>
 
             {{-- Add Woreda Modal --}}
-            <div class="modal fade" id="addWoredaModal{{ $zone->id }}" tabindex="-1">
+            <div class="modal fade" id="addWoredaModal{{ $zone->id }}" tabindex="-1" aria-hidden="true">
                 <div class="modal-dialog">
                     <form method="POST" action="{{ route('admin.woreda.store') }}" class="modal-content">
                         @csrf
                         <div class="modal-header bg-success text-white">
                             <h5 class="modal-title">Add Woreda to {{ $zone->name }}</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
                             <input type="hidden" name="zone_id" value="{{ $zone->id }}">
-                            <input type="text" name="name" class="form-control" placeholder="Woreda Name" required>
+                            <div class="mb-3">
+                                <label for="woreda_name_{{ $zone->id }}" class="form-label">Woreda Name</label>
+                                <input type="text" id="woreda_name_{{ $zone->id }}" name="name" 
+                                    class="form-control" placeholder="Woreda Name" required>
+                            </div>
                         </div>
                         <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                             <button class="btn btn-success" type="submit">Save</button>
                         </div>
                     </form>
@@ -267,18 +296,22 @@
     </div>
 
     {{-- Add Zone Modal --}}
-    <div class="modal fade" id="addZoneModal" tabindex="-1">
+    <div class="modal fade" id="addZoneModal" tabindex="-1" aria-labelledby="addZoneModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <form method="POST" action="{{ route('admin.zones.store') }}" class="modal-content">
                 @csrf
                 <div class="modal-header bg-primary text-white">
-                    <h5 class="modal-title">Add Zone</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    <h5 class="modal-title" id="addZoneModalLabel">Add Zone</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <input type="text" name="name"  class="form-control" placeholder="Zone Name" required>
+                    <div class="mb-3">
+                        <label for="zone_name" class="form-label">Zone Name</label>
+                        <input type="text" id="zone_name" name="name" class="form-control" placeholder="Zone Name" required>
+                    </div>
                 </div>
                 <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                     <button class="btn btn-primary" type="submit">Save</button>
                 </div>
             </form>
@@ -291,12 +324,51 @@
             font-family: 'Segoe UI', Roboto, sans-serif;
             background-color: #f8f9fa;
         }
-
         .list-group-item:hover {
             background-color: #e9ecef;
         }
+        .btn-sm {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.875rem;
+        }
     </style>
 
+    {{-- Bootstrap CSS --}}
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    
+    {{-- Bootstrap JS (CRITICAL - Add this!) --}}
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    
+    {{-- Optional: Debug script if buttons still don't work --}}
+    <script nonce="{{ $nonce }}">
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM loaded - Checking Bootstrap functionality');
+            
+            // Check if Bootstrap is loaded
+            if (typeof bootstrap === 'undefined') {
+                console.error('Bootstrap not loaded! Check script tag.');
+            } else {
+                console.log('Bootstrap loaded successfully');
+            }
+            
+            // Add aria-expanded attribute to collapse buttons
+            document.querySelectorAll('[data-bs-toggle="collapse"]').forEach(button => {
+                const target = button.getAttribute('data-bs-target');
+                const targetElement = document.querySelector(target);
+                if (targetElement) {
+                    button.setAttribute('aria-expanded', targetElement.classList.contains('show'));
+                    button.setAttribute('aria-controls', target.replace('#', ''));
+                    
+                    // Update aria-expanded when collapse state changes
+                    targetElement.addEventListener('show.bs.collapse', function() {
+                        button.setAttribute('aria-expanded', 'true');
+                    });
+                    targetElement.addEventListener('hide.bs.collapse', function() {
+                        button.setAttribute('aria-expanded', 'false');
+                    });
+                }
+            });
+        });
+    </script>
 </x-layout>

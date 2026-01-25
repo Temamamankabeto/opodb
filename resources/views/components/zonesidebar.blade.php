@@ -44,6 +44,48 @@
             </li>
         </ul>
 </li>
+
+<li class="nav-item">
+        <a href="#" class="nav-link">
+            <i class="nav-icon fas fa-calendar-alt"></i>
+            <p>
+                {{ __('Structures ') }}
+                <i class="fas fa-angle-left right"></i>
+            </p>
+        </a>
+
+        <ul class="nav nav-treeview">
+
+            <!-- Misooma Midhaanii (Crop Development) -->
+            <li class="nav-item">
+                <a href="#" class="nav-link">
+                    <i class="fas fa-seedling nav-icon"></i>
+                    <p>
+                        {{ __('Structures') }}
+                        <i class="fas fa-angle-left right"></i>
+                    </p>
+                </a>
+
+                <ul class="nav nav-treeview">
+
+                    
+                       <li class="nav-item">
+                        <a href="{{ url('zones/woreda/structures') }}" class="nav-link">
+                            <i class="fas fa-flask nav-icon"></i>
+                            <p>{{ __('kebeles') }}</p>
+                        </a>
+                    </li>  
+                    
+                    <li class="nav-item">
+                        <a href="{{ url('admin/zones') }}" class="nav-link">
+                            <i class="fas fa-flask nav-icon"></i>
+                            <p>{{ __('Woreadas') }}</p>
+                        </a> 
+            </ul>
+            </li>
+        </ul>
+</li>
+
  
  {{-- gabaasa woggaa  --}}
 <li class="nav-item">
