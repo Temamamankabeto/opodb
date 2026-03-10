@@ -92,16 +92,8 @@
                                                     </label>
                                                     <select class="form-select supply-unit" disabled>
                                                         <option value="">-- Select Unit --</option>
-                                                        <option value="kg">kg</option>
-                                                        <option value="liter">Liter</option>
-                                                        <option value="piece">Piece</option>
-                                                        <option value="bag">Bag</option>
-                                                        <option value="quintal">Quintal</option>
-                                                        <option value="ton">Ton</option>
-                                                        <option value="box">Box</option>
-                                                        <option value="bottle">Bottle</option>
-                                                        <option value="pack">Pack</option>
-                                                        <option value="unit">Unit</option>
+                                                        <option value="kg">Lakk</option>
+                                                         
                                                     </select>
                                                 </div>
                                             </div>
