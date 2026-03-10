@@ -92,7 +92,7 @@
                                                     </label>
                                                     <select class="form-select supply-unit" disabled>
                                                         <option value="">-- Select Unit --</option>
-                                                        <option value="kg">Lakk</option>
+                                                        <option value="lakk">Lakk</option>
                                                          
                                                     </select>
                                                 </div>
