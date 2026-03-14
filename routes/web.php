@@ -442,7 +442,7 @@ Route::get('seedling-reports/kebele', [KaroraController::class, 'seedling'])
     
 });
 
-        Route::middleware('role:4')->prefix('kebele')->group(function () {
+        Route::middleware('role:4,1')->prefix('kebele')->group(function () {
             // add more woreda admin routes here
 
             Route::get('/gabaasa_torbanii/employee/plans', [EmploymentReportController::class, 'plans'])->name('kebele.employee.plans');
